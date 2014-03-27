@@ -89,16 +89,24 @@ Installation
 
    Consult the list of dependencies.
 
-  Fix RNAmmer bug
+  Choose a rRNA predictor
 
-   RNAmmer was written when HMMER 2.x was the latest release. Since them,
-   HMMER 3.x has been released, and uses the same executable binary names.
-   Prokka needs HMMER3 and RNAmmer (and hence HMMER2) so you need to edit
-   your RNAmmer script to explicitly point your HMMER2 binary instead of
-   using the HMMER3 binary which is more likely to be in your PATH first.
+    Option 1 - Barrnap
 
-   Type which rnammer to find the script, and then edit it with your
-   favourite editor. Find the following lines at the top:
+   This was written by the author of Prokka and is recommended if you prefer
+   speed over absolute accuracy. It uses the new multi-core NHMMER for
+   DNA:DNA profile searches. Download it here.
+
+    Option 2 - RNAmmer
+
+    RNAmmer was written when HMMER 2.x was the latest release. Since them,
+    HMMER 3.x has been released, and uses the same executable binary names.
+    Prokka needs HMMER3 and RNAmmer (and hence HMMER2) so you need to edit
+    your RNAmmer script to explicitly point your HMMER2 binary instead of
+    using the HMMER3 binary which is more likely to be in your PATH first.
+
+    Type which rnammer to find the script, and then edit it with your
+    favourite editor. Find the following lines at the top:
 
  if ( $uname eq "Linux" ) {
  #       $HMMSEARCH_BINARY = "/usr/cbs/bio/bin/linux64/hmmsearch";    # OLD
@@ -108,14 +116,14 @@ Installation
  If you are using Mac OS X, you'll also have to change the
  "Linux" to "Darwin" too..
 
-   As you can see, I have commented out the original part, and replaced it
-   with the location of my HMMER2 hmmsearch tool, so it doesn't run the
-   HMMER3 one. You need to ensure HMMER3 is in your PATH before the old
-   HMMER2 too.
+    As you can see, I have commented out the original part, and replaced it
+    with the location of my HMMER2 hmmsearch tool, so it doesn't run the
+    HMMER3 one. You need to ensure HMMER3 is in your PATH before the old
+    HMMER2 too.
 
   Test
 
-   Type prokka --version and you should see an output like prokka 1.x.
+    Type prokka --version and you should see an output like prokka 1.x.
 
 Invoking Prokka
 
@@ -124,8 +132,8 @@ Invoking Prokka
  # Vanilla (but with free toppings)
  % prokka contigs.fa
 
-   After some minutes, it will be finished, and explain where to find your
-   result files.
+    After some minutes, it will be finished, and explain where to find your
+    result files.
 
   Moderate
 
@@ -159,47 +167,50 @@ Invoking Prokka
 
 Output Files
 
-   .gff
-           This is the master annotation in GFF3 format, containing both
-           sequences and annotations. It can be viewed directly in Artemis or
-           IGV.
+    .gff
+            This is the master annotation in GFF3 format, containing both
+            sequences and annotations. It can be viewed directly in Artemis
+            or IGV.
 
-   .gbk
-           This is a standard Genbank file derived from the master .gff. If
-           the input to prokka was a multi-FASTA, then this will be a
-           multi-Genbank, with one record for each sequence.
+    .gbk
+            This is a standard Genbank file derived from the master .gff. If
+            the input to prokka was a multi-FASTA, then this will be a
+            multi-Genbank, with one record for each sequence.
 
-   .fna
-           Nucleotide FASTA file of the input contig sequences.
+    .fna
+            Nucleotide FASTA file of the input contig sequences.
 
-   .faa
-           Protein FASTA file of the translated CDS sequences.
+    .faa
+            Protein FASTA file of the translated CDS sequences.
 
-   .ffn
-           Nucleotide FASTA file of all the annotated sequences, not just
-           CDS.
+    .ffn
+            Nucleotide FASTA file of all the annotated sequences, not just
+            CDS.
 
-   .sqn
-           An ASN1 format "Sequin" file for submission to Genbank. It needs
-           to be edited to set the correct taxonomy, authors, related
-           publication etc.
+    .sqn
+            An ASN1 format "Sequin" file for submission to Genbank. It needs
+            to be edited to set the correct taxonomy, authors, related
+            publication etc.
 
-   .fsa
-           Nucleotide FASTA file of the input contig sequences, used by
-           "tbl2asn" to create the .sqn file. It is mostly the same as the
-           .fna file, but with extra Sequin tags in the sequence description
-           lines.
+    .fsa
+            Nucleotide FASTA file of the input contig sequences, used by
+            "tbl2asn" to create the .sqn file. It is mostly the same as the
+            .fna file, but with extra Sequin tags in the sequence description
+            lines.
 
-   .tbl
-           Feature Table file, used by "tbl2asn" to create the .sqn file.
+    .tbl
+            Feature Table file, used by "tbl2asn" to create the .sqn file.
 
-   .err
-           Unacceptable annotations - the NCBI discrepancy report.
+    .err
+            Unacceptable annotations - the NCBI discrepancy report.
 
-   .log
-           Contains all the output that Prokka produced during its run. This
-           is a record of what settings you used, even if the --quiet option
-           was enabled.
+    .log
+            Contains all the output that Prokka produced during its run. This
+            is a record of what settings you used, even if the --quiet option
+            was enabled.
+
+    .txt
+            Statistics relating to the annotated features found
 
 Options
 
@@ -218,110 +229,118 @@ Options
    --locustag [X]    Locus tag prefix (default 'PROKKA')
    --increment [N]   Locus tag counter increment (default '1')
    --gffver [N]      GFF version (default '3')
-   --centre [X]      Sequencing centre ID (default 'VBC')
+   --compliant       Force Genbank/ENA/DDJB compliance: --genes --mincontiglen 200 --centre XXX (default OFF)
+   --centre [X]      Sequencing centre ID. (default '')
  Organism details:
-   --genus [X]       Genus name (will be used to aid annotation) (default 'Genus')
+   --genus [X]       Genus name (default 'Genus')
    --species [X]     Species name (default 'species')
    --strain [X]      Strain name (default 'strain')
+   --plasmid [X]     Plasmid name or identifier (default '')
  Annotations:
    --kingdom [X]     Annotation mode: Archaea|Bacteria|Viruses (default 'Bacteria')
    --gcode [N]       Genetic code / Translation table (set if --kingdom is set) (default '0')
    --gram [X]        Gram: -/neg +/pos (default '')
    --usegenus        Use genus-specific BLAST databases (needs --genus) (default OFF)
    --proteins [X]    Fasta file of trusted proteins to first annotate from (default '')
+   --metagenome      Improve gene predictions for highly fragmented genomes (default OFF)
  Computation:
    --fast            Fast mode - skip CDS /product searching (default OFF)
-   --cpus [N]        Number of CPUs to use [0=all] (default '0')
-   --mincontig [N]   Minimum contig size [NCBI needs 200] (default '200')
+   --cpus [N]        Number of CPUs to use [0=all] (default '8')
+   --mincontiglen [N] Minimum contig size [NCBI needs 200] (default '1')
    --evalue [n.n]    Similarity e-value cut-off (default '1e-06')
    --rfam            Enable searching for ncRNAs with Infernal+Rfam (SLOW!) (default '0')
+   --norrna          Don't run rRNA search (default OFF)
+   --notrna          Don't run tRNA search (default OFF)
 
 Dependencies
 
-   GNU Parallel
-           A shell tool for executing jobs in parallel using one or more
-           computers O. Tange, GNU Parallel - The Command-Line Power Tool,
-           ;login: The USENIX Magazine, Feb 2011:42-47.
+    GNU Parallel
+            A shell tool for executing jobs in parallel using one or more
+            computers O. Tange, GNU Parallel - The Command-Line Power Tool,
+            ;login: The USENIX Magazine, Feb 2011:42-47.
 
-   BioPerl
-           Used for input/output of various file formats Stajich et al, The
-           Bioperl toolkit: Perl modules for the life sciences. Genome Res.
-           2002 Oct;12(10):1611-8.
+    BioPerl
+            Used for input/output of various file formats Stajich et al, The
+            Bioperl toolkit: Perl modules for the life sciences. Genome Res.
+            2002 Oct;12(10):1611-8.
 
-   Aragorn
-           Finds transfer RNA features (tRNA) Laslett D, Canback B. ARAGORN,
-           a program to detect tRNA genes and tmRNA genes in nucleotide
-           sequences. Nucleic Acids Res. 2004 Jan 2;32(1):11-6.
+    Aragorn
+            Finds transfer RNA features (tRNA) Laslett D, Canback B. ARAGORN,
+            a program to detect tRNA genes and tmRNA genes in nucleotide
+            sequences. Nucleic Acids Res. 2004 Jan 2;32(1):11-6.
 
-   RNAmmer
-           Finds ribosomal RNA features (rRNA) Lagesen K et al. RNAmmer:
-           consistent and rapid annotation of ribosomal RNA genes. Nucleic
-           Acids Res. 2007;35(9):3100-8.
+    Barrnap
+            Used to predict rRNA features. Manuscript under preparation.
 
-   Prodigal
-           Finds protein-coding features (CDS) Hyatt D et al. Prodigal:
-           prokaryotic gene recognition and translation initiation site
-           identification. BMC Bioinformatics. 2010 Mar 8;11:119.
+    RNAmmer
+            Finds ribosomal RNA features (rRNA) Lagesen K et al. RNAmmer:
+            consistent and rapid annotation of ribosomal RNA genes. Nucleic
+            Acids Res. 2007;35(9):3100-8.
 
-   SignalP >= 4.0
-           Finds signal peptide features in CDS (sig_peptide) Petersen TN et
-           al. SignalP 4.0: discriminating signal peptides from transmembrane
-           regions. Nat Methods. 2011 Sep 29;8(10):785-6.
+    Prodigal
+            Finds protein-coding features (CDS) Hyatt D et al. Prodigal:
+            prokaryotic gene recognition and translation initiation site
+            identification. BMC Bioinformatics. 2010 Mar 8;11:119.
 
-   BLAST+
-           Used for similarity searching against protein sequence libraries
-           Camacho C et al. BLAST+: architecture and applications. BMC
-           Bioinformatics. 2009 Dec 15;10:421.
+    SignalP >= 4.0
+            Finds signal peptide features in CDS (sig_peptide) Petersen TN et
+            al. SignalP 4.0: discriminating signal peptides from
+            transmembrane regions. Nat Methods. 2011 Sep 29;8(10):785-6.
 
-   HMMER3
-           Used for similarity searching against protein family profiles Finn
-           RD et al. HMMER web server: interactive sequence similarity
-           searching. Nucleic Acids Res. 2011 Jul;39(Web Server
-           issue):W29-37.
+    BLAST+
+            Used for similarity searching against protein sequence libraries
+            Camacho C et al. BLAST+: architecture and applications. BMC
+            Bioinformatics. 2009 Dec 15;10:421.
 
-   Infernal
-           Used for similarity searching against ncRNA family profiles D. L.
-           Kolbe, S. R. Eddy. Fast Filtering for RNA Homology Search.
-           Bioinformatics, 27:3102-3109, 2011.
+    HMMER3
+            Used for similarity searching against protein family profiles
+            Finn RD et al. HMMER web server: interactive sequence similarity
+            searching. Nucleic Acids Res. 2011 Jul;39(Web Server
+            issue):W29-37.
+
+    Infernal
+            Used for similarity searching against ncRNA family profiles D. L.
+            Kolbe, S. R. Eddy. Fast Filtering for RNA Homology Search.
+            Bioinformatics, 27:3102-3109, 2011.
 
 Databases
 
   The Core Databases
 
-   Prokka uses a variety of databases when trying to assign function to the
-   predicted CDS features. It takes a hierarchial approach to make it fast. A
-   small, core set of well characterized proteins are first searched using
-   BLAST+. This combination of small database and fast search typically
-   completes about 70% of the workload. Then a series of slower but more
-   sensitive HMM databases are searched using HMMER3.
+    Prokka uses a variety of databases when trying to assign function to the
+    predicted CDS features. It takes a hierarchial approach to make it fast.
+    A small, core set of well characterized proteins are first searched using
+    BLAST+. This combination of small database and fast search typically
+    completes about 70% of the workload. Then a series of slower but more
+    sensitive HMM databases are searched using HMMER3.
 
-   The initial core databases are derived from UniProtKB; there is one per
-   "kingdom" supported. To qualify for inclusion, a protein must be (1) from
-   Bacteria (or Archaea or Viruses); (2) not be "Fragment" entries; and (3)
-   have an evidence level ("PE") of 2 or lower, which corresponds to
-   experimental mRNA or proteomics evidence.
+    The initial core databases are derived from UniProtKB; there is one per
+    "kingdom" supported. To qualify for inclusion, a protein must be (1) from
+    Bacteria (or Archaea or Viruses); (2) not be "Fragment" entries; and (3)
+    have an evidence level ("PE") of 2 or lower, which corresponds to
+    experimental mRNA or proteomics evidence.
 
   Making a Core Databases
 
-   If you want to modify these core databases, the included script
-   prokka-uniprot_to_fasta_db, along with the official uniprot_sprot.dat, can
-   be used to generate a new database to put in /path/to/prokka/db/kingdom/.
-   If you add new ones, the command prokka --listdb will show you whether it
-   has been detected properly.
+    If you want to modify these core databases, the included script
+    prokka-uniprot_to_fasta_db, along with the official uniprot_sprot.dat,
+    can be used to generate a new database to put in
+    /path/to/prokka/db/kingdom/. If you add new ones, the command prokka
+    --listdb will show you whether it has been detected properly.
 
   The Genus Databases
 
-   If you enable --usegenus and also provide a Genus via --genus then it will
-   first use a BLAST database which is Genus specific. Prokka comes with a
-   set of databases for the most common Bacterial genera; type prokka
-   --listdb to see what they are.
+    If you enable --usegenus and also provide a Genus via --genus then it
+    will first use a BLAST database which is Genus specific. Prokka comes
+    with a set of databases for the most common Bacterial genera; type prokka
+    --listdb to see what they are.
 
   Adding a Genus Databases
 
-   If you have a set of Genbank files and want to create a new Genus
-   database, Prokka comes with a tool called prokka-genbank_to_fasta_db to
-   help. For example, if you had four annotated "Coccus" genomes, you could
-   do the following:
+    If you have a set of Genbank files and want to create a new Genus
+    database, Prokka comes with a tool called prokka-genbank_to_fasta_db to
+    help. For example, if you had four annotated "Coccus" genomes, you could
+    do the following:
 
  % quokka-genbank_to_fasta_db Coccus1.gbk Coccus2.gbk Coccus3.gbk Coccus4.gbk > Coccus.faa
  % cd-hit -i Coccus.faa -o Coccus -T 0 -M 0 -g 1 -s 0.8 -c 0.9
@@ -331,30 +350,30 @@ Databases
 
   The HMM Databases
 
-   Prokka comes with a bunch of HMM libraries for HMMER3. They are mostly
-   Bacteria-specific. They are searched after the core and genus databases.
-   You can add more simply by putting them in /path/to/prokka/db/hmm. Type
-   prokka --listdb to confirm they are recognised.
+    Prokka comes with a bunch of HMM libraries for HMMER3. They are mostly
+    Bacteria-specific. They are searched after the core and genus databases.
+    You can add more simply by putting them in /path/to/prokka/db/hmm. Type
+    prokka --listdb to confirm they are recognised.
 
   Database format
 
-   Prokka understands two annotation tag formats, a plain one and a detailed
-   one.
+    Prokka understands two annotation tag formats, a plain one and a detailed
+    one.
 
-   The plain one is a standard FASTA-like line with the ID after the > sign,
-   and the protein "/product" after the ID (the "description" part of the
-   line):
+    The plain one is a standard FASTA-like line with the ID after the > sign,
+    and the protein "/product" after the ID (the "description" part of the
+    line):
 
  >SeqID product
 
-   The detailed one consists of a special encoded three-part description
-   line. The parts are the /EC_number, the /gene code, then the /product -
-   and they are separated by a special "~~~" sequence:
+    The detailed one consists of a special encoded three-part description
+    line. The parts are the /EC_number, the /gene code, then the /product -
+    and they are separated by a special "~~~" sequence:
 
  >SeqID EC_number~~~gene~~~product
 
-   Here are some examples. Note that not all parts need to be present, but
-   the "~~~" should still be there:
+    Here are some examples. Note that not all parts need to be present, but
+    the "~~~" should still be there:
 
  >YP_492693.1 2.1.1.48~~~ermC~~~rRNA adenine N-6-methyltransferase
  MNEKNIKHSQNFITSKHNIDKIMTNIRLNEHDNIFEIGSGKGHFTLELVQRCNFVTAIEI
@@ -368,8 +387,8 @@ Databases
  MNYFRYKQFNKDVITVAVGYYLRYALSYRDISEILRGRGVNVHHSTVYRWVQEYAPILYQ
  QSINTAKNTLKGIECIYALYKKNRRSLQIYGFSPCHEISIMLAS*
 
-   The same description lines apply to HMM models, except the "NAME" and
-   "DESC" fields are used:
+    The same description lines apply to HMM models, except the "NAME" and
+    "DESC" fields are used:
 
  NAME  PRK00001
  ACC   PRK00001
@@ -378,33 +397,33 @@ Databases
 
 FAQ
 
-   Where does the name "Prokka" come from?
-           Prokka is a contraction of "prokaryotic annotation". It's also
-           relatively unique within Google, and also rhymes with a native
-           Australian marsupial called the quokka.
+    Where does the name "Prokka" come from?
+            Prokka is a contraction of "prokaryotic annotation". It's also
+            relatively unique within Google, and also rhymes with a native
+            Australian marsupial called the quokka.
 
-   Can I annotate by eukaryote genome with Prokka?
-           No. Prokka is specifically designed for Bacteria, Archaea and
-           Viruses. It can't handle multi-exon gene models; I would recommend
-           using MAKER 2 for that purpose.
+    Can I annotate by eukaryote genome with Prokka?
+            No. Prokka is specifically designed for Bacteria, Archaea and
+            Viruses. It can't handle multi-exon gene models; I would
+            recommend using MAKER 2 for that purpose.
 
-   Why does Prokka keeps on crashing when it gets to tge "tbl2asn" stage?
-           It seems that the tbl2asn program from NCBI "expires" after 12
-           months, and refuses to run. Unfortunately you need to install a
-           newer version which you can download from here.
+    Why does Prokka keeps on crashing when it gets to tge "tbl2asn" stage?
+            It seems that the tbl2asn program from NCBI "expires" after 12
+            months, and refuses to run. Unfortunately you need to install a
+            newer version which you can download from here.
 
-   The hmmscan step seems to hang and do nothing?
-           The problem here is GNU Parallel. It seems the Debian package for
-           hmmer has modified it to require the --gnu option to behave in the
-           'default' way. There is no clear reason for this. The only way to
-           restore normal behaviour is to edit the prokka script and change
-           "parallel" to "parallel --gnu".
+    The hmmscan step seems to hang and do nothing?
+            The problem here is GNU Parallel. It seems the Debian package for
+            hmmer has modified it to require the --gnu option to behave in
+            the 'default' way. There is no clear reason for this. The only
+            way to restore normal behaviour is to edit the prokka script and
+            change "parallel" to "parallel --gnu".
 
-   Why does prokka fail when it gets to hmmscan?
-           Unfortunately HMMER keeps changing it's database format, and they
-           aren't upward compatible. If you upgraded HMMER (from 3.0 to 3.1
-           say) then you need to "re-press" the files. This can be done as
-           follows:
+    Why does prokka fail when it gets to hmmscan?
+            Unfortunately HMMER keeps changing it's database format, and they
+            aren't upward compatible. If you upgraded HMMER (from 3.0 to 3.1
+            say) then you need to "re-press" the files. This can be done as
+            follows:
 
  cd /path/to/prokka/db/hmm
  mkdir new
@@ -416,52 +435,30 @@ FAQ
 
 Still To Do
 
-     * Add an example input/output so users can check their copy is producing
-       similar results.
-     * Output potential homopolymer assembly errors near CDS flanks
-     * Do the parallel blasting/hmmering in batch mode instead of 1 sequence
-       at a time.
-     * Add the CLUSTERS "PHA" library to Viruses mode.
-     * Option to include ribosomal binding sites (RBS) as features.
-     * Check input contigs for runs of Ns, and either complain, or split the
-       file, or additionally create a .AGP scaffold file. (Mitchell
-       Stanton-Cook has done this, need to incorporate)
-     * Allow running even if some dependencies are not installed.
-     * Allow disabling of some dependencies even if they are installed. eg
-       RNAmmer
-     * Support not re-naming contigs
-     * Add --plasmid mode
+      * Add an example input/output so users can check their copy is
+        producing similar results.
+      * Output potential homopolymer assembly errors near CDS flanks
+      * Add the CLUSTERS "PHA" library to Viruses mode.
+      * Option to include ribosomal binding sites (RBS) as features.
+      * Check input contigs for runs of Ns, and either complain, or split the
+        file, or additionally create a .AGP scaffold file. (Mitchell
+        Stanton-Cook has done this, need to incorporate)
 
 Changes
 
-  Version 1.6
-
-     * signalp is now an optional install (only needed for --gram)
-     * cmscan is now an optional install (only needed for --rfam)
-     * makeblastdb is now an optional install (only needed for --proteins)
-     * your contigs will not be re-named unless --centre is set
-     * new --compliant option to meet NCBI submission rules
-     * new --metagenome option for sets of small contigs
-     * included nice EcoCyc .faa file to use with --proteins option with
-       E.coli
-     * check for versions of software
-     * updated to HMMer 3.1-dev
-     * updated included databases
-     * better documentation
-     * extra helper scripts
-     * various bug fixes
+    See the ChangeLog.txt file in the doc/ subdirectory of Prokka.
 
 Bugs
 
-     * tbl2asn seems to be removing the "(anti-codon)" part in my tRNA
-       /product values
-     * tbl2asn putting space in /inference for Infernal
+      * tbl2asn seems to be removing the "(anti-codon)" part in my tRNA
+        /product values
+      * tbl2asn putting space in /inference for Infernal
 
 Citation
 
-   The manuscript is currently being prepared. If you use Prokka in your
-   research before then, please cite: Prokka: Prokaryotic Genome Annotation
-   System - http://vicbioinformatics.com/
+    The manuscript is currently being prepared. If you use Prokka in your
+    research before then, please cite: Prokka: Prokaryotic Genome Annotation
+    System - http://vicbioinformatics.com/
 
 Appendix A - The Canonical Bacterial Gene Model
 

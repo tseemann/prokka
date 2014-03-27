@@ -134,7 +134,15 @@ export PATH=$PATH:/opt/prokka-1.x
 <P>
 Consult the <A HREF="#depends">list of dependencies</A>.
 
-<H3>Fix RNAmmer bug</H3>
+<H3>Choose a rRNA predictor</H3>
+
+<H4>Option 1 - Barrnap</H4>
+<P>
+This was written by the author of Prokka and is recommended if you prefer
+speed over absolute accuracy. It uses the new multi-core NHMMER for DNA:DNA 
+profile searches. Download it <a href='software.barrnap.shtml'>here</a>.
+
+<H4>Option 2 - RNAmmer</H3>
 <P>
 RNAmmer was written when HMMER 2.x was the latest release.
 Since them, HMMER 3.x has been released, and uses the same
@@ -265,6 +273,9 @@ the sequence description lines.
 <DD>Contains all the output that Prokka produced during its run.
 This is a record of what settings you used, even if the --quiet option was enabled.
 
+<DT>.txt
+<DD>Statistics relating to the annotated features found
+
 </DL>
 
 <!-- -------------------------------------------------------- -->
@@ -287,23 +298,28 @@ Outputs:
   --locustag [X]    Locus tag prefix (default 'PROKKA')
   --increment [N]   Locus tag counter increment (default '1')
   --gffver [N]      GFF version (default '3')
-  --centre [X]      Sequencing centre ID (default 'VBC')
+  --compliant       Force Genbank/ENA/DDJB compliance: --genes --mincontiglen 200 --centre XXX (default OFF)
+  --centre [X]      Sequencing centre ID. (default '')
 Organism details:
-  --genus [X]       Genus name (will be used to aid annotation) (default 'Genus')
+  --genus [X]       Genus name (default 'Genus')
   --species [X]     Species name (default 'species')
   --strain [X]      Strain name (default 'strain')
+  --plasmid [X]     Plasmid name or identifier (default '')
 Annotations:
   --kingdom [X]     Annotation mode: Archaea|Bacteria|Viruses (default 'Bacteria')
   --gcode [N]       Genetic code / Translation table (set if --kingdom is set) (default '0')
   --gram [X]        Gram: -/neg +/pos (default '')
   --usegenus        Use genus-specific BLAST databases (needs --genus) (default OFF)
   --proteins [X]    Fasta file of trusted proteins to first annotate from (default '')
+  --metagenome      Improve gene predictions for highly fragmented genomes (default OFF)
 Computation:
   --fast            Fast mode - skip CDS /product searching (default OFF)
-  --cpus [N]        Number of CPUs to use [0=all] (default '0')
-  --mincontig [N]   Minimum contig size [NCBI needs 200] (default '200')
+  --cpus [N]        Number of CPUs to use [0=all] (default '8')
+  --mincontiglen [N] Minimum contig size [NCBI needs 200] (default '1')
   --evalue [n.n]    Similarity e-value cut-off (default '1e-06')
   --rfam            Enable searching for ncRNAs with Infernal+Rfam (SLOW!) (default '0')
+  --norrna          Don't run rRNA search (default OFF)
+  --notrna          Don't run tRNA search (default OFF)
 </PRE>
 
 <!-- -------------------------------------------------------- -->
@@ -330,6 +346,12 @@ Computation:
   <CITE>
   Laslett D, Canback B. ARAGORN, a program to detect tRNA genes 
   and tmRNA genes in nucleotide sequences. Nucleic Acids Res. 2004 Jan 2;32(1):11-6.
+  </CITE>
+
+  <DT><A HREF='software.barrnap.shtml'>Barrnap</A>
+  <DD>Used to predict rRNA features.
+  <CITE>
+  Manuscript under preparation.
   </CITE>
 
   <DT><A HREF=''>RNAmmer</A>
@@ -565,9 +587,6 @@ similar results.
 <LI>
 Output potential homopolymer assembly errors near CDS flanks
 <LI>
-Do the parallel blasting/hmmering in batch mode instead of 1 sequence 
-at a time.
-<LI>
 Add the CLUSTERS "PHA" library to Viruses mode.
 <LI>
 Option to include ribosomal binding sites (RBS) as features.
@@ -575,36 +594,14 @@ Option to include ribosomal binding sites (RBS) as features.
 Check input contigs for runs of Ns, and either complain, or split
 the file, or additionally create a .AGP scaffold file. 
 (Mitchell Stanton-Cook has done this, need to incorporate)
-<LI>
-<S>Allow running even if some dependencies are not installed.</S>
-<LI>
-Allow disabling of some dependencies even if they are installed. eg RNAmmer
-<LI>
-<S>Support not re-naming contigs</S>
-<LI>
-Add --plasmid mode
 </UL>
 
 <!-- -------------------------------------------------------- -->
 <H2>Changes</H2>
 <A NAME='changes'>
 
-<H3>Version 1.6</H3>
-<UL>
-<LI>signalp is now an optional install (only needed for --gram)
-<LI>cmscan  is now an optional install (only needed for --rfam)
-<LI>makeblastdb is now an optional install (only needed for --proteins)
-<LI>your contigs will not be re-named unless --centre is set
-<LI>new --compliant option to meet NCBI submission rules
-<LI>new --metagenome option for sets of small contigs
-<LI>included nice EcoCyc .faa file to use with --proteins option with E.coli
-<LI>check for versions of software
-<LI>updated to HMMer 3.1-dev
-<LI>updated included databases
-<LI>better documentation
-<LI>extra helper scripts
-<LI>various bug fixes
-</UL>
+<P>
+See the <I>ChangeLog.txt</I> file in the <I>doc/</I> subdirectory of Prokka.
 
 <!-- -------------------------------------------------------- -->
 <H2>Bugs</H2>

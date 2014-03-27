@@ -2,6 +2,24 @@
 Prokka ChangeLog
 ----------------
 
+v1.7 - 3 Sep 2013
+* complete overhaul of method of using GNU parallel, twice as fast now!
+* add support for my BARRNAP rRNA predictor software, will use before RNAmmer
+* added --norrna flag to disable rRNA searching
+* added --notrna flaf to disable tRNA searching
+* add --plasmid option to enable /plasmid in 'source' tag
+* add .txt output file summarising feature counts
+* added name/version/author to --help output
+* bugfix: parallel *.seq command line too long with >10^5 contigs [Jon Graf]
+* updated kingdom uniprot databases
+* filtered hypothetical/UPF/DUF proteins from all HMMs
+* put TIGRFAMs before Cdd as COG names showing their age now
+* bug: didn't check if <contigs.fa> was a readable, non-empty file
+* option --moncontig renamed to --moncontiglen (backward compatible)
+* default value for --mincontig set to 1 rather than 0
+* exit if input fasta file doesn't contain any valid sequences
+* added new binaries/{linux,darwin}, only used if not already installed
+
 v1.6 - 7 Aug 2013
 * fixed bug: 'infernal' exe doesn't exist, look for 'cmscan'
 * added custom trusted E.coli --proteins file derived from EcoCyc
@@ -11,7 +29,6 @@ v1.6 - 7 Aug 2013
 * fixed bug where --centre '' caused faulty /protein_id and no CDS in .gbk
 * new --metagenome for working with fragmented genomes (sets prodigal --meta)
 * new --compliant option to auto-set options for NCBI submission
-* add 'Plasmid' mode; for naming and locus_tag _pXXX stuff ?
 * dont remove CDS overlapping ncRNA found via --rfam
 * document the "tbl2asn" out of date problem!
 * add --gnu option to parallel and require version XXX
@@ -23,6 +40,7 @@ v1.6 - 7 Aug 2013
 * added prokka-build_kingdom_dbs to enable user updating of uniprot BLAST dbs
 * added prokka-build_genus_dbs to enable user to generate new ones ???
 * added support for binaries/linux and binaries/darwin to be included
+* fixed bug: wrong detection of rfam index file
 
 v1.5.2 - 14 Sep 2012
 * fixed bug to handle -ve strand ncRNAs [Adam Caldwell]

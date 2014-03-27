@@ -29,6 +29,7 @@ use Bio::SeqIO;
 use Bio::SearchIO;
 use Bio::Seq;
 use Bio::SeqFeature::Generic;
+use Bio::Tools::GFF;
 use FindBin;
 
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
@@ -38,16 +39,23 @@ my @CMDLINE = @ARGV;
 my $OPSYS = $^O;
 my $BINDIR = "$FindBin::RealBin/../binaries/$OPSYS";
 my $EXE = $FindBin::RealScript;
-my $VERSION = "1.6";
+my $VERSION = "1.7";
 my $AUTHOR = 'Torsten Seemann <torsten.seemann@monash.edu>';
 my $URL = 'http://www.vicbioinformatics.com';
 my $DBDIR = "$FindBin::RealBin/../db";
 my $HYPO = 'hypothetical protein';
 my $UNANN = 'unannotated protein';
-my $BLASTPCMD = "blastp -query %i -db %d -evalue %e -num_threads 1 -out %o -num_descriptions 1 -num_alignments 1 2>/dev/null";
-my $HMMER3CMD = "hmmscan --noali --notextw --acc -E %e --cpu 1 -o %o %d %i 2>/dev/null";
+
+# these should accept .faa on STDIN and write report to STDOUT
+my $BLASTPCMD = "blastp -query - -db %d -evalue %e -num_threads 1 -num_descriptions 1 -num_alignments 1";
+my $HMMER3CMD = "hmmscan --noali --notextw --acc -E %e --cpu 1 %d /dev/stdin";
+
+# debian package broke compatibility so have to force it now *grumble*
 my $PARALLELCMD = "parallel --gnu";
+
+# not used anymore
 #my $INFERNALCMD = "cmscan --noali --notextw --acc -E %e --cpu 1 -o %o %d %i 2>/dev/null";
+
 my $starttime = localtime;
 my %seq;
 
@@ -55,8 +63,10 @@ my %seq;
 # command line options
 
 my(@Options, $quiet, $kingdom, $fast, $force, $outdir, $prefix, $cpus, $addgenes,
-             $gcode, $gram, $gffver, $locustag, $increment, $mincontig, $evalue, $coverage,
-             $genus, $species, $strain, $usegenus, $proteins, $centre, $minimaps, $rfam,
+             $gcode, $gram, $gffver, $locustag, $increment, $mincontiglen, $evalue, $coverage,
+             $genus, $species, $strain, $plasmid, 
+             $usegenus, $proteins, $centre, 
+             $rfam, $norrna, $notrna,
 	     $metagenome, $compliant, $listdb, $citation);
 setOptions();
 
@@ -99,7 +109,7 @@ if ($compliant) {
   msg("Enabling options to ensure Genbank/ENA/DDJB submission compliance.");
   $addgenes = 1;
   $centre ||= 'Prokka';
-  $mincontig = 200;
+  $mincontiglen = 200;
 }
 
 #$centre or err("You must set --centre or the NCBI tbl2asn tool won't work properly, sorry.");
@@ -127,6 +137,9 @@ msg("Using filename prefix: $prefix.XXX");
 # canonical names
 $genus = ucfirst(lc($genus)) if $genus;
 $species = lc($species) if $strain;
+
+msg("Setting HMMER_NCPU=1");
+$ENV{HMMER_NCPU} = 1;
 
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
 # set up log file
@@ -168,6 +181,12 @@ my %tools = (
     GETVER  => "rnammer -V 2>&1 | grep -i 'rnammer [0-9]'",
     REGEXP  => qr/($BIDEC)/,
     MINVER  => "1.2",
+    NEEDED  => 0,
+  },
+  'barrnap' => {
+    GETVER  => "barrnap --version 2>&1",
+    REGEXP  => qr/($BIDEC)/,
+    MINVER  => "0.1",
     NEEDED  => 0,
   },
   'prodigal' => {
@@ -273,13 +292,14 @@ msg("Using genetic code table $gcode.");
 # read in sequences; remove small contigs; replace ambig with N
 
 my $in = shift @ARGV or err("Please supply a contig fasta file on the command line.");
+(-r $in and !-d _ and -s _) or err("'$in' is not a readable non-empty FASTA file");
 msg("Loading and checking input file: $in");
 my $fin = Bio::SeqIO->new(-file=>$in, -format=>'fasta');
 my $fout = Bio::SeqIO->new(-file=>">$outdir/$prefix.fna", -format=>'fasta');
 my $ncontig = 0;
 while (my $seq = $fin->next_seq) {
-  if ($seq->length < $mincontig) {
-    msg("Skipping short (<$mincontig bp) contig:",$seq->display_id);
+  if ($seq->length < $mincontiglen) {
+    msg("Skipping short (<$mincontiglen bp) contig:",$seq->display_id);
     next;
   }
   $ncontig++;
@@ -296,114 +316,141 @@ while (my $seq = $fin->next_seq) {
   $fout->write_seq($seq);
   $seq{ $seq->id }{DNA} = $seq;
 }
+$ncontig > 0 or err("FASTA file '$in' contains no suitable sequence entries");
 msg("Wrote $ncontig contigs");
 #msg(sort keys %seq); exit;
 
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
 # tRNA + tmRNA
 
-msg("Predicting tRNAs and tmRNAs");
-my $cmd = "aragorn -gc$gcode -w $outdir/$prefix.fna"; # -t/-m 
-msg("Running: $cmd");
-my $num_trna=0;
-open TRNA, "$cmd |";
-my $sid;
-while (<TRNA>) {
-  chomp;
-  if (m/^>(\S+)/) {
-    $sid = $1;
-    next;
-  }
-  my @x = split m/\s+/;
-  next unless @x == 5 and $x[0] =~ m/^\d+$/; 
-  # and $x[4] =~ m/^\([ATCG]{3}\)$/i;
-  #msg($_);
-  msg("@x");
-  $x[2] =~ m/(c)?\[(\d+),(\d+)\]/;
-  my($revcom, $start, $end) = ($1,$2,$3);
-  # bug fix for aragorn when revcom trna ends at start of contig!
-#  if (defined $revcom and $start > $end) { 
-#    msg("Activating kludge for Aragorn bug for tRNA end at contig start");
-#    $start = 1;
-#  }
-  if ($start > $end) {
-    msg("tRNA $x[2] has start($start) > end ($end) - skipping.");
-    next;
-  }
-  if (abs($end-$start) > 500) {
-    msg("tRNA/tmRNA $x[2] is too big (>500bp) - skipping.");
-    next;
-  }
-  # end kludge
-  $num_trna++;
-
-  my $ftype = 'tRNA';
-  my $product = $x[1].$x[4];
-  my @gene = ();
-  if ($x[1] eq 'tmRNA') {
-    $ftype = $x[1];
-    $product = "transfer-messenger RNA, SsrA";
-    @gene = ('gene' => 'ssrA')
-  }
-
-  my $tool = "Aragorn:".$tools{aragorn}->{VERSION};
-  push @{$seq{$sid}{FEATURE}}, Bio::SeqFeature::Generic->new( 
-    -primary    => $ftype, # tRNA or tmRNA
-    -seq_id     => $sid,
-    -source     => $tool,
-    -start      => $start,
-    -end        => $end,
-    -strand     => (defined $revcom ? -1 : +1),
-    -score      => undef,
-    -frame      => 0,
-    -tag        => {
-      'product' => $product,
-      'inference' => "COORDINATES:profile:$tool",
-      @gene,
-    }
-  );
+if ($notrna) {
+  msg("Skipping tRNA search at user request.");
 }
-msg("Found $num_trna tRNAs"); 
+else {
+  msg("Predicting tRNAs and tmRNAs");
+  my $cmd = "aragorn -gc$gcode -w $outdir/$prefix.fna"; # -t/-m 
+  msg("Running: $cmd");
+  my $num_trna=0;
+  open TRNA, "$cmd |";
+  my $sid;
+  while (<TRNA>) {
+    chomp;
+    if (m/^>(\S+)/) {
+      $sid = $1;
+      next;
+    }
+    my @x = split m/\s+/;
+    next unless @x == 5 and $x[0] =~ m/^\d+$/; 
+    # and $x[4] =~ m/^\([ATCG]{3}\)$/i;
+    #msg($_);
+    msg("@x");
+    $x[2] =~ m/(c)?\[(\d+),(\d+)\]/;
+    my($revcom, $start, $end) = ($1,$2,$3);
+    # bug fix for aragorn when revcom trna ends at start of contig!
+  #  if (defined $revcom and $start > $end) { 
+  #    msg("Activating kludge for Aragorn bug for tRNA end at contig start");
+  #    $start = 1;
+  #  }
+    if ($start > $end) {
+      msg("tRNA $x[2] has start($start) > end ($end) - skipping.");
+      next;
+    }
+    if (abs($end-$start) > 500) {
+      msg("tRNA/tmRNA $x[2] is too big (>500bp) - skipping.");
+      next;
+    }
+    # end kludge
+    $num_trna++;
+
+    my $ftype = 'tRNA';
+    my $product = $x[1].$x[4];
+    my @gene = ();
+    if ($x[1] eq 'tmRNA') {
+      $ftype = $x[1];
+      $product = "transfer-messenger RNA, SsrA";
+      @gene = ('gene' => 'ssrA')
+    }
+
+    my $tool = "Aragorn:".$tools{aragorn}->{VERSION};
+    push @{$seq{$sid}{FEATURE}}, Bio::SeqFeature::Generic->new( 
+      -primary    => $ftype, # tRNA or tmRNA
+      -seq_id     => $sid,
+      -source     => $tool,
+      -start      => $start,
+      -end        => $end,
+      -strand     => (defined $revcom ? -1 : +1),
+      -score      => undef,
+      -frame      => 0,
+      -tag        => {
+        'product' => $product,
+        'inference' => "COORDINATES:profile:$tool",
+        @gene,
+      }
+    );
+  }
+  msg("Found $num_trna tRNAs"); 
+}
 
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
 # rRNA
 
-if ($kingdom ne 'Viruses' and $tools{'rnammer'}->{HAVE}) {
+if ($kingdom ne 'Viruses' and !$norrna) {
   msg("Predicting Ribosomal RNAs");
-  my $rnammerfn = "$outdir/rnammer.xml";
-  my $num_rrna = 0;
-  my $rnammer_opt = $cpus != 1 ? "-multi" : "";
-  runcmd("rnammer -S bac $rnammer_opt -xml $rnammerfn $outdir/$prefix.fna");
-  my $xml = XML::Simple->new(ForceArray => 1);
-  my $data = $xml->XMLin($rnammerfn);
-  for my $entry (@{$data->{entries}[0]->{entry}}) {
-    my $sid = $entry->{sequenceEntry}[0];
-    next unless exists $seq{$sid};
-    my $desc = $entry->{mol}[0];
-    $desc =~ s/s_r/S ribosomal /i; # make it English '23S_rRNA => 23S ribosomal RNA'
-    $num_rrna++;
-    my $tool = "RNAmmer:".$tools{rnammer}->{VERSION};
-    push @{$seq{$sid}{FEATURE}}, Bio::SeqFeature::Generic->new( 
-      -primary    => 'rRNA',
-      -seq_id     => $sid,
-      -source     => $tool, # $data->{predictor}[0]
-      -start      => $entry->{start}[0],
-      -end        => $entry->{stop}[0],
-      -strand     => $entry->{direction}[0],
-      -score      => undef, # $entry->{score}[0],
-      -frame      => 0,
-      -tag        => {
-	'product' => $desc,
-	'inference' => "COORDINATES:profile:$tool",  # FIXME version ?
-      }
+  if ($tools{'barrnap'}->{HAVE}) {
+    msg("Running Barrnap with $cpus threads");
+    my $num_rrna=0;
+    my $gff = Bio::Tools::GFF->new(
+      -file => "barrnap --threads $cpus --quiet $outdir/$prefix.fna  |",
+      -gff_version => 3,
     );
-    msg(join "\t", $num_rrna, $desc, $sid, $entry->{start}[0], $entry->{stop}[0], $entry->{direction}[0]);
+    while (my $feat = $gff->next_feature) {
+      $feat->remove_tag('Name'); # only want /product
+      push @{$seq{$feat->seq_id}{FEATURE}}, $feat;
+      $num_rrna++;
+      msg("$num_rrna", $feat->seq_id, $feat->start, $feat->get_tag_values('product'));
+    }
+    msg("Found $num_rrna rRNAs");
   }
-  delfile($rnammerfn);
-  msg("Found $num_rrna rRNAs");
+  elsif ($tools{'rnammer'}->{HAVE}) {
+    msg("Running RNAmmer");
+    my $rnammerfn = "$outdir/rnammer.xml";
+    my $num_rrna = 0;
+    my $rnammer_opt = $cpus != 1 ? "-multi" : "";
+    runcmd("rnammer -S bac $rnammer_opt -xml $rnammerfn $outdir/$prefix.fna");
+    my $xml = XML::Simple->new(ForceArray => 1);
+    my $data = $xml->XMLin($rnammerfn);
+    for my $entry (@{$data->{entries}[0]->{entry}}) {
+      my $sid = $entry->{sequenceEntry}[0];
+      next unless exists $seq{$sid};
+      my $desc = $entry->{mol}[0];
+      $desc =~ s/s_r/S ribosomal /i; # make it English '23S_rRNA => 23S ribosomal RNA'
+      $num_rrna++;
+      my $tool = "RNAmmer:".$tools{rnammer}->{VERSION};
+      push @{$seq{$sid}{FEATURE}}, Bio::SeqFeature::Generic->new( 
+        -primary    => 'rRNA',
+        -seq_id     => $sid,
+        -source     => $tool, # $data->{predictor}[0]
+        -start      => $entry->{start}[0],
+        -end        => $entry->{stop}[0],
+        -strand     => $entry->{direction}[0],
+        -score      => undef, # $entry->{score}[0],
+        -frame      => 0,
+        -tag        => {
+          'product' => $desc,
+          'inference' => "COORDINATES:profile:$tool",  # FIXME version ?
+        }
+      );
+      msg(join "\t", $num_rrna, $desc, $sid, $entry->{start}[0], $entry->{stop}[0], $entry->{direction}[0]);
+    }
+    delfile($rnammerfn);
+    msg("Found $num_rrna rRNAs");
+  }
+  else {
+    msg("You need either Barrnap or RNAmmer installed to predict rRNAs!");
+  }
 }
 else {
-  msg("Disabling rRNA search for $kingdom.");
+  msg("Disabling rRNA search: --kingdom=$kingdom or --norrna=$norrna");
 }
 
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
@@ -469,9 +516,10 @@ my $totalbp = sum( map { $seq{$_}{DNA}->length } keys %seq);
 my $prodigal_mode = ($totalbp >= 100000 && !$metagenome) ? 'single' : 'meta';
 msg("Contigs total $totalbp bp, so using $prodigal_mode mode");
 my $num_cds=0;
-$cmd = "prodigal -i $outdir/$prefix.fna -c -m -g $gcode -p $prodigal_mode -f sco -q";
+my $cmd = "prodigal -i $outdir/$prefix.fna -c -m -g $gcode -p $prodigal_mode -f sco -q";
 msg("Running: $cmd");
 open CDS, "$cmd |";
+my $sid;
 while (<CDS>) {
   if (m/seqhdr="([^\s\"]+)"/) {  
     $sid = $1;
@@ -634,7 +682,7 @@ my @database = (
 
 # secondary sources are a series of HMMs
 unless ($kingdom eq 'Viruses') {
-  for my $name (qw(CLUSTERS Cdd TIGRFAMs Pfam)) {
+  for my $name (qw(CLUSTERS TIGRFAMs Cdd Pfam)) {
     push @database, {
       DB  => "$DBDIR/hmm/$name.hmm",
       SRC => "protein motif:$name:",
@@ -686,10 +734,16 @@ if ($fast) {
 else {
   msg("Annotating CDS, please be patient.");
 
-  my $paropts = $cpus > 0 ? " -j $cpus" : "";
   msg("Will use", ($cpus > 0 ? $cpus : 'all available'), "CPUs for similarity searching.");
 
+  # for each sequence/profile database in order,
+
   for my $db (@database) {
+
+    # we write out all the CDS which haven't been annotated yet and then search them
+    my $faa_name = "$outdir/proteins.faa";
+    open my $faa, '>', $faa_name;
+
     my %cds;
     my $count=0;
     for my $sid (sort keys %seq) {
@@ -697,32 +751,45 @@ else {
 	next unless $f->primary_tag eq 'CDS';
 	next if $f->has_tag('product');
 	$cds{++$count} = $f;
-	open my $fout, '>', "$outdir/$count.seq";
-	print $fout ">$count\n",$f->seq->translate->seq,"\n";
-	close $fout;
+	print $faa ">$count\n",$f->seq->translate->seq,"\n";
       }
     }
+    close $faa;
     
     next if $count <= 0;
-    msg($db->{FMT}, "remaining $count CDS (of $num_cds) proteins against", $db->{DB});
+    msg("There are still $count unannotated CDS left (started with $num_cds)");
+    msg("Will use", $db->{FMT}, "to search againt", $db->{DB}, "with $cpus CPUs");
 
     my $cmd = $db->{CMD};
-    $cmd =~ s/%i/{}/g;
-    $cmd =~ s/%o/{}.out/g;
+#    $cmd =~ s/%i/{}/g;
+#    $cmd =~ s/%o/{}.out/g;
     $cmd =~ s/%e/$evalue/g;
     $cmd =~ s,%d,$db->{DB},g;
 
     #
     # **** PARALLEL RUN! ****
     #
-    runcmd("nice ${PARALLELCMD}$paropts $cmd ::: $outdir/*.seq"); 
+    my $faa_bytes = -s $faa_name;
+    my $bsize = int($faa_bytes / $cpus / 2); # div 2 to allow for slow vs fast subtasks?
+    my $paropts = $cpus > 0 ? " -j $cpus" : "";
+
+    # HACK!
+    if (0 and $cmd =~ /hmmscan/ ) {
+      msg("*** MESSING WITH HMMSCAN HERE ***");
+#      $bsize = 2* $faa_bytes;
+      $cmd =~ s/--cpu 1/--cpu 2/;
+#      $paropts = " -j 1";     
+    }
+    # /HACK
+    
+    my $bls_name = "$outdir/proteins.bls";
+    runcmd("cat $faa_name | ${PARALLELCMD}$paropts --block $bsize --recstart '>' --pipe $cmd > $bls_name 2> /dev/null"); 
 
     my $num_cleaned=0;
-    for my $pid (keys %cds) {
-      my $bls = Bio::SearchIO->new(-file=>"$outdir/$pid.seq.out", -format=>$db->{FMT});
-      my $res = $bls->next_result or next;
+    my $bls = Bio::SearchIO->new(-file=>$bls_name, -format=>$db->{FMT});
+    while (my $res = $bls->next_result) {
       my $hit = $res->next_hit or next;
-      my($prod,$gene,$EC) = ($hit->description, '', '');
+      my($pid,$prod,$gene,$EC) = ($res->query_name, $hit->description, '', '');
       if ($prod =~ m/~~~/) {
 	($EC,$gene,$prod) = split m/~~~/, $prod;
 	$EC =~ s/n\d+/-/g; # collapse transitionary EC numbers
@@ -730,6 +797,7 @@ else {
       my $cleanprod = cleanup_product($prod);      
       if ($cleanprod ne $prod) {
         msg("Modify product: $prod => $cleanprod");
+        # we remove any special /gene or /EC if the /product is 'hypothetical protein' !
 	if ($cleanprod eq $HYPO) {
    	  $cds{$pid}->add_tag_value('note', $prod);
   	  $cds{$pid}->remove_tag('gene') if $cds{$pid}->has_tag('gene');
@@ -743,8 +811,10 @@ else {
       $cds{$pid}->add_tag_value('inference', $db->{SRC}.$hit->name);
     }
     msg("Cleaned $num_cleaned /product names") if $num_cleaned > 0;
-    unlink map { "$outdir/$_.seq"     } keys %cds;
-    unlink map { "$outdir/$_.seq.out" } keys %cds;
+    for my $fn ($faa_name, $bls_name) {
+      msg("Deleting temporary file: $fn");
+      unlink $fn;
+    }
   }
 }
 
@@ -858,6 +928,7 @@ for my $id (sort keys %seq) {
 }
 
 my $fsa_desc = "[gcode=$gcode] [organism=$genus $species] [strain=$strain]";
+$fsa_desc .= " [plasmid=$plasmid]" if $plasmid;
 
 for my $sid (sort keys %seq) {
   my $ctg = $seq{$sid}{DNA};
@@ -902,6 +973,30 @@ if (scalar keys %seq) {
 }
 
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
+# Output a general .txt file with statistics about the annotation
+
+msg("Generating annotation statistics file");
+open my $txtFh, '>', "$outdir/$prefix.txt";
+select $txtFh;
+
+printf "organism: $genus $species $strain $plasmid\n";
+printf "contigs: %d\n", scalar(keys %seq); 
+printf "bases: %d\n", sum( map { $seq{$_}{DNA}->length } keys %seq );
+
+my %count;
+for my $sid (sort keys %seq) {
+  for my $f (@{ $seq{$sid}{FEATURE} }) {
+    $count{ $f->primary_tag }++;
+  }
+}
+for my $ft (keys %count) {
+  printf "%s: %d\n", $ft, $count{$ft};
+}
+
+select STDOUT;
+close $txtFh;
+
+# . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
 # Use tbl2asn tool to make .gbk and .sqn for us
 
 # NOTE: the -A and -N  fake accession and version needed for Mauve!
@@ -910,10 +1005,11 @@ if (scalar keys %seq) {
 msg("Generating Genbank and Sequin files");
 #runcmd("tbl2asn -a s -q F -A $prefix -N 1 -y 'Annotated using $EXE $VERSION from $URL' -Z $outdir/$prefix.err -M n -V b -i $outdir/$prefix.fsa -f $outdir/$prefix.tbl 2> /dev/null");
 #runcmd("tbl2asn -V b -a s -A $prefix -N 1 -y 'Annotated using $EXE $VERSION from $URL' -Z $outdir/$prefix.err -i $outdir/$prefix.fsa");
-runcmd("tbl2asn -V b -a s -N 1 -y 'Annotated using $EXE $VERSION from $URL' -Z $outdir/$prefix.err -i $outdir/$prefix.fsa");
+runcmd("tbl2asn -V b -a s -N 1 -y 'Annotated using $EXE $VERSION from $URL' -Z $outdir/$prefix.err -i $outdir/$prefix.fsa 2> /dev/null");
 delfile("$outdir/errorsummary.val");
 delfile( map { "$outdir/$prefix.$_" } qw(dr fixedproducts ecn val) );
 move("$outdir/$prefix.gbf", "$outdir/$prefix.gbk"); # rename XXX.gbf to XXX.gbk
+
 
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
 # Some final log output
@@ -939,6 +1035,7 @@ sub cleanup_product {
 #  return $HYPO if $p =~ m/^[A-Z]+$/;
   return $HYPO if $p !~ m/[a-z]/;
 
+  $p =~ s/^arCOG\d+\s+//;
   $p =~ s/\((EC|COG).*?\)//;
   $p =~ s/\s*\w+\d{4,}//; # remove possible locus tags
   $p =~ s/ and (inactivated|related) \w+//;
@@ -1088,13 +1185,13 @@ sub setOptions {
     {OPT=>"locustag=s",  VAR=>\$locustag, DEFAULT=>uc($EXE), DESC=>"Locus tag prefix"},
     {OPT=>"increment=i",  VAR=>\$increment, DEFAULT=>1, DESC=>"Locus tag counter increment"},
     {OPT=>"gffver=i",  VAR=>\$gffver, DEFAULT=>3, DESC=>"GFF version"},
-    {OPT=>"compliant!",  VAR=>\$compliant, DEFAULT=>0, DESC=>"Force Genbank/ENA/DDJB compliance: --genes --mincontig 200 --centre XXX"},
-#    {OPT=>"minimaps!",  VAR=>\$minimaps, DEFAULT=>0, DESC=>"Add ASCII alignment mini-maps to CDS features"},
+    {OPT=>"compliant!",  VAR=>\$compliant, DEFAULT=>0, DESC=>"Force Genbank/ENA/DDJB compliance: --genes --mincontiglen 200 --centre XXX"},
     {OPT=>"centre=s",  VAR=>\$centre, DEFAULT=>'', DESC=>"Sequencing centre ID."},
     'Organism details:',
-    {OPT=>"genus=s",  VAR=>\$genus, DEFAULT=>'Genus', DESC=>"Genus name (will be used to aid annotation)"},
+    {OPT=>"genus=s",  VAR=>\$genus, DEFAULT=>'Genus', DESC=>"Genus name"},
     {OPT=>"species=s",  VAR=>\$species, DEFAULT=>'species', DESC=>"Species name"},
     {OPT=>"strain=s",  VAR=>\$strain, DEFAULT=>'strain', DESC=>"Strain name"},    
+    {OPT=>"plasmid=s",  VAR=>\$plasmid, DEFAULT=>'', DESC=>"Plasmid name or identifier"},    
     'Annotations:',
     {OPT=>"kingdom=s",  VAR=>\$kingdom, DEFAULT=>'Bacteria', DESC=>"Annotation mode: ".join('|', kingdoms()) },
     {OPT=>"gcode=i",  VAR=>\$gcode, DEFAULT=>0, DESC=>"Genetic code / Translation table (set if --kingdom is set)"},
@@ -1105,10 +1202,12 @@ sub setOptions {
     'Computation:',
     {OPT=>"fast!",  VAR=>\$fast, DEFAULT=>0, DESC=>"Fast mode - skip CDS /product searching"},
     {OPT=>"cpus=i",  VAR=>\$cpus, DEFAULT=>8, DESC=>"Number of CPUs to use [0=all]"},
-    {OPT=>"mincontig=i",  VAR=>\$mincontig, DEFAULT=>0, DESC=>"Minimum contig size [NCBI needs 200]"},
+    {OPT=>"mincontiglen=i",  VAR=>\$mincontiglen, DEFAULT=>1, DESC=>"Minimum contig size [NCBI needs 200]"},
     {OPT=>"evalue=f",  VAR=>\$evalue, DEFAULT=>1E-6, DESC=>"Similarity e-value cut-off"},
 #    {OPT=>"coverage=f",  VAR=>\$coverage, DEFAULT=>0, DESC=>"Similarity \%id cut-off (otherwise /pseudo)"},
     {OPT=>"rfam",  VAR=>\$rfam, DEFAULT=>0, DESC=>"Enable searching for ncRNAs with Infernal+Rfam (SLOW!)"},
+    {OPT=>"norrna!",  VAR=>\$norrna, DEFAULT=>0, DESC=>"Don't run rRNA search"},
+    {OPT=>"notrna!",  VAR=>\$notrna, DEFAULT=>0, DESC=>"Don't run tRNA search"},
   );
 
   (!@ARGV) && (usage());
@@ -1124,8 +1223,10 @@ sub setOptions {
 }
 
 sub usage {
-  print STDERR "Synopsis:\n  Fast compliant bacterial genome annotation.\n";
-  print STDERR "Usage:\n  $EXE [options] <contigs.fasta>\n";
+  print STDERR 
+    "Name:\n  ", ucfirst($EXE), " $VERSION by $AUTHOR\n",
+    "Synopsis:\n  rapid bacterial genome annotation\n",
+    "Usage:\n  $EXE [options] <contigs.fasta>\n";
   foreach (@Options) {
     if (ref) {
       my $def = defined($_->{DEFAULT}) ? " (default '$_->{DEFAULT}')" : "";
