@@ -2,6 +2,9 @@
 Prokka ChangeLog
 ----------------
 
+v1.5.2 - 14 Sep 2012
+* fixed bug to handle -ve strand ncRNAs [Adam Caldwell]
+
 v1.5.1 - 13 Sep 2012
 * fixed bug parsing cmscan output [Adam Caldwell]
 * added Infernal to documentation requirements

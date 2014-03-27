@@ -35,8 +35,9 @@ use FindBin;
 # global variables
 
 my @CMDLINE = @ARGV;
+
 my $EXE = $FindBin::RealScript;
-my $VERSION = "1.5.1";
+my $VERSION = "1.5.2";
 my $AUTHOR = 'Torsten Seemann <torsten.seemann@monash.edu>';
 my $URL = 'http://www.vicbioinformatics.com';
 my $DBDIR = "$FindBin::RealBin/../db";
@@ -350,8 +351,8 @@ if ($rfam and -r "$cmdb.i1m") {
       -primary    => 'misc_RNA',
       -seq_id     => $sid,
       -source     => $tool,
-      -start      => $x[7],
-      -end        => $x[8],
+      -start      => min($x[7], $x[8]),
+      -end        => max($x[7], $x[8]),
       -strand     => ($x[9] eq '-' ? -1 : +1),
       -score      => undef,  # possibly x[16] but had problems here with '!'
       -frame      => 0,
