@@ -25,6 +25,7 @@ use Time::Seconds;
 use XML::Simple;
 use List::Util qw(min max sum);
 use Scalar::Util qw(openhandle);
+use Bio::Root::Version;
 use Bio::SeqIO;
 use Bio::SearchIO;
 use Bio::Seq;
@@ -39,7 +40,7 @@ my @CMDLINE = @ARGV;
 my $OPSYS = $^O;
 my $BINDIR = "$FindBin::RealBin/../binaries/$OPSYS";
 my $EXE = $FindBin::RealScript;
-my $VERSION = "1.7";
+my $VERSION = "1.7.1";
 my $AUTHOR = 'Torsten Seemann <torsten.seemann@monash.edu>';
 my $URL = 'http://www.vicbioinformatics.com';
 my $DBDIR = "$FindBin::RealBin/../db";
@@ -49,6 +50,7 @@ my $UNANN = 'unannotated protein';
 # these should accept .faa on STDIN and write report to STDOUT
 my $BLASTPCMD = "blastp -query - -db %d -evalue %e -num_threads 1 -num_descriptions 1 -num_alignments 1";
 my $HMMER3CMD = "hmmscan --noali --notextw --acc -E %e --cpu 1 %d /dev/stdin";
+my $rnammer_mode = 'bac';
 
 # debian package broke compatibility so have to force it now *grumble*
 my $PARALLELCMD = "parallel --gnu";
@@ -81,21 +83,45 @@ msg("You are", $ENV{USER} || 'not telling me who you are!');
 msg("Operating system is $OPSYS");
 
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
+# check BioPerl version 
+
+my $minbpver = "1.006002"; # for Bio::SearcIO::hmmer3
+my $bpver = $Bio::Root::Version::VERSION;
+msg("You have BioPerl $bpver");
+err("Please install BioPerl $minbpver or higher") if $bpver < $minbpver;
+
+# . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
+# Determine CPU cores available
+
+my $num_cores = num_cpu();
+msg("System has $num_cores cores.");
+if (!defined $cpus or $cpus < 0) {
+  $cpus = 1;
+}
+elsif ($cpus == 0) {
+  $cpus = $num_cores;
+}
+msg("User requested that $cpus cores be used by $EXE");
+
+# . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
 # set up options based on --mode
 
 if ($kingdom =~ m/bac|prok/i) {
   $kingdom = 'Bacteria';
   $gcode ||= 11;
+  $rnammer_mode = 'bac';
 }
 elsif ($kingdom =~ m/arch/i) {
   $kingdom = 'Archaea';  
   $gcode ||= 11;
   $gram = '';
+  $rnammer_mode = 'arc';
 }
 elsif ($kingdom =~ m/vir/i) {
   $kingdom = 'Viruses';
   $gcode ||= 1;  # std
   $gram = '';
+  $rnammer_mode = '';
 }
 else {
   err("Can't parse --mode '$kingdom'. Choose from: Bacteria Archaea Virus");
@@ -168,7 +194,7 @@ my %tools = (
   'parallel' => {
     GETVER  => "parallel --version | grep '^GNU parallel 2'",
     REGEXP  => qr/GNU parallel (\d+)/,
-    MINVER  => "20120322",
+    MINVER  => "20130422",
     NEEDED  => 1,
   },
   'aragorn' => {
@@ -310,7 +336,8 @@ while (my $seq = $fin->next_seq) {
   }
   my $s = $seq->seq;
   $s = uc($s);
-  $s =~ s/[^ACTG]/N/g;
+  $s =~ s/[*-]//g;      # replace pads/gaps with nothing$s =~ s/[^ACTG]/N/g;
+  $s =~ s/[^ACTG]/N/g;  # replace wacky IUPAC with N
   $seq->seq($s);
   $seq->desc(undef);
   $fout->write_seq($seq);
@@ -416,7 +443,7 @@ if ($kingdom ne 'Viruses' and !$norrna) {
     my $rnammerfn = "$outdir/rnammer.xml";
     my $num_rrna = 0;
     my $rnammer_opt = $cpus != 1 ? "-multi" : "";
-    runcmd("rnammer -S bac $rnammer_opt -xml $rnammerfn $outdir/$prefix.fna");
+    runcmd("rnammer -S $rnammer_mode $rnammer_opt -xml $rnammerfn $outdir/$prefix.fna");
     my $xml = XML::Simple->new(ForceArray => 1);
     my $data = $xml->XMLin($rnammerfn);
     for my $entry (@{$data->{entries}[0]->{entry}}) {
@@ -460,7 +487,7 @@ my $cmdb = "$DBDIR/cm/$kingdom";
 if ($rfam) {
   if (-r "$cmdb.i1m") {
     msg("Scanning for ncRNAs... please be patient.");
-    my $num_ncrna = 0; # FIXME --cpu !!
+    my $num_ncrna = 0;
     my $tool = "Infernal:".$tools{'cmscan'}->{VERSION};
     my $icpu = $cpus || 1;
     open INFERNAL, "cmscan --cpu $icpu -E $evalue --tblout /dev/stdout -o /dev/null --noali $cmdb $outdir/$prefix.fna |";
@@ -758,7 +785,7 @@ else {
     
     next if $count <= 0;
     msg("There are still $count unannotated CDS left (started with $num_cds)");
-    msg("Will use", $db->{FMT}, "to search againt", $db->{DB}, "with $cpus CPUs");
+    msg("Will use", $db->{FMT}, "to search against", $db->{DB}, "with $cpus CPUs");
 
     my $cmd = $db->{CMD};
 #    $cmd =~ s/%i/{}/g;
@@ -773,15 +800,6 @@ else {
     my $bsize = int($faa_bytes / $cpus / 2); # div 2 to allow for slow vs fast subtasks?
     my $paropts = $cpus > 0 ? " -j $cpus" : "";
 
-    # HACK!
-    if (0 and $cmd =~ /hmmscan/ ) {
-      msg("*** MESSING WITH HMMSCAN HERE ***");
-#      $bsize = 2* $faa_bytes;
-      $cmd =~ s/--cpu 1/--cpu 2/;
-#      $paropts = " -j 1";     
-    }
-    # /HACK
-    
     my $bls_name = "$outdir/proteins.bls";
     runcmd("cat $faa_name | ${PARALLELCMD}$paropts --block $bsize --recstart '>' --pipe $cmd > $bls_name 2> /dev/null"); 
 
@@ -1031,6 +1049,7 @@ msg($walltime % 2 ? "Share and enjoy!" : "Thank you, come again.");
 
 sub cleanup_product {
   my $p = shift;
+  return $p if $p eq 'rep';
   return $HYPO if $p =~ m/DUF\d|UPF\d|conserved|domain of unknown|[CN].term|homolog|paralog/i;
 #  return $HYPO if $p =~ m/^[A-Z]+$/;
   return $HYPO if $p !~ m/[a-z]/;
@@ -1060,6 +1079,20 @@ sub TAG {
 sub num_digits {
   my $n = shift;
   return max( 2, 1+int(log($n)/log(10)) );
+}
+
+#----------------------------------------------------------------------
+
+sub num_cpu {
+  if ( $^O =~ m/linux/i ) {
+    my($num) = qx(grep -c ^processor /proc/cpuinfo);
+    return $1 if $num =~ m/^(\d+)/;
+  }
+  elsif ( $^O =~ m/darwin/i ) {
+    my($num) = qx(system_profiler SPHardwareDataType | grep Cores);
+    return $1 if $num =~ /.*Cores: (\d+)/;
+  }
+  return 1;
 }
 
 #----------------------------------------------------------------------
