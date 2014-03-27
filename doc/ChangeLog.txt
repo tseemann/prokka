@@ -2,6 +2,24 @@
 Prokka ChangeLog
 ----------------
 
+v1.8 - Nov 2013
+* Added support for 'minced' CRISPR finder [Connor Skennerton]
+* If --cpus > no. cores in system, reduce it down
+* Improved message explaining CDS overlapping existing RNAs
+* Defend against Bio::SearchIO bug for parsing hmmscan [Andrew Page]
+
+v1.7.2 - 2 Nov 2013
+* Fixed serious++ memory leak if --genes/--compliant used [Geoff Winsor]
+
+v1.7.1 - 10 Oct 2013
+* bug when --cpu 0 set [Lionel Guy]
+* added two more entries to FAQ
+* check for BioPerl >= 1.6.2 (not 1.6) for hmmer3 parsing [Bastien Chevreux]
+* typo: "againt" => "against" [Dieter Bulach]
+* cleanup product exception for 'rep' phage protein [Dieter Bulach]
+* check for Parallel >= 20130422 bug https://savannah.gnu.org/bugs/?34241 [Nicola Soranzo]
+* BUG: rnammer used -S bac no matter what --kingdom was [Harald Gruber-Vodicka]
+
 v1.7 - 3 Sep 2013
 * complete overhaul of method of using GNU parallel, twice as fast now!
 * add support for my BARRNAP rRNA predictor software, will use before RNAmmer
