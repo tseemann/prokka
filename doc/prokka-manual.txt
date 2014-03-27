@@ -261,6 +261,11 @@ Dependencies
            searching. Nucleic Acids Res. 2011 Jul;39(Web Server
            issue):W29-37.
 
+   Infernal
+           Used for similarity searching against ncRNA family profiles D. L.
+           Kolbe, S. R. Eddy. Fast Filtering for RNA Homology Search.
+           Bioinformatics, 27:3102-3109, 2011.
+
 Databases
 
   The Core Databases
@@ -371,9 +376,6 @@ Still To Do
        similar results.
      * Do the parallel blasting/hmmering in batch mode instead of 1 sequence
        at a time.
-     * Support a bacterial subset of Rfam (riboswitches etc). Main issue is
-       the high computational complexity of RNA profile searching using
-       Infernal.
      * Add the CLUSTERS "PHA" library to Viruses mode.
      * Option to include ribosomal binding sites (RBS) as features.
      * Add a "--ncbi" option to enable all NCBI-specific things.

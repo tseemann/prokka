@@ -2,7 +2,12 @@
 Prokka ChangeLog
 ----------------
 
-v.1.5 - 9 Sep 2012
+v1.5.1 - 13 Sep 2012
+* fixed bug parsing cmscan output [Adam Caldwell]
+* added Infernal to documentation requirements
+* record $USER in .log file
+
+v1.5 - 9 Sep 2012
 * fixed .faa output not honouring --gctable [Adam Caldwell]
 * option --addgenes causes duplicate entries in the .ffn output
 * removed --coverage option which wasn't being used/honoured

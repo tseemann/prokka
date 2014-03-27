@@ -36,7 +36,7 @@ use FindBin;
 
 my @CMDLINE = @ARGV;
 my $EXE = $FindBin::RealScript;
-my $VERSION = "1.5";
+my $VERSION = "1.5.1";
 my $AUTHOR = 'Torsten Seemann <torsten.seemann@monash.edu>';
 my $URL = 'http://www.vicbioinformatics.com';
 my $DBDIR = "$FindBin::RealBin/../db";
@@ -61,9 +61,10 @@ setOptions();
 # welcome message
 
 msg("This is $EXE $VERSION");
-msg("$AUTHOR");
+msg("Written by $AUTHOR");
 msg("Victorian Bioinformatics Consortium - $URL");
 msg("Local time is $starttime");
+msg("You are", $ENV{USER} || 'not telling me who you are!');
 
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
 # set up options based on --mode
@@ -338,17 +339,21 @@ if ($rfam and -r "$cmdb.i1m") {
   my $icpu = $cpus || 1;
   open INFERNAL, "cmscan --cpu $icpu -E $evalue --tblout /dev/stdout -o /dev/null --noali $cmdb $outdir/$prefix.fna |";
   while (<INFERNAL>) {
+    next if m/^#/;       # ignore comments
     my @x = split ' ';   # magic Perl whitespace splitter
-    print join("~~~", @x)."\n";
-    next unless $x[1] =~ m/^RF\d/;
+#    msg("DEBUG: ", join("~~~", @x) );
+    next unless @x > 9;  # avoid incorrect lines
+    next unless defined $x[1] and $x[1] =~ m/^RF\d/;
+    my $sid = $x[2];
+    next unless exists $seq{$sid};
     push @{$seq{$sid}{FEATURE}}, Bio::SeqFeature::Generic->new( 
-      -primary    => 'ncRNA',
+      -primary    => 'misc_RNA',
       -seq_id     => $sid,
       -source     => $tool,
       -start      => $x[7],
       -end        => $x[8],
       -strand     => ($x[9] eq '-' ? -1 : +1),
-      -score      => $x[16],
+      -score      => undef,  # possibly x[16] but had problems here with '!'
       -frame      => 0,
       -tag        => {
 	'product' => $x[0],
@@ -356,6 +361,7 @@ if ($rfam and -r "$cmdb.i1m") {
       }
     );
     $num_ncrna++;    
+    msg("$num_ncrna ncRNA $x[0] $sid $x[7]..$x[8]");
   } 
   msg("Found $num_ncrna ncRNAs.");
 }
