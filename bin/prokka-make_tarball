@@ -1,0 +1,47 @@
+#!/bin/bash
+
+DESTDIR=/tmp
+
+if [ ! -d "../db" ]; then
+  echo "Please run this script from the bin/ folder of the Prokka folder."
+  exit 1
+fi
+
+NAME=$(prokka --version 2>&1 | sed 's/ /-/g')
+echo "Using name: $NAME"
+
+FOLDER="$DESTDIR/$NAME"
+echo "Making fresh folder: $FOLDER"
+if [ -f "$FOLDER" ]; then
+  rm -r "$FOLDER"
+fi
+mkdir "$FOLDER"
+
+echo "Converting HTML manual to TXT"
+links -dump ../doc/prokka-manual.html > ../doc/prokka-manual.txt
+
+echo "Copying files to: $FOLDER"
+cp -rv ../bin ../doc ../db "$FOLDER"
+
+echo "Removing unwanted backup files in: $FOLDER"
+find "$FOLDER" -name "*~" -exec rm -f {} \;
+
+TARBALL="$DESTDIR/$NAME.tar.gz"
+echo "Creating: $TARBALL"
+tar -C "$DESTDIR" -zvcf "$TARBALL" "$NAME"
+
+echo "Cleaning up: $FOLDER"
+rm -r "$FOLDER"
+
+echo "Checking tarball: $TARBALL"
+ls -l $TARBALL
+tar ztf $TARBALL
+
+echo "Your tarball is here: $TARBALL"
+echo "Done."
+
+
+
+
+
+

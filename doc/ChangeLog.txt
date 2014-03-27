@@ -1,0 +1,37 @@
+
+Prokka ChangeLog
+----------------
+
+v1.3 - 17 Jun 2012
+* removed 'sprot' fasta files, can recover from indices with fastacmd/blastdbcmd
+* removed Time::Seconds->walltime() as it is too new [Heikki Lehvaslaiho]
+* checked for GNU parallel VS "parallel" from Debian moreutils pkg [Heikki Lehvaslaiho]
+* fixed 'ribsomnal' / 'Ecoli.faa' typo in manual
+* added citations for GNU Parallel and all other tools [Ole Tange]
+* add /protein_id tags to CDS [NCBI]
+* added --citation option to show publication reference
+* improved manual w/ details on how
+* changed NCBI error suggestion file from *.val to *.err
+
+v1.2 -  28 Apr 2012
+* fixed changelog 1.01 to 1.1 as released
+* fixed bug so only newly created files are listed at end when --outdir='.'
+* work-around for bug in Aragorn reporting 27000bp long tRNAs at contig ends
+* wrote blog post about it at http://thegenomefactory.blogspot.com/ G
+* announced on Google+, Twitter
+
+v1.1 - 25 Apr 2012
+* fixed accidental forcing lower case for strain instead of species
+* use of genus-specific DBs is now default off, use --usegenus to enable it
+* changed $URL
+* altered COMMENT about prokka in .gbk file
+* features weren't sorted by location before locus tag assignment
+* identified bug in tbl2asn introducing space in /inference="COORDINATES: profile"
+* added support to "un-collide" duplicate /gene names by adding _1 _2 etc
+* added more documentation in doc/prokka-manual.html
+* added --listdb option to show what databases are configured
+* removed .gz versions of raw HMM databases, as not needed
+
+v1.00 - 23 Apr 2012
+* first public version
+

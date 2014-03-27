@@ -1,3 +1,4 @@
+tmp/
 blib/
 .build/
 _build/
