@@ -40,7 +40,7 @@ my @CMDLINE = @ARGV;
 my $OPSYS = $^O;
 my $BINDIR = "$FindBin::RealBin/../binaries/$OPSYS";
 my $EXE = $FindBin::RealScript;
-my $VERSION = "1.7.2";
+my $VERSION = "1.8";
 my $AUTHOR = 'Torsten Seemann <torsten.seemann@monash.edu>';
 my $URL = 'http://www.vicbioinformatics.com';
 my $DBDIR = "$FindBin::RealBin/../db";
@@ -67,7 +67,7 @@ my %seq;
 my(@Options, $quiet, $kingdom, $fast, $force, $outdir, $prefix, $cpus, $addgenes,
              $gcode, $gram, $gffver, $locustag, $increment, $mincontiglen, $evalue, $coverage,
              $genus, $species, $strain, $plasmid, 
-             $usegenus, $proteins, $centre, 
+             $usegenus, $proteins, $centre, $scaffolds,
              $rfam, $norrna, $notrna,
 	     $metagenome, $compliant, $listdb, $citation);
 setOptions();
@@ -101,7 +101,11 @@ if (!defined $cpus or $cpus < 0) {
 elsif ($cpus == 0) {
   $cpus = $num_cores;
 }
-msg("User requested that $cpus cores be used by $EXE");
+elsif ($cpus > $num_cores) {
+  msg("Option --cpu asked for $cpus cores, but system only has $num_cores");
+  $cpus = $num_cores;
+}
+msg("Will use maximum of $cpus cores.");
 
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
 # set up options based on --mode
@@ -228,6 +232,12 @@ my %tools = (
     MINVER  => "3.0",
     NEEDED  => 0,  # only if --gram used
   },
+  'minced' => {
+     GETVER => "minced --version | sed -n '1p'",
+     REGEXP => qr/minced\s+\d+\.(\d+\.\d+)/,
+     MINVER => "1.3",
+     NEEDED => 0,
+   },
   'cmscan' => {
     GETVER  => "cmscan -h | grep '^# INFERNAL'",
     REGEXP  => qr/INFERNAL\s+($BIDEC)/,
@@ -527,13 +537,40 @@ else {
 }
 
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
-# Tally all the RNA features so we can exclude overlaps with CDS
+# Tally all the RNA features __ which we want to exclude overlaps with CDS __
 
 my @allrna;
 for my $sid (sort keys %seq) {
   push @allrna, (grep { $_->primary_tag =~ m/[tr]RNA/ } @{ $seq{$sid}{FEATURE} });
 }
 msg("Total of", scalar(@allrna), "tRNA + rRNA features");
+
+# . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+# CRISPRs
+
+if ($tools{'minced'}->{HAVE}) {
+  msg("Searching for CRISPR repeats");
+  my $num_crispr=0;
+  my $gff = Bio::Tools::GFF->new(
+    -file => "minced -gff '$outdir/$prefix.fna' |",
+    -gff_version => 3,
+  );
+  while (my $feat = $gff->next_feature) {
+    # format it properly for NCBI
+    $feat->primary_tag("repeat_region");
+    $feat->remove_tag('ID');
+    $feat->add_tag_value('rpt_family', 'CRISPR');
+
+    push @{$seq{$feat->seq_id}{FEATURE}}, $feat;
+
+    # there should be no CDS features overlapping with CRISPRs, but prodigal
+    # will occasionally create ORFs in these regions. Got to stop that.
+    push @allrna, $feat;
+    $num_crispr++;
+    msg("CRISPR$num_crispr", $feat->seq_id, $feat->start, "with", $feat->score, "spacers");
+  }
+  msg("Found $num_crispr CRISPRs");
+}
 
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
 # CDS
@@ -577,7 +614,8 @@ while (<CDS>) {
       }	
     }
     if ($overlap) {
-      msg("Not including CDS which overlaps existing RNA at $sid:$1..$2 on $3 strand");
+      my $type = $overlap->primary_tag;
+      msg("Excluding CDS which overlaps existing RNA ($type) at $sid:$1..$2 on $3 strand");
     }
     else {
       $num_cds++;
@@ -715,6 +753,7 @@ unless ($kingdom eq 'Viruses') {
       SRC => "protein motif:$name:",
       FMT => 'hmmer3',
       CMD => $HMMER3CMD,
+      VERSION => 3,   # without this, latest Bioperl goes into infinite loop
     };
   }
 }
@@ -804,7 +843,7 @@ else {
     runcmd("cat $faa_name | ${PARALLELCMD}$paropts --block $bsize --recstart '>' --pipe $cmd > $bls_name 2> /dev/null"); 
 
     my $num_cleaned=0;
-    my $bls = Bio::SearchIO->new(-file=>$bls_name, -format=>$db->{FMT});
+    my $bls = Bio::SearchIO->new(-file=>$bls_name, -format=>$db->{FMT}, -version=>$db->{VERSION});
     while (my $res = $bls->next_result) {
       my $hit = $res->next_hit or next;
       my($pid,$prod,$gene,$EC) = ($res->query_name, $hit->description, '', '');
@@ -1191,9 +1230,10 @@ sub show_citation {
   
 If you use Prokka in your work, please cite:
 
-    Seemann T (2012)
-    Prokka: Prokaryotic Genome Annotation System
-    http://vicbioinformatics.com/
+    Seemann T (2013)
+    Prokka: Rapid Prokaryotic Genome Annotation
+    Bioinformatics 
+    (in review)
     
 Thank you.
 
@@ -1226,6 +1266,7 @@ sub setOptions {
     {OPT=>"gffver=i",  VAR=>\$gffver, DEFAULT=>3, DESC=>"GFF version"},
     {OPT=>"compliant!",  VAR=>\$compliant, DEFAULT=>0, DESC=>"Force Genbank/ENA/DDJB compliance: --genes --mincontiglen 200 --centre XXX"},
     {OPT=>"centre=s",  VAR=>\$centre, DEFAULT=>'', DESC=>"Sequencing centre ID."},
+#    {OPT=>"scaffolds!",  VAR=>\$scaffolds, DEFAULT=>0, DESC=>"Break scaffoldings into contigs and create .AGP file"},
     'Organism details:',
     {OPT=>"genus=s",  VAR=>\$genus, DEFAULT=>'Genus', DESC=>"Genus name"},
     {OPT=>"species=s",  VAR=>\$species, DEFAULT=>'species', DESC=>"Species name"},
