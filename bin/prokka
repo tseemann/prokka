@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/usr/bin/env perl
 
 #    prokka - Bacterial annotation done fast and NCBI compliant (mostly).
 #
@@ -36,7 +36,7 @@ use FindBin;
 
 my @CMDLINE = @ARGV;
 my $EXE = $FindBin::RealScript;
-my $VERSION = "1.4.1";
+my $VERSION = "1.5";
 my $AUTHOR = 'Torsten Seemann <torsten.seemann@monash.edu>';
 my $URL = 'http://www.vicbioinformatics.com';
 my $DBDIR = "$FindBin::RealBin/../db";
@@ -44,6 +44,7 @@ my $HYPO = 'hypothetical protein';
 my $UNANN = 'unannotated protein';
 my $BLASTPCMD = "blastp -query %i -db %d -evalue %e -num_threads 1 -out %o -num_descriptions 1 -num_alignments 1 2>/dev/null";
 my $HMMER3CMD = "hmmscan --noali --notextw --acc -E %e --cpu 1 -o %o %d %i 2>/dev/null";
+my $INFERNALCMD = "cmscan --noali --notextw --acc -E %e --cpu 1 -o %o %d %i 2>/dev/null";
 my $starttime = localtime;
 my %seq;
 
@@ -52,7 +53,7 @@ my %seq;
 
 my(@Options, $quiet, $kingdom, $fast, $force, $outdir, $prefix, $cpus, $addgenes,
              $gcode, $gram, $gffver, $locustag, $increment, $mincontig, $evalue, $coverage,
-             $genus, $species, $strain, $usegenus, $proteins, $centre, $minimaps,
+             $genus, $species, $strain, $usegenus, $proteins, $centre, $minimaps, $rfam,
 	     $listdb, $citation);
 setOptions();
 
@@ -91,7 +92,7 @@ msg("Annotating as >>> $kingdom <<<");
 
 ($gcode < 1 or $gcode > 24) and err("Invalid genetic code, must be 1..24");
 $evalue >= 0 or err("Invalid --evalue, must be >= 0");
-($coverage >= 0 and $coverage <= 100) or err("Invalid --coverage, must be 0..100");
+#($coverage >= 0 and $coverage <= 100) or err("Invalid --coverage, must be 0..100");
 $increment >= 1 or err("Invalid --increment, must be >= 1");
 $locustag ||= uc($EXE);
 # http://www.ncbi.nlm.nih.gov/genomes/static/Annotation_pipeline_README.txt
@@ -127,14 +128,14 @@ msg("Command: @CMDLINE");
 # check dependencies
 
 for my $exe (qw(less grep egrep sed find tbl2asn makeblastdb blastp 
-                aragorn prodigal rnammer parallel hmmscan)) {
+                aragorn prodigal rnammer parallel hmmscan cmscan)) {
   my $fp = require_exe($exe);
   $fp ? msg("Need '$exe' - using $fp") : err("Can't find $exe in your \$PATH");
 }
 # Heikki discovered moreutils.deb contains a really old 'parallel' tool....
 my($pout) = qx(parallel -V 2> /dev/null);
 if ($pout !~ m/GNU/) {
-  err("You don't have GNU 'parallel' installed, you have different tool with that name.") 
+  err("You don't have GNU 'parallel' installed, you have a different tool with that name.") 
 }
 
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
@@ -163,14 +164,28 @@ my %tools = (
     REGEXP  => qr/^(.*?)[,\s]/,
     VERSION => "4.0",
   },
+  'infernal' => {
+    GETVER  => "cmscan -h | grep '^# INFERNAL'",
+    REGEXP  => qr/INFERNAL ([\d\.]+)/,
+    VERSION => "1.0",
+  },
 );  
 
 for my $toolname (keys %tools) {
   my $t = $tools{$toolname};
   my($s) = qx($t->{GETVER});
-  $s =~ $t->{REGEXP};
-  $t->{VERSION} = $1 if defined $1;
+  if (defined $s) {
+    $s =~ $t->{REGEXP};
+    $t->{VERSION} = $1 if defined $1;
+  }
+  else {
+    msg("Could not determine version of $toolname ...");
+  }
   msg("Determined $toolname version is $t->{VERSION}");
+}
+
+if ($rfam and $tools{infernal}{VERSION} < 1.1) {
+  err("This script only supports --rfam with Infernal (ie. cmscan) version 1.1 or higher");
 }
 
 $gcode ||= 1;
@@ -206,10 +221,10 @@ msg("Wrote $ncontig contigs");
 #msg(sort keys %seq); exit;
 
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
-# tRNA
+# tRNA + tmRNA
 
-msg("Predicting Transfer RNAs");
-my $cmd = "aragorn -t -gc$gcode -w $outdir/$prefix.fna";
+msg("Predicting tRNAs and tmRNAs");
+my $cmd = "aragorn -gc$gcode -w $outdir/$prefix.fna"; # -t/-m 
 msg("Running: $cmd");
 my $num_trna=0;
 open TRNA, "$cmd |";
@@ -221,8 +236,10 @@ while (<TRNA>) {
     next;
   }
   my @x = split m/\s+/;
-  next unless @x == 5 and $x[0] =~ m/^\d+$/ and $x[4] =~ m/^\([ATCG]{3}\)$/i;
-  msg($_);
+  next unless @x == 5 and $x[0] =~ m/^\d+$/; 
+  # and $x[4] =~ m/^\([ATCG]{3}\)$/i;
+  #msg($_);
+  msg("@x");
   $x[2] =~ m/(c)?\[(\d+),(\d+)\]/;
   my($revcom, $start, $end) = ($1,$2,$3);
   # bug fix for aragorn when revcom trna ends at start of contig!
@@ -234,15 +251,25 @@ while (<TRNA>) {
     msg("tRNA $x[2] has start($start) > end ($end) - skipping.");
     next;
   }
-  if (abs($end-$start) > 150) {
-    msg("tRNA $x[2] is too big (>150bp) - skipping.");
+  if (abs($end-$start) > 500) {
+    msg("tRNA/tmRNA $x[2] is too big (>500bp) - skipping.");
     next;
   }
   # end kludge
   $num_trna++;
+
+  my $ftype = 'tRNA';
+  my $product = $x[1].$x[4];
+  my @gene = ();
+  if ($x[1] eq 'tmRNA') {
+    $ftype = $x[1];
+    $product = "transfer-messenger RNA, SsrA";
+    @gene = ('gene' => 'ssrA')
+  }
+
   my $tool = "Aragorn:".$tools{aragorn}->{VERSION};
   push @{$seq{$sid}{FEATURE}}, Bio::SeqFeature::Generic->new( 
-    -primary    => 'tRNA',
+    -primary    => $ftype, # tRNA or tmRNA
     -seq_id     => $sid,
     -source     => $tool,
     -start      => $start,
@@ -251,8 +278,9 @@ while (<TRNA>) {
     -score      => undef,
     -frame      => 0,
     -tag        => {
-      'product' => "$x[1]$x[4]",
+      'product' => $product,
       'inference' => "COORDINATES:profile:$tool",
+      @gene,
     }
   );
 }
@@ -290,10 +318,49 @@ if ($kingdom ne 'Viruses') {
 	'inference' => "COORDINATES:profile:$tool",  # FIXME version
       }
     );
-    msg("$num_rrna\t$desc\t$sid\t$entry->{start}[0]\t$entry->{stop}[0]\t$entry->{direction}[0]");
+    msg(join "\t", $num_rrna, $desc, $sid, $entry->{start}[0], $entry->{stop}[0], $entry->{direction}[0]);
   }
   delfile($rnammerfn);
   msg("Found $num_rrna rRNAs");
+}
+else {
+  msg("Disabling rRNA search for $kingdom.");
+}
+
+# . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
+# ncRNA via Rfam + Infernal
+
+my $cmdb = "$DBDIR/cm/$kingdom";
+if ($rfam and -r "$cmdb.i1m") {
+  msg("Scanning for ncRNAs... please be patient.");
+  my $num_ncrna = 0; # FIXME --cpu !!
+  my $tool = "Infernal:".$tools{infernal}->{VERSION};
+  my $icpu = $cpus || 1;
+  open INFERNAL, "cmscan --cpu $icpu -E $evalue --tblout /dev/stdout -o /dev/null --noali $cmdb $outdir/$prefix.fna |";
+  while (<INFERNAL>) {
+    my @x = split ' ';   # magic Perl whitespace splitter
+    print join("~~~", @x)."\n";
+    next unless $x[1] =~ m/^RF\d/;
+    push @{$seq{$sid}{FEATURE}}, Bio::SeqFeature::Generic->new( 
+      -primary    => 'ncRNA',
+      -seq_id     => $sid,
+      -source     => $tool,
+      -start      => $x[7],
+      -end        => $x[8],
+      -strand     => ($x[9] eq '-' ? -1 : +1),
+      -score      => $x[16],
+      -frame      => 0,
+      -tag        => {
+	'product' => $x[0],
+	'inference' => "COORDINATES:profile:$tool",
+      }
+    );
+    $num_ncrna++;    
+  } 
+  msg("Found $num_ncrna ncRNAs.");
+}
+else {
+  msg("Disabling ncRNA search, can't find $cmdb file.");
 }
 
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
@@ -455,7 +522,7 @@ if ($kingdom eq 'Bacteria' and $sigpver==3 || $sigpver==4) {
     delfile($spoutfn);
   }
   else {
-    msg(">>> --gram not specified <<< will NOT check for signal peptides.");
+    msg("Option --gram not specified, will NOT check for signal peptides.");
   }
 }
 
@@ -648,7 +715,7 @@ for my $gene (keys %collide) {
   }
   $num_collide++;
 }
-msg("Fixed $num_collide colliding /gene names.\n");
+msg("Fixed $num_collide colliding /gene names.");
 
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
 # Add locus_tags and protein_id[CDS only] (and Parent genes if asked)
@@ -676,8 +743,6 @@ for my $sid (sort keys %seq) {
   }
 }
 msg("Assigned $num_lt locus_tags to CDS and RNA features.");
-
-
 
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
 # Write it all out!
@@ -722,8 +787,12 @@ for my $sid (sort keys %seq) {
     my $p = $seq{$sid}{DNA}->trunc($f->location);
     $p->display_id( TAG($f, 'locus_tag') );
     $p->desc( TAG($f, 'product') ) if $f->has_tag('product');
-    $ffn_fh->write_seq($p);      
-    $faa_fh->write_seq($p->translate) if ($f->primary_tag eq 'CDS');
+    unless ($addgenes and $f->primary_tag eq 'gene') {
+      $ffn_fh->write_seq($p);      
+    }
+    if ($f->primary_tag eq 'CDS') {
+      $faa_fh->write_seq( $p->translate(-codontable_id=>$gcode) ); 
+    }
   }
 }
 
@@ -866,11 +935,16 @@ sub hmms {
   return map { s{^.*/}{}; s{.hmm.h3m$}{}; $_ } glob("$DBDIR/hmm/*.h3m");
 }
 
+sub cms {
+  return map { s{^.*/}{}; s{.i1m$}{}; $_ } glob("$DBDIR/cm/*.i1m");
+}
+
 sub show_databases {
   msg( "Databases: $DBDIR" );
   msg( "Kingdoms: ", kingdoms() );
   msg( "Genera:", genera() );
   msg( "HMMs:", hmms() );
+  msg( "CMs:", cms() );
   exit;
 }
 
@@ -928,8 +1002,9 @@ sub setOptions {
     {OPT=>"fast!",  VAR=>\$fast, DEFAULT=>0, DESC=>"Fast mode - skip CDS /product searching"},
     {OPT=>"cpus=i",  VAR=>\$cpus, DEFAULT=>0, DESC=>"Number of CPUs to use [0=all]"},
     {OPT=>"mincontig=i",  VAR=>\$mincontig, DEFAULT=>200, DESC=>"Minimum contig size [NCBI needs 200]"},
-    {OPT=>"evalue=f",  VAR=>\$evalue, DEFAULT=>1E-9, DESC=>"Similarity e-value cut-off"},
-    {OPT=>"coverage=f",  VAR=>\$coverage, DEFAULT=>0, DESC=>"Similarity \%id cut-off (otherwise /pseudo)"},
+    {OPT=>"evalue=f",  VAR=>\$evalue, DEFAULT=>1E-6, DESC=>"Similarity e-value cut-off"},
+#    {OPT=>"coverage=f",  VAR=>\$coverage, DEFAULT=>0, DESC=>"Similarity \%id cut-off (otherwise /pseudo)"},
+    {OPT=>"rfam",  VAR=>\$rfam, DEFAULT=>0, DESC=>"Enable searching for ncRNAs with Infernal+Rfam (SLOW!)"},
   );
 
   (!@ARGV) && (usage());

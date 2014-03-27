@@ -2,6 +2,18 @@
 Prokka ChangeLog
 ----------------
 
+v.1.5 - 9 Sep 2012
+* fixed .faa output not honouring --gctable [Adam Caldwell]
+* option --addgenes causes duplicate entries in the .ffn output
+* removed --coverage option which wasn't being used/honoured
+* changed /usr/bin/perl to /usr/bin/env perl
+* added support for tmRNA (ssrA/10S) features from Aragorn
+* added support for Infernal/cmscan 1.1 against Rfam
+* added a "Bug" to docs
+* consisified some warning messages
+* added LICENSE for Rfam and Pfam
+* removed redundant sprot fasta files: prokka/db/kingdom/*/sprot
+
 v1.4.1 - 14 Aug 2012
 * fixed bug which rejected --increment 1 default! [Simon Gladman]
 

@@ -197,6 +197,7 @@ Options
    --force           Force overwriting existing output folder (default OFF)
    --prefix [X]      Filename output prefix [auto] (default '')
    --locustag [X]    Locus tag prefix (default 'PROKKA')
+   --increment [N]   Locus tag counter increment (default '1')
    --gffver [N]      GFF version (default '3')
    --addgenes        Add 'gene' features for each 'CDS' feature (default OFF)
    --centre [X]      Sequencing centre ID (default 'VBC')
@@ -366,6 +367,8 @@ FAQ
 
 Still To Do
 
+     * Add an example input/output so users can check their copy is producing
+       similar results.
      * Do the parallel blasting/hmmering in batch mode instead of 1 sequence
        at a time.
      * Support a bacterial subset of Rfam (riboswitches etc). Main issue is
@@ -382,7 +385,8 @@ Still To Do
 
 Bugs
 
-     * Probably.
+     * tbl2asn seems to be removing the "(anti-codon)" part in my tRNA
+       /product values
 
 Citation
 
