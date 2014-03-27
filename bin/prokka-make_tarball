@@ -35,13 +35,7 @@ rm -r "$FOLDER"
 
 echo "Checking tarball: $TARBALL"
 ls -l $TARBALL
-tar ztf $TARBALL
+#tar ztf $TARBALL
 
 echo "Your tarball is here: $TARBALL"
 echo "Done."
-
-
-
-
-
-

@@ -48,14 +48,14 @@ Why use Prokka?
            Prokka is neatly packaged, with no hard-coded directories.
            Everything can be controlled via command line options. It is
            trivial to add it to your private genomics pipeline, including
-           [1]Galaxy.
+           Galaxy.
 
 Installation
 
   Download
 
    Download the latest prokka-1.x.tar.gz archive from
-   [2]http://www.bioinformatics.net.au/
+   http://www.bioinformatics.net.au/
 
   Extract
 
@@ -72,7 +72,7 @@ Installation
 
   Install dependencies
 
-   Consult the [3]list of dependencies.
+   Consult the list of dependencies.
 
   Fix RNAmmer bug
 
@@ -143,12 +143,12 @@ Output Files
 
    .gff
            This is the master annotation in GFF3 format, containing both
-           sequences and annotations. It can be viewed directly in [4]Artemis
-           or [5]IGV.
+           sequences and annotations. It can be viewed directly in Artemis or
+           IGV.
 
    .gbk
-           This is a [6]standard Genbank file derived from the master .gff.
-           If the input to prokka was a multi-FASTA, then this will be a
+           This is a standard Genbank file derived from the master .gff. If
+           the input to prokka was a multi-FASTA, then this will be a
            multi-Genbank, with one record for each sequence.
 
    .fna
@@ -219,42 +219,42 @@ Options
 
 Dependencies
 
-   [7]GNU Parallel
+   GNU Parallel
            A shell tool for executing jobs in parallel using one or more
            computers O. Tange, GNU Parallel - The Command-Line Power Tool,
            ;login: The USENIX Magazine, Feb 2011:42-47.
 
-   [8]BioPerl
+   BioPerl
            Used for input/output of various file formats Stajich et al, The
            Bioperl toolkit: Perl modules for the life sciences. Genome Res.
            2002 Oct;12(10):1611-8.
 
-   [9]Aragorn
+   Aragorn
            Finds transfer RNA features (tRNA) Laslett D, Canback B. ARAGORN,
            a program to detect tRNA genes and tmRNA genes in nucleotide
            sequences. Nucleic Acids Res. 2004 Jan 2;32(1):11-6.
 
-   [10]RNAmmer
+   RNAmmer
            Finds ribosomal RNA features (rRNA) Lagesen K et al. RNAmmer:
            consistent and rapid annotation of ribosomal RNA genes. Nucleic
            Acids Res. 2007;35(9):3100-8.
 
-   [11]Prodigal
+   Prodigal
            Finds protein-coding features (CDS) Hyatt D et al. Prodigal:
            prokaryotic gene recognition and translation initiation site
            identification. BMC Bioinformatics. 2010 Mar 8;11:119.
 
-   [12]SignalP >= 4.0
+   SignalP >= 4.0
            Finds signal peptide features in CDS (sig_peptide) Petersen TN et
            al. SignalP 4.0: discriminating signal peptides from transmembrane
            regions. Nat Methods. 2011 Sep 29;8(10):785-6.
 
-   [13]BLAST+
+   BLAST+
            Used for similarity searching against protein sequence libraries
            Camacho C et al. BLAST+: architecture and applications. BMC
            Bioinformatics. 2009 Dec 15;10:421.
 
-   [14]HMMER3
+   HMMER3
            Used for similarity searching against protein family profiles Finn
            RD et al. HMMER web server: interactive sequence similarity
            searching. Nucleic Acids Res. 2011 Jul;39(Web Server
@@ -357,20 +357,20 @@ FAQ
    Where does the name "Prokka" come from?
            Prokka is a contraction of "prokaryotic annotation". It's also
            relatively unique within Google, and also rhymes with a native
-           Australian marsupial called the [15]quokka.
+           Australian marsupial called the quokka.
 
    Can I annotate by eukaryote genome with Prokka?
            No. Prokka is specifically designed for Bacteria, Archaea and
            Viruses. It can't handle multi-exon gene models; I would recommend
-           using [16]MAKER 2 for that purpose.
+           using MAKER 2 for that purpose.
 
 Still To Do
 
      * Do the parallel blasting/hmmering in batch mode instead of 1 sequence
        at a time.
-     * Support a bacterial subset of [17]Rfam (riboswitches etc). Main issue
-       is the high computational complexity of RNA profile searching using
-       [18]Infernal.
+     * Support a bacterial subset of Rfam (riboswitches etc). Main issue is
+       the high computational complexity of RNA profile searching using
+       Infernal.
      * Add the CLUSTERS "PHA" library to Viruses mode.
      * Option to include ribosomal binding sites (RBS) as features.
      * Add a "--ncbi" option to enable all NCBI-specific things.
@@ -398,25 +398,3 @@ Appendix A - The Canonical Bacterial Gene Model
          RBS         =>
          CDS            ================================>
  sig_peptide            ====>
-
-References
-
-   Visible links
-   1. http://galaxyproject.org/
-   2. http://www.bioinformatics.net.au/
-   3. file:///db/sw/vbc/prokka/doc/prokka-manual.html#depends
-   4. http://www.sanger.ac.uk/resources/software/artemis/
-   5. http://www.broadinstitute.org/igv/
-   6. http://www.ncbi.nlm.nih.gov/collab/FT/
-   7. http://www.gnu.org/software/parallel/
-   8. http://bioperl.org/
-   9. http://130.235.46.10/ARAGORN/
-  10. file:///db/sw/vbc/prokka/doc/
-  11. http://prodigal.ornl.gov/
-  12. http://www.cbs.dtu.dk/services/SignalP/
-  13. ftp://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/LATEST/
-  14. http://hmmer.janelia.org/software
-  15. http://en.wikipedia.org/wiki/Quokka
-  16. http://www.yandell-lab.org/software/maker.html
-  17. file:///db/sw/vbc/prokka/doc/
-  18. file:///db/sw/vbc/prokka/doc/

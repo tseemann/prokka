@@ -36,7 +36,7 @@ use FindBin;
 
 my @CMDLINE = @ARGV;
 my $EXE = $FindBin::RealScript;
-my $VERSION = "1.3";
+my $VERSION = "1.4.1";
 my $AUTHOR = 'Torsten Seemann <torsten.seemann@monash.edu>';
 my $URL = 'http://www.vicbioinformatics.com';
 my $DBDIR = "$FindBin::RealBin/../db";
@@ -51,7 +51,7 @@ my %seq;
 # command line options
 
 my(@Options, $quiet, $kingdom, $fast, $force, $outdir, $prefix, $cpus, $addgenes,
-             $gcode, $gram, $gffver, $locustag, $mincontig, $evalue, $coverage,
+             $gcode, $gram, $gffver, $locustag, $increment, $mincontig, $evalue, $coverage,
              $genus, $species, $strain, $usegenus, $proteins, $centre, $minimaps,
 	     $listdb, $citation);
 setOptions();
@@ -65,11 +65,34 @@ msg("Victorian Bioinformatics Consortium - $URL");
 msg("Local time is $starttime");
 
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
+# set up options based on --mode
+
+if ($kingdom =~ m/bac|prok/i) {
+  $kingdom = 'Bacteria';
+  $gcode ||= 11;
+}
+elsif ($kingdom =~ m/arch/i) {
+  $kingdom = 'Archaea';  
+  $gcode ||= 11;
+  $gram = '';
+}
+elsif ($kingdom =~ m/vir/i) {
+  $kingdom = 'Viruses';
+  $gcode ||= 1;  # std
+  $gram = '';
+}
+else {
+  err("Can't parse --mode '$kingdom'. Choose from: Bacteria Archaea Virus");
+}
+msg("Annotating as >>> $kingdom <<<");
+
+# . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
 # check options
 
 ($gcode < 1 or $gcode > 24) and err("Invalid genetic code, must be 1..24");
 $evalue >= 0 or err("Invalid --evalue, must be >= 0");
 ($coverage >= 0 and $coverage <= 100) or err("Invalid --coverage, must be 0..100");
+$increment >= 1 or err("Invalid --increment, must be >= 1");
 $locustag ||= uc($EXE);
 # http://www.ncbi.nlm.nih.gov/genomes/static/Annotation_pipeline_README.txt
 $prefix ||= $locustag.'_'.(localtime->mdy('')); # NCBI wants US format, ech.
@@ -150,27 +173,7 @@ for my $toolname (keys %tools) {
   msg("Determined $toolname version is $t->{VERSION}");
 }
 
-# . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
-# set up options based on --mode
-
-if ($kingdom =~ m/[BT]/i) {
-  $kingdom = 'Bacteria';
-  $gcode = 11;
-}
-elsif ($kingdom =~ m/^A|H/i) {
-  $kingdom = 'Archaea';  
-  $gcode = 11;
-  $gram = '';
-}
-elsif ($kingdom =~ m/[VUS]/i) {
-  $kingdom = 'Viruses';
-  $gcode = 1;  # std
-  $gram = '';
-}
-else {
-  err("Can't parse --mode '$kingdom'. Choose from bacteria, archaea, virus.");
-}
-msg("Annotating as >>> $kingdom <<<");
+$gcode ||= 1;
 msg("Using genetic code table $gcode.");
 
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
@@ -314,7 +317,7 @@ $cmd = "prodigal -i $outdir/$prefix.fna -c -m -g $gcode -p $prodigal_mode -f sco
 msg("Running: $cmd");
 open CDS, "$cmd |";
 while (<CDS>) {
-  if (m/seqhdr="([^\s"]+)"/) {  
+  if (m/seqhdr="([^\s\"]+)"/) {  
     $sid = $1;
 #    msg("CDS $sid");
     next;
@@ -343,7 +346,7 @@ while (<CDS>) {
       }	
     }
     if ($overlap) {
-      msg("Not including CDS/mRNA which overlaps other RNA at $sid:$1..$2 on $3 strand");
+      msg("Not including CDS which overlaps existing RNA at $sid:$1..$2 on $3 strand");
     }
     else {
       $num_cds++;
@@ -565,7 +568,7 @@ else {
       }
       my $cleanprod = cleanup_product($prod);      
       if ($cleanprod ne $prod) {
-        #msg("Modify product: $prod => $cleanprod");
+        msg("Modify product: $prod => $cleanprod");
 	if ($cleanprod eq $HYPO) {
    	  $cds{$pid}->add_tag_value('note', $prod);
   	  $cds{$pid}->remove_tag('gene') if $cds{$pid}->has_tag('gene');
@@ -655,7 +658,7 @@ for my $sid (sort keys %seq) {
   for my $f ( sort { $a->start <=> $b->start } @{ $seq{$sid}{FEATURE} }) {
     next unless $f->primary_tag =~ m/CDS|RNA/;
     $num_lt++;
-    my $ID = sprintf("${locustag}_%05d", $num_lt);
+    my $ID = sprintf("${locustag}_%05d", $num_lt * $increment);
     $f->add_tag_value('ID', $ID);
     $f->add_tag_value('locus_tag', $ID);
     $f->add_tag_value('protein_id', "gnl|$centre|$ID") if $f->primary_tag eq 'CDS';
@@ -736,7 +739,7 @@ if (scalar keys %seq) {
 # Use tbl2asn tool to make .gbk and .sqn for us
 
 msg("Generating Genbank and Sequin files");
-runcmd("tbl2asn -y 'Annotated using $EXE $VERSION from $URL' -Z $outdir/$prefix.err -M n -V b -i $outdir/$prefix.fsa -f $outdir/$prefix.tbl 2> /dev/null");
+runcmd("tbl2asn -N 1 -y 'Annotated using $EXE $VERSION from $URL' -Z $outdir/$prefix.err -M n -V b -i $outdir/$prefix.fsa -f $outdir/$prefix.tbl 2> /dev/null");
 delfile("$outdir/errorsummary.val");
 delfile( map { "$outdir/$prefix.$_" } qw(dr fixedproducts ecn val) );
 move("$outdir/$prefix.gbf", "$outdir/$prefix.gbk"); # rename XXX.gbf to XXX.gbk
@@ -761,10 +764,16 @@ msg($walltime % 2 ? "Share and enjoy!" : "Thank you, come again.");
 
 sub cleanup_product {
   my $p = shift;
-  return $HYPO if $p =~ m/DUF\d|conserved|domain of unknown/i;
+  return $HYPO if $p =~ m/DUF\d|UPF\d|conserved|domain of unknown|[CN].term|homolog|paralog/i;
+#  return $HYPO if $p =~ m/^[A-Z]+$/;
+  return $HYPO if $p !~ m/[a-z]/;
+
   $p =~ s/\((EC|COG).*?\)//;
+  $p =~ s/\s*\w+\d{4,}//; # remove possible locus tags
+  $p =~ s/ and (inactivated|related) \w+//;
+
   $p =~ s/^(possible|probable|predicted|uncharacteri.ed)/putative/i;
-  if ($p =~ m/(domain|family)$/i and $p !~ m/,/)  {
+  if ($p =~ m/(domain|family|binding|fold|like)\s*$/i and $p !~ m/,/)  {
     $p .= " protein";
   }
   return $p;
@@ -899,9 +908,10 @@ sub setOptions {
     {OPT=>"outdir=s",  VAR=>\$outdir, DEFAULT=>'', DESC=>"Output folder [auto]"},
     {OPT=>"force!",  VAR=>\$force, DEFAULT=>0, DESC=>"Force overwriting existing output folder"},
     {OPT=>"prefix=s",  VAR=>\$prefix, DEFAULT=>'', DESC=>"Filename output prefix [auto]"},
-    {OPT=>"locustag=s",  VAR=>\$locustag, DEFAULT=>uc($EXE), DESC=>"Locus tag prefix"},
-    {OPT=>"gffver=i",  VAR=>\$gffver, DEFAULT=>3, DESC=>"GFF version"},
     {OPT=>"addgenes!",  VAR=>\$addgenes, DEFAULT=>0, DESC=>"Add 'gene' features for each 'CDS' feature"},
+    {OPT=>"locustag=s",  VAR=>\$locustag, DEFAULT=>uc($EXE), DESC=>"Locus tag prefix"},
+    {OPT=>"increment=i",  VAR=>\$increment, DEFAULT=>1, DESC=>"Locus tag counter increment"},
+    {OPT=>"gffver=i",  VAR=>\$gffver, DEFAULT=>3, DESC=>"GFF version"},
 #    {OPT=>"minimaps!",  VAR=>\$minimaps, DEFAULT=>0, DESC=>"Add ASCII alignment mini-maps to CDS features"},
     {OPT=>"centre=s",  VAR=>\$centre, DEFAULT=>"VBC", DESC=>"Sequencing centre ID"},
     'Organism details:',
@@ -910,7 +920,7 @@ sub setOptions {
     {OPT=>"strain=s",  VAR=>\$strain, DEFAULT=>'strain', DESC=>"Strain name"},    
     'Annotations:',
     {OPT=>"kingdom=s",  VAR=>\$kingdom, DEFAULT=>'Bacteria', DESC=>"Annotation mode: ".join('|', kingdoms()) },
-    {OPT=>"gcode=i",  VAR=>\$gcode, DEFAULT=>11, DESC=>"Genetic code / Translation table"},
+    {OPT=>"gcode=i",  VAR=>\$gcode, DEFAULT=>0, DESC=>"Genetic code / Translation table (set if --kingdom is set)"},
     {OPT=>"gram=s",  VAR=>\$gram, DEFAULT=>'', DESC=>"Gram: -/neg +/pos"},
     {OPT=>"usegenus!",  VAR=>\$usegenus, DEFAULT=>0, DESC=>"Use genus-specific BLAST databases (needs --genus)"},
     {OPT=>"proteins=s",  VAR=>\$proteins, DEFAULT=>'', DESC=>"Fasta file of trusted proteins to first annotate from"},
@@ -956,5 +966,4 @@ sub usage {
 }
 
 __DATA__
-
 

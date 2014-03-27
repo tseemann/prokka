@@ -2,6 +2,15 @@
 Prokka ChangeLog
 ----------------
 
+v1.4.1 - 14 Aug 2012
+* fixed bug which rejected --increment 1 default! [Simon Gladman]
+
+v1.4 - 13 Aug 2012
+* improved cleaning up of product names to (help) satisfy NCBI tests
+* added LICENCE information for Swissprot, TIGRFams in doc/ [Emailed Uniprot]
+* option to change locus_tag numbering increment [Roderick Felsheim]
+* fixed bug where setting --gcode was over-ridden by --kingdom
+
 v1.3 - 17 Jun 2012
 * removed 'sprot' fasta files, can recover from indices with fastacmd/blastdbcmd
 * removed Time::Seconds->walltime() as it is too new [Heikki Lehvaslaiho]
@@ -10,14 +19,16 @@ v1.3 - 17 Jun 2012
 * added citations for GNU Parallel and all other tools [Ole Tange]
 * add /protein_id tags to CDS [NCBI]
 * added --citation option to show publication reference
-* improved manual w/ details on how
+* improved manual w/ details on how to get RNAmmer working with old HMMER
+* added "Installation" section to manual
 * changed NCBI error suggestion file from *.val to *.err
+* added prokka-make_tarball script to automate new releases
 
 v1.2 -  28 Apr 2012
 * fixed changelog 1.01 to 1.1 as released
 * fixed bug so only newly created files are listed at end when --outdir='.'
 * work-around for bug in Aragorn reporting 27000bp long tRNAs at contig ends
-* wrote blog post about it at http://thegenomefactory.blogspot.com/ G
+* wrote blog post about it at http://thegenomefactory.blogspot.com/
 * announced on Google+, Twitter
 
 v1.1 - 25 Apr 2012
@@ -34,4 +45,3 @@ v1.1 - 25 Apr 2012
 
 v1.00 - 23 Apr 2012
 * first public version
-
