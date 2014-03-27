@@ -22,15 +22,36 @@ H2 { border-top: solid 0.2ex black; }
 <BODY>
 
 <!-- -------------------------------------------------------- -->
+<A NAME='top'>
 <H1>Prokka User Manual</H1> 
 
 <DL>
 <DT>Author<DD>Torsten Seemann &lt;torsten.seemann@monash.edu&gt;
 <DT>Institute<DD>Victorian Bioinformatics Consortium &lt;http://www.bioinformatics.net.au/&gt;
-<DT>Last updated<DD>17 June 2012
+<DT>Last updated<DD>Wed 7 Aug 2013
 </DL>
 
 <!-- -------------------------------------------------------- -->
+<A NAME='toc'>
+<H2>Contents</H2> 
+<OL>
+<LI><A HREF="#intro">Introduction</A>
+<LI><A HREF="#why">Why use Prokka?</A>
+<LI><A HREF="#install">Installation</A>
+<LI><A HREF="#run">Invokation</A>
+<LI><A HREF="#output">Output</A>
+<LI><A HREF="#options">Options</A>
+<LI><A HREF="#depends">Dependencies</A>
+<LI><A HREF="#db">Databases</A>
+<LI><A HREF="#faq">FAQ</A>
+<LI><A HREF="#todo">TODO</A>
+<LI><A HREF="#changes">Changes</A>
+<LI><A HREF="#bugs">Bugs</A>
+<LI><A HREF="#cite">Citation</A>
+</OL>
+
+<!-- -------------------------------------------------------- -->
+<A NAME='intro'>
 <H2>Introduction</H2>
 <P>
 Whole genome annotation is the process of identifying
@@ -43,12 +64,13 @@ to submit to Genbank/ENA/DDBJ.
 
 <!-- -------------------------------------------------------- -->
 <H2>Why use Prokka?</H2>
+<A NAME='why'>
 
 <DL>
 
 <DT>It is fast!
 <DD>
-A typical 4 Mbp bacterial genome will be <U>annotated in 5 minutes</U> 
+A typical 4 Mbp bacterial genome will be annotated in 10 minutes
 on a typical quad-core desktop. The more CPU cores you have, the
 faster it will go.
 
@@ -69,7 +91,7 @@ getting your first result.
 Prokka comes with custom BLAST and HMMER databases, so there is no
 need to have any installed, but power users can add their own.
 
-<DT>Smooth Genbank submission
+<DT>Smoother Genbank submission
 <DD>
 Prokka produces a template ASN1 file (Seq-Entry:), 
 which you can edit with Sequin to create a Seq-Submt: 
@@ -79,13 +101,14 @@ to submit to NCBI/ENA/DDBJ.
 <DD>
 Prokka is neatly packaged, with no hard-coded directories.
 Everything can be controlled via command line options.
-It is trivial to add it to your private genomics pipeline, including
+You can add it to your private genomics pipeline, including
 <A HREF='http://galaxyproject.org/'>Galaxy</A>.
 
 </DL>
 
 <!-- -------------------------------------------------------- -->
 <H2>Installation</H2>
+<A NAME='install'>
 
 <H3>Download</H3>
 <P>
@@ -129,6 +152,9 @@ if ( $uname eq "Linux" ) {
 #       $HMMSEARCH_BINARY = "/usr/cbs/bio/bin/linux64/hmmsearch";    # OLD
         $HMMSEARCH_BINARY = "/path/to/my/hmmer-2.3.2/bin/hmmsearch"; # NEW (yours)
 }
+<P>
+If you are using Mac OS X, you'll also have to change the
+"Linux" to "Darwin" too..
 </PRE>
 <P>
 As you can see, I have commented out the original part, and 
@@ -143,6 +169,7 @@ like <TT>prokka 1.x</TT>.
 
 <!-- -------------------------------------------------------- -->
 <H2>Invoking Prokka</H2>
+<A NAME='run'>
 
 <H3>Beginner</H3>
 
@@ -192,6 +219,7 @@ explain where to find your result files.
 
 <!-- -------------------------------------------------------- -->
 <H2>Output Files</H2>
+<A NAME='output'>
 <DL>
 
 <DT>.gff
@@ -241,6 +269,7 @@ This is a record of what settings you used, even if the --quiet option was enabl
 
 <!-- -------------------------------------------------------- -->
 <H2>Options</H2>
+<A NAME='options'>
 
 <PRE>
 General:
@@ -248,16 +277,16 @@ General:
   --version         Print version and exit
   --docs            Show full manual/documentation
   --listdb          List all configured databases
-  --citation        Print citation details for this software
+  --citation        Print citation for referencing Prokka
   --quiet           No screen output (default OFF)
 Outputs:
   --outdir [X]      Output folder [auto] (default '')
   --force           Force overwriting existing output folder (default OFF)
   --prefix [X]      Filename output prefix [auto] (default '')
+  --addgenes        Add 'gene' features for each 'CDS' feature (default OFF)
   --locustag [X]    Locus tag prefix (default 'PROKKA')
   --increment [N]   Locus tag counter increment (default '1')
   --gffver [N]      GFF version (default '3')
-  --addgenes        Add 'gene' features for each 'CDS' feature (default OFF)
   --centre [X]      Sequencing centre ID (default 'VBC')
 Organism details:
   --genus [X]       Genus name (will be used to aid annotation) (default 'Genus')
@@ -265,7 +294,7 @@ Organism details:
   --strain [X]      Strain name (default 'strain')
 Annotations:
   --kingdom [X]     Annotation mode: Archaea|Bacteria|Viruses (default 'Bacteria')
-  --gcode [N]       Genetic code / Translation table (default '11')
+  --gcode [N]       Genetic code / Translation table (set if --kingdom is set) (default '0')
   --gram [X]        Gram: -/neg +/pos (default '')
   --usegenus        Use genus-specific BLAST databases (needs --genus) (default OFF)
   --proteins [X]    Fasta file of trusted proteins to first annotate from (default '')
@@ -273,8 +302,8 @@ Computation:
   --fast            Fast mode - skip CDS /product searching (default OFF)
   --cpus [N]        Number of CPUs to use [0=all] (default '0')
   --mincontig [N]   Minimum contig size [NCBI needs 200] (default '200')
-  --evalue [n.n]    Similarity e-value cut-off (default '1e-09')
-  --coverage [n.n]  Similarity %id cut-off (otherwise /pseudo) (default '0')
+  --evalue [n.n]    Similarity e-value cut-off (default '1e-06')
+  --rfam            Enable searching for ncRNAs with Infernal+Rfam (SLOW!) (default '0')
 </PRE>
 
 <!-- -------------------------------------------------------- -->
@@ -352,6 +381,7 @@ Computation:
 
 <!-- -------------------------------------------------------- -->
 <H2>Databases</H2>
+<A NAME='db'>
 
 <H3>The Core Databases</H3>
 
@@ -468,6 +498,7 @@ LENG  284
 
 <!-- -------------------------------------------------------- -->
 <H2>FAQ</H2>
+<A NAME='faq'>
 
 <DL>
 
@@ -488,16 +519,51 @@ It can't handle multi-exon gene models; I would recommend using
 for that purpose.
 
 <DT>
+Why does Prokka keeps on crashing when it gets to tge "tbl2asn" stage?
+<DD>
+It seems that the 
+<A HREF='http://www.ncbi.nlm.nih.gov/genbank/tbl2asn2/'>tbl2asn</A> 
+program from NCBI "expires" after 12 months, 
+and refuses to run. Unfortunately you need to install a newer version which 
+you can download from 
+<A HREF='ftp://ftp.ncbi.nih.gov/toolbox/ncbi_tools/converters/by_program/tbl2asn/'>here</A>.
+
+<DT>
+The hmmscan step seems to hang and do nothing?
+<DD>
+The problem here is GNU Parallel. It seems the Debian package for hmmer has
+modified it to require the --gnu option to behave in the 'default' way.
+There is no clear reason for this. The only way to restore normal behaviour
+is to edit the prokka script and change "parallel" to "parallel --gnu".
+
+<DT>
+Why does prokka fail when it gets to hmmscan?
+<DD>
+Unfortunately HMMER keeps changing it's database format, and they aren't
+upward compatible. If you upgraded HMMER (from 3.0 to 3.1 say) then you need
+to "re-press" the files. This can be done as follows:
+<PRE>
+cd /path/to/prokka/db/hmm
+mkdir new
+for D in *.hmm ; do hmmconvert $D > new/$D ; done
+cd new
+for D in *.hmm ; do hmmpress $D ; done
+mv * ..
+rmdir new
+</PRE>
 
 </DL>
 
 <!-- -------------------------------------------------------- -->
 <H2>Still To Do</H2>
+<A NAME='todo'>
 
 <UL>
 <LI>
 Add an example input/output so users can check their copy is producing
 similar results.
+<LI>
+Output potential homopolymer assembly errors near CDS flanks
 <LI>
 Do the parallel blasting/hmmering in batch mode instead of 1 sequence 
 at a time.
@@ -506,25 +572,52 @@ Add the CLUSTERS "PHA" library to Viruses mode.
 <LI>
 Option to include ribosomal binding sites (RBS) as features.
 <LI>
-Add a "--ncbi" option to enable all NCBI-specific things.
-<LI>
 Check input contigs for runs of Ns, and either complain, or split
-the file, or additionally create a .AGP scaffold file.
+the file, or additionally create a .AGP scaffold file. 
+(Mitchell Stanton-Cook has done this, need to incorporate)
 <LI>
-Allow running even if some dependencies are not installed.
+<S>Allow running even if some dependencies are not installed.</S>
 <LI>
 Allow disabling of some dependencies even if they are installed. eg RNAmmer
+<LI>
+<S>Support not re-naming contigs</S>
+<LI>
+Add --plasmid mode
+</UL>
+
+<!-- -------------------------------------------------------- -->
+<H2>Changes</H2>
+<A NAME='changes'>
+
+<H3>Version 1.6</H3>
+<UL>
+<LI>signalp is now an optional install (only needed for --gram)
+<LI>cmscan  is now an optional install (only needed for --rfam)
+<LI>makeblastdb is now an optional install (only needed for --proteins)
+<LI>your contigs will not be re-named unless --centre is set
+<LI>new --compliant option to meet NCBI submission rules
+<LI>new --metagenome option for sets of small contigs
+<LI>included nice EcoCyc .faa file to use with --proteins option with E.coli
+<LI>check for versions of software
+<LI>updated to HMMer 3.1-dev
+<LI>updated included databases
+<LI>better documentation
+<LI>extra helper scripts
+<LI>various bug fixes
 </UL>
 
 <!-- -------------------------------------------------------- -->
 <H2>Bugs</H2>
+<A NAME='bugs'>
 
 <UL>
 <LI>tbl2asn seems to be removing the "(anti-codon)" part in my tRNA /product values
+<LI>tbl2asn putting space in /inference for Infernal
 </UL>
 
 <!-- -------------------------------------------------------- -->
 <H2>Citation</H2>
+<A NAME='cite'>
 
 <P>
 The manuscript is currently being prepared. 

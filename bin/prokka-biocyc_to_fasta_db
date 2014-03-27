@@ -1,0 +1,116 @@
+#!/usr/bin/perl
+use strict;
+use warnings;
+use Bio::SeqIO;
+use Data::Dumper;
+use Text::Unidecode qw(unidecode);
+use HTML::Entities qw(decode_entities);
+
+my(@Options, $verbose, $datadir, $hypo, $sep, $blank, $pseudo, $minlen);
+setOptions();
+
+$datadir or die "please specify BioCyc --datadir";
+-d $datadir or die "--datadir $datadir is not a valid folder";
+
+my $dna_fh = get_file('dnaseq.fsa', "dna sequences");
+my $aa_fh = get_file('*.aa', "amino acid sequences");
+my $gene_fh = get_file('genes.col', "gene annotations");
+my $ec_fh = get_file('gene_association.*cyc', "gene assocation terms");
+
+my %seq;
+my %short2long;
+
+my $in = Bio::SeqIO->new(-fh=>$dna_fh, -format=>'fasta');
+while (my $seq = $in->next_seq) {
+  my @id = split m/\|/, $seq->id;
+  $seq->desc =~ m/^(\S+)\s+\"(.*?)\"/ or next;
+  $seq{$2} = { GENE=>$1, ID=>$id[2] };
+  $short2long{$id[2]} = $2;
+}
+
+while (<$ec_fh>) {
+  my @x = split m/\t/;
+  next unless exists $seq{ $x[1] };
+  next unless $x[7] =~ m/^EC:(.*)$/;
+  $seq{$x[1]}{EC} = $1;  
+}
+
+while (<$gene_fh>) {
+  my @x = split m/\t/;
+  my $id = $short2long{$x[0]} or next;
+  # remove HTML markup
+  $x[3] =~ s/<.*?>//g;
+  # special case for regular entities
+  $x[3] =~ s/&(alpha|beta|gamma|delta|epsilon);/$1/g; 
+  # http://stackoverflow.com/questions/576095/how-can-i-decode-html-entities
+  $x[3] = unidecode(decode_entities($x[3]));
+  $seq{$id}{PRODUCT} = $x[3];
+}
+
+my $out = Bio::SeqIO->new(-fh=>\*STDOUT, -format=>'fasta');
+
+$in = Bio::SeqIO->new(-fh=>$aa_fh, -format=>'fasta');
+while (my $seq = $in->next_seq) {
+  if (exists $seq{$seq->id}) {
+    my $d = $seq{$seq->id};
+    $seq->desc( join($sep, $d->{EC}||'', $d->{GENE}||'', $d->{PRODUCT}||'hypothetical protein') );
+    $out->write_seq($seq);
+  }
+}
+
+
+
+print STDERR "\nDone\n";
+
+#----------------------------------------------------------------------
+
+sub get_file {
+  my($pattern, $desc) = @_;
+  my($first) = glob("$datadir/$pattern");
+  if ($first and -r $first) {
+    print STDERR "Found $desc: $first\n";
+    open my $fh, '<', $first;
+    return $fh;
+  }
+  die "Problem finding $pattern in $datadir ($desc)";
+}
+
+#----------------------------------------------------------------------
+# Option setting routines
+
+sub setOptions {
+  use Getopt::Long;
+
+  @Options = (
+    {OPT=>"help",      VAR=>\&usage,                   DESC=>"This help"},
+    {OPT=>"verbose!",  VAR=>\$verbose, DEFAULT=>0,     DESC=>"Verbose progress"},
+    {OPT=>"datadir=s", VAR=>\$datadir, DEFAULT=>'',    DESC=>"Path to data/ folder in BioCyc organism directory" },
+    {OPT=>"sep=s",     VAR=>\$sep,     DEFAULT=>'~~~', DESC=>"Separator between EC/gene/product" },
+    {OPT=>"blank=s",   VAR=>\$blank,   DEFAULT=>'',    DESC=>"Replace empty EC/gene/product with this"},
+    {OPT=>"pseudo!",   VAR=>\$pseudo,  DEFAULT=>0,     DESC=>"Include /pseudo genes"},
+    {OPT=>"hypo!",     VAR=>\$hypo,    DEFAULT=>0,     DESC=>"Include 'hypothetical protein' genes"},
+    {OPT=>"minlen=i",  VAR=>\$minlen,  DEFAULT=>0,     DESC=>"Minimum peptide length"},
+  );
+
+  #(!@ARGV) && (usage());
+
+  &GetOptions(map {$_->{OPT}, $_->{VAR}} @Options) || usage();
+
+  # Now setup default values.
+  foreach (@Options) {
+    if (defined($_->{DEFAULT}) && !defined(${$_->{VAR}})) {
+      ${$_->{VAR}} = $_->{DEFAULT};
+    }
+  }
+}
+
+sub usage {
+  print "Usage: $0 [options] [--datadir biocyc_data_subdir] > proteins.faa\n";
+  foreach (@Options) {
+    printf "  --%-13s %s%s.\n",$_->{OPT},$_->{DESC},
+           defined($_->{DEFAULT}) ? " (default '$_->{DEFAULT}')" : "";
+  }
+  exit(1);
+}
+ 
+#----------------------------------------------------------------------

@@ -2,6 +2,28 @@
 Prokka ChangeLog
 ----------------
 
+v1.6 - 7 Aug 2013
+* fixed bug: 'infernal' exe doesn't exist, look for 'cmscan'
+* added custom trusted E.coli --proteins file derived from EcoCyc
+* added prokka-biocyc_to_fasta to make Prokka databases from Biocyc downloads
+* leave contig names alone if --centre is NOT set
+* make --centre '' the default
+* fixed bug where --centre '' caused faulty /protein_id and no CDS in .gbk
+* new --metagenome for working with fragmented genomes (sets prodigal --meta)
+* new --compliant option to auto-set options for NCBI submission
+* add 'Plasmid' mode; for naming and locus_tag _pXXX stuff ?
+* dont remove CDS overlapping ncRNA found via --rfam
+* document the "tbl2asn" out of date problem!
+* add --gnu option to parallel and require version XXX
+* fixed problem where .gbk had no CDS features (added "-a s" to tbl2asn)
+* added parallel and blastp to version checking
+* enforcing minimum version of software to ensure compatibility
+* signalp(--gram),makeblastdb(--proteins),cmscan(--rfam) are now optional installs
+* added support to add platform binaries to binaries/{linux,darwin}/
+* added prokka-build_kingdom_dbs to enable user updating of uniprot BLAST dbs
+* added prokka-build_genus_dbs to enable user to generate new ones ???
+* added support for binaries/linux and binaries/darwin to be included
+
 v1.5.2 - 14 Sep 2012
 * fixed bug to handle -ve strand ncRNAs [Adam Caldwell]
 

@@ -1,0 +1,29 @@
+#!/bin/bash
+
+URL="ftp://ftp.ebi.edu.au/pub/databases/uniprot/current_release/knowledgebase/taxonomic_divisions/"
+
+# where to put formatted database: /path/to/prokka/db/
+BASEDIR="$(dirname $0)/../db/kingdom/test"
+
+for K in Viruses Archaea Bacteria ; do
+
+  # lowercase name for download
+  KL=$(echo $K | tr 'A-Z' 'a-z')
+
+  DAT="$URL/uniprot_sprot_$KL.dat.gz"
+
+
+  DIR="$BASEDIR/$K"
+  mkdir -pv "$DIR"
+  echo "Downloading $DAT and installing in $DIR"
+
+  # pipe: download, gunzip, convert to fasta, format into database
+  # no intermediate files!
+
+  wget -q -O - "$DAT" | \
+    gunzip | \
+    prokka-uniprot_to_fasta_db --evidence 2 --minlen 20 --term '' | \
+    formatdb -i stdin -p T -V T -t "Prokka $K" -n "$DIR/test.sprot"
+
+done
+

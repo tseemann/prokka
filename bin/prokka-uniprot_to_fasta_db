@@ -5,8 +5,10 @@ use SWISS::KW;
 #use SWISS::OC;
 use Data::Dumper;
 
-my(@Options, $verbose, $frag, $evlev, $minlen, $sep, $blank, $term);
+my(@Options, $verbose, $frag, $evlev, $minlen, $sep, $blank, $term, $hypo);
 setOptions();
+
+my $HYPO = 'hypothetical protein'; 
 
 # Read an entire record at a time
 local $/ = "\n//\n";
@@ -62,11 +64,14 @@ while (<ARGV>)
       elsif ($de->type eq 'Full') {
 	$prod = $de->text;
 	if ($prod =~ m/^UPF\d|^Uncharacterized protein|^ORF|^Protein /) {
-	  $prod = 'hypothetical protein';
+	  $prod = $HYPO;
 	}
       }
     }
   }
+
+  # skip hypthetical proteins, unless user has overridden this with --hypo
+  next if !$hypo and $prod eq $HYPO;
 
   $ec ||= $blank;
   $gene ||= $blank;
@@ -92,10 +97,11 @@ sub setOptions {
     {OPT=>"verbose!", VAR=>\$verbose, DEFAULT=>0, DESC=>"Verbose output"},
     {OPT=>"separator=s",   VAR=>\$sep, DEFAULT=>'~~~', DESC=>"Separator for gene/EC/product"},
     {OPT=>"blank=s",   VAR=>\$blank, DEFAULT=>'', DESC=>"Replace empty gene/EC/product with this"},
-    {OPT=>"evidence=i",   VAR=>\$evlev, DEFAULT=>6, DESC=>"1=prot 2=mrna 3=homol 4=pred 5=unsure"},
+    {OPT=>"evidence=i",   VAR=>\$evlev, DEFAULT=>2, DESC=>"1=prot 2=mrna 3=homol 4=pred 5=unsure"},
     {OPT=>"fragments!",   VAR=>\$frag, DEFAULT=>0, DESC=>"Include 'DE Flags: Fragment;' entries"},
-    {OPT=>"minlen=i",   VAR=>\$minlen, DEFAULT=>0, DESC=>"Minimum peptide length"},
-    {OPT=>"term=s",   VAR=>\$term, DEFAULT=>'Bacteria', DESC=>"Lineage must contain this term"},
+    {OPT=>"minlen=i",   VAR=>\$minlen, DEFAULT=>20, DESC=>"Minimum peptide length"},
+    {OPT=>"term=s",   VAR=>\$term, DEFAULT=>'Bacteria', DESC=>"Lineage must contain this term (use '' for no filtering)"},
+    {OPT=>"hypo!",   VAR=>\$hypo, DEFAULT=>0, DESC=>"Don't filter out hypothetical proteins"},
   );
 
   #(!@ARGV) && (usage());

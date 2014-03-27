@@ -8,7 +8,23 @@
            <http://www.bioinformatics.net.au/>
 
    Last updated
-           17 June 2012
+           Wed 7 Aug 2013
+
+Contents
+
+    1. Introduction
+    2. Why use Prokka?
+    3. Installation
+    4. Invokation
+    5. Output
+    6. Options
+    7. Dependencies
+    8. Databases
+    9. FAQ
+   10. TODO
+   11. Changes
+   12. Bugs
+   13. Citation
 
 Introduction
 
@@ -21,8 +37,8 @@ Introduction
 Why use Prokka?
 
    It is fast!
-           A typical 4 Mbp bacterial genome will be annotated in 5 minutes on
-           a typical quad-core desktop. The more CPU cores you have, the
+           A typical 4 Mbp bacterial genome will be annotated in 10 minutes
+           on a typical quad-core desktop. The more CPU cores you have, the
            faster it will go.
 
    Uses freely accessible tools
@@ -39,16 +55,15 @@ Why use Prokka?
            Prokka comes with custom BLAST and HMMER databases, so there is no
            need to have any installed, but power users can add their own.
 
-   Smooth Genbank submission
+   Smoother Genbank submission
            Prokka produces a template ASN1 file (Seq-Entry:), which you can
            edit with Sequin to create a Seq-Submt: to submit to
            NCBI/ENA/DDBJ.
 
    Clean interface
            Prokka is neatly packaged, with no hard-coded directories.
-           Everything can be controlled via command line options. It is
-           trivial to add it to your private genomics pipeline, including
-           Galaxy.
+           Everything can be controlled via command line options. You can add
+           it to your private genomics pipeline, including Galaxy.
 
 Installation
 
@@ -89,6 +104,9 @@ Installation
  #       $HMMSEARCH_BINARY = "/usr/cbs/bio/bin/linux64/hmmsearch";    # OLD
          $HMMSEARCH_BINARY = "/path/to/my/hmmer-2.3.2/bin/hmmsearch"; # NEW (yours)
  }
+
+ If you are using Mac OS X, you'll also have to change the
+ "Linux" to "Darwin" too..
 
    As you can see, I have commented out the original part, and replaced it
    with the location of my HMMER2 hmmsearch tool, so it doesn't run the
@@ -190,16 +208,16 @@ Options
    --version         Print version and exit
    --docs            Show full manual/documentation
    --listdb          List all configured databases
-   --citation        Print citation details for this software
+   --citation        Print citation for referencing Prokka
    --quiet           No screen output (default OFF)
  Outputs:
    --outdir [X]      Output folder [auto] (default '')
    --force           Force overwriting existing output folder (default OFF)
    --prefix [X]      Filename output prefix [auto] (default '')
+   --addgenes        Add 'gene' features for each 'CDS' feature (default OFF)
    --locustag [X]    Locus tag prefix (default 'PROKKA')
    --increment [N]   Locus tag counter increment (default '1')
    --gffver [N]      GFF version (default '3')
-   --addgenes        Add 'gene' features for each 'CDS' feature (default OFF)
    --centre [X]      Sequencing centre ID (default 'VBC')
  Organism details:
    --genus [X]       Genus name (will be used to aid annotation) (default 'Genus')
@@ -207,7 +225,7 @@ Options
    --strain [X]      Strain name (default 'strain')
  Annotations:
    --kingdom [X]     Annotation mode: Archaea|Bacteria|Viruses (default 'Bacteria')
-   --gcode [N]       Genetic code / Translation table (default '11')
+   --gcode [N]       Genetic code / Translation table (set if --kingdom is set) (default '0')
    --gram [X]        Gram: -/neg +/pos (default '')
    --usegenus        Use genus-specific BLAST databases (needs --genus) (default OFF)
    --proteins [X]    Fasta file of trusted proteins to first annotate from (default '')
@@ -215,8 +233,8 @@ Options
    --fast            Fast mode - skip CDS /product searching (default OFF)
    --cpus [N]        Number of CPUs to use [0=all] (default '0')
    --mincontig [N]   Minimum contig size [NCBI needs 200] (default '200')
-   --evalue [n.n]    Similarity e-value cut-off (default '1e-09')
-   --coverage [n.n]  Similarity %id cut-off (otherwise /pseudo) (default '0')
+   --evalue [n.n]    Similarity e-value cut-off (default '1e-06')
+   --rfam            Enable searching for ncRNAs with Infernal+Rfam (SLOW!) (default '0')
 
 Dependencies
 
@@ -370,25 +388,74 @@ FAQ
            Viruses. It can't handle multi-exon gene models; I would recommend
            using MAKER 2 for that purpose.
 
+   Why does Prokka keeps on crashing when it gets to tge "tbl2asn" stage?
+           It seems that the tbl2asn program from NCBI "expires" after 12
+           months, and refuses to run. Unfortunately you need to install a
+           newer version which you can download from here.
+
+   The hmmscan step seems to hang and do nothing?
+           The problem here is GNU Parallel. It seems the Debian package for
+           hmmer has modified it to require the --gnu option to behave in the
+           'default' way. There is no clear reason for this. The only way to
+           restore normal behaviour is to edit the prokka script and change
+           "parallel" to "parallel --gnu".
+
+   Why does prokka fail when it gets to hmmscan?
+           Unfortunately HMMER keeps changing it's database format, and they
+           aren't upward compatible. If you upgraded HMMER (from 3.0 to 3.1
+           say) then you need to "re-press" the files. This can be done as
+           follows:
+
+ cd /path/to/prokka/db/hmm
+ mkdir new
+ for D in *.hmm ; do hmmconvert $D > new/$D ; done
+ cd new
+ for D in *.hmm ; do hmmpress $D ; done
+ mv * ..
+ rmdir new
+
 Still To Do
 
      * Add an example input/output so users can check their copy is producing
        similar results.
+     * Output potential homopolymer assembly errors near CDS flanks
      * Do the parallel blasting/hmmering in batch mode instead of 1 sequence
        at a time.
      * Add the CLUSTERS "PHA" library to Viruses mode.
      * Option to include ribosomal binding sites (RBS) as features.
-     * Add a "--ncbi" option to enable all NCBI-specific things.
      * Check input contigs for runs of Ns, and either complain, or split the
-       file, or additionally create a .AGP scaffold file.
+       file, or additionally create a .AGP scaffold file. (Mitchell
+       Stanton-Cook has done this, need to incorporate)
      * Allow running even if some dependencies are not installed.
      * Allow disabling of some dependencies even if they are installed. eg
        RNAmmer
+     * Support not re-naming contigs
+     * Add --plasmid mode
+
+Changes
+
+  Version 1.6
+
+     * signalp is now an optional install (only needed for --gram)
+     * cmscan is now an optional install (only needed for --rfam)
+     * makeblastdb is now an optional install (only needed for --proteins)
+     * your contigs will not be re-named unless --centre is set
+     * new --compliant option to meet NCBI submission rules
+     * new --metagenome option for sets of small contigs
+     * included nice EcoCyc .faa file to use with --proteins option with
+       E.coli
+     * check for versions of software
+     * updated to HMMer 3.1-dev
+     * updated included databases
+     * better documentation
+     * extra helper scripts
+     * various bug fixes
 
 Bugs
 
      * tbl2asn seems to be removing the "(anti-codon)" part in my tRNA
        /product values
+     * tbl2asn putting space in /inference for Infernal
 
 Citation
 

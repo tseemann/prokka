@@ -21,7 +21,7 @@ echo "Converting HTML manual to TXT"
 links -dump ../doc/prokka-manual.html > ../doc/prokka-manual.txt
 
 echo "Copying files to: $FOLDER"
-cp -rv ../bin ../doc ../db "$FOLDER"
+cp -rv ../bin ../doc ../db ../binaries "$FOLDER"
 
 echo "Removing unwanted backup files in: $FOLDER"
 find "$FOLDER" -name "*~" -exec rm -f {} \;
