@@ -52,23 +52,27 @@ while (<ARGV>)
   $gene = '' if $gene =~ m/\d{2}/ or $gene =~ m/\./;
 
   my $ec = ''; 
-  my $prod = 'hypothetical protein'; 
+#  my $prod = 'hypothetical protein'; 
+  my $prod = ''; 
 
   if (1) {  
     for my $de ($entry->DEs->elements) {
       if ($de->type eq 'EC') {
 	$ec = $de->text;
 	$ec =~ s/^\D*//;
-	last;
+#	last;
       }
-      elsif ($de->type eq 'Full') {
+      elsif ($de->type eq 'Full' and $de->category eq 'RecName') {
 	$prod = $de->text;
 	if ($prod =~ m/^UPF\d|^Uncharacterized protein|^ORF|^Protein /) {
 	  $prod = $HYPO;
 	}
       }
+      last if $prod and $ec;  # we have some data now, exit out
     }
   }
+  
+  $prod ||= $HYPO;
 
   # skip hypthetical proteins, unless user has overridden this with --hypo
   next if !$hypo and $prod eq $HYPO;
@@ -100,7 +104,7 @@ sub setOptions {
     {OPT=>"evidence=i",   VAR=>\$evlev, DEFAULT=>2, DESC=>"1=prot 2=mrna 3=homol 4=pred 5=unsure"},
     {OPT=>"fragments!",   VAR=>\$frag, DEFAULT=>0, DESC=>"Include 'DE Flags: Fragment;' entries"},
     {OPT=>"minlen=i",   VAR=>\$minlen, DEFAULT=>20, DESC=>"Minimum peptide length"},
-    {OPT=>"term=s",   VAR=>\$term, DEFAULT=>'Bacteria', DESC=>"Lineage must contain this term (use '' for no filtering)"},
+    {OPT=>"term=s",   VAR=>\$term, DEFAULT=>'', DESC=>"Lineage must contain this term eg. 'Bacteria'"},
     {OPT=>"hypo!",   VAR=>\$hypo, DEFAULT=>0, DESC=>"Don't filter out hypothetical proteins"},
   );
 

@@ -22,8 +22,8 @@ for K in Viruses Archaea Bacteria ; do
 
   wget -q -O - "$DAT" | \
     gunzip | \
-    prokka-uniprot_to_fasta_db --evidence 2 --minlen 20 --term '' | \
-    formatdb -i stdin -p T -V T -t "Prokka $K" -n "$DIR/test.sprot"
+    prokka-uniprot_to_fasta_db | \
+    formatdb -i stdin -p T -V T -t "Prokka $K" -n "$DIR/sprot"
 
 done
 

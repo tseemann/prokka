@@ -25,6 +25,7 @@ use Time::Seconds;
 use XML::Simple;
 use List::Util qw(min max sum);
 use Scalar::Util qw(openhandle);
+use Data::Dumper;
 use Bio::Root::Version;
 use Bio::SeqIO;
 use Bio::SearchIO;
@@ -40,7 +41,7 @@ my @CMDLINE = @ARGV;
 my $OPSYS = $^O;
 my $BINDIR = "$FindBin::RealBin/../binaries/$OPSYS";
 my $EXE = $FindBin::RealScript;
-my $VERSION = "1.8";
+my $VERSION = "1.9";
 my $AUTHOR = 'Torsten Seemann <torsten.seemann@monash.edu>';
 my $URL = 'http://www.vicbioinformatics.com';
 my $DBDIR = "$FindBin::RealBin/../db";
@@ -51,6 +52,7 @@ my $UNANN = 'unannotated protein';
 my $BLASTPCMD = "blastp -query - -db %d -evalue %e -num_threads 1 -num_descriptions 1 -num_alignments 1";
 my $HMMER3CMD = "hmmscan --noali --notextw --acc -E %e --cpu 1 %d /dev/stdin";
 my $rnammer_mode = 'bac';
+my $aragorn_opt = '';
 
 # debian package broke compatibility so have to force it now *grumble*
 my $PARALLELCMD = "parallel --gnu";
@@ -60,133 +62,6 @@ my $PARALLELCMD = "parallel --gnu";
 
 my $starttime = localtime;
 my %seq;
-
-# . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
-# command line options
-
-my(@Options, $quiet, $kingdom, $fast, $force, $outdir, $prefix, $cpus, $addgenes,
-             $gcode, $gram, $gffver, $locustag, $increment, $mincontiglen, $evalue, $coverage,
-             $genus, $species, $strain, $plasmid, 
-             $usegenus, $proteins, $centre, $scaffolds,
-             $rfam, $norrna, $notrna,
-	     $metagenome, $compliant, $listdb, $citation);
-setOptions();
-
-# . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
-# welcome message
-
-msg("This is $EXE $VERSION");
-msg("Written by $AUTHOR");
-msg("Victorian Bioinformatics Consortium - $URL");
-msg("Local time is $starttime");
-msg("You are", $ENV{USER} || 'not telling me who you are!');
-msg("Operating system is $OPSYS");
-
-# . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
-# check BioPerl version 
-
-my $minbpver = "1.006002"; # for Bio::SearcIO::hmmer3
-my $bpver = $Bio::Root::Version::VERSION;
-msg("You have BioPerl $bpver");
-err("Please install BioPerl $minbpver or higher") if $bpver < $minbpver;
-
-# . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
-# Determine CPU cores available
-
-my $num_cores = num_cpu();
-msg("System has $num_cores cores.");
-if (!defined $cpus or $cpus < 0) {
-  $cpus = 1;
-}
-elsif ($cpus == 0) {
-  $cpus = $num_cores;
-}
-elsif ($cpus > $num_cores) {
-  msg("Option --cpu asked for $cpus cores, but system only has $num_cores");
-  $cpus = $num_cores;
-}
-msg("Will use maximum of $cpus cores.");
-
-# . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
-# set up options based on --mode
-
-if ($kingdom =~ m/bac|prok/i) {
-  $kingdom = 'Bacteria';
-  $gcode ||= 11;
-  $rnammer_mode = 'bac';
-}
-elsif ($kingdom =~ m/arch/i) {
-  $kingdom = 'Archaea';  
-  $gcode ||= 11;
-  $gram = '';
-  $rnammer_mode = 'arc';
-}
-elsif ($kingdom =~ m/vir/i) {
-  $kingdom = 'Viruses';
-  $gcode ||= 1;  # std
-  $gram = '';
-  $rnammer_mode = '';
-}
-else {
-  err("Can't parse --mode '$kingdom'. Choose from: Bacteria Archaea Virus");
-}
-msg("Annotating as >>> $kingdom <<<");
-
-# . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
-# check options
-
-if ($compliant) {
-  msg("Enabling options to ensure Genbank/ENA/DDJB submission compliance.");
-  $addgenes = 1;
-  $centre ||= 'Prokka';
-  $mincontiglen = 200;
-}
-
-#$centre or err("You must set --centre or the NCBI tbl2asn tool won't work properly, sorry.");
-($gcode < 1 or $gcode > 24) and err("Invalid genetic code, must be 1..24");
-$evalue >= 0 or err("Invalid --evalue, must be >= 0");
-#($coverage >= 0 and $coverage <= 100) or err("Invalid --coverage, must be 0..100");
-$increment >= 1 or err("Invalid --increment, must be >= 1");
-$locustag ||= uc($EXE);
-# http://www.ncbi.nlm.nih.gov/genomes/static/Annotation_pipeline_README.txt
-$prefix ||= $locustag.'_'.(localtime->mdy('')); # NCBI wants US format, ech.
-$outdir ||= $prefix;
-if (-d $outdir) {
-  if ($force) { 
-    msg("Re-using existing --outdir $outdir")
-  }
-  else {
-   err("Folder '$outdir' already exists! Please change --outdir or use --force");
-  }
-}
-else {    
-  msg("Creating new output folder: $outdir");
-  runcmd("mkdir -p \Q$outdir\E");
-}
-msg("Using filename prefix: $prefix.XXX");
-# canonical names
-$genus = ucfirst(lc($genus)) if $genus;
-$species = lc($species) if $strain;
-
-msg("Setting HMMER_NCPU=1");
-$ENV{HMMER_NCPU} = 1;
-
-# . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
-# set up log file
-
-my $logfile = "$outdir/$prefix.log";
-msg("Writing log to: $logfile");
-open LOG, '>', $logfile or err("Can't open logfile");
-
-msg("Command: @CMDLINE");
-
-# . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
-# add our included binaries to the END of the PATH
-
-if (-d $BINDIR) {
-  msg("Extending PATH: $BINDIR");
-  $ENV{PATH} .= ":$BINDIR";
-}
 
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
 # table of tools we need/optional and min versions
@@ -277,6 +152,142 @@ my %tools = (
 );  
 
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
+# command line options
+
+my(@Options, $quiet, $kingdom, $fast, $force, $outdir, $prefix, $cpus, $addgenes,
+             $gcode, $gram, $gffver, $locustag, $increment, $mincontiglen, $evalue, $coverage,
+             $genus, $species, $strain, $plasmid, 
+             $usegenus, $proteins, $centre, $scaffolds,
+             $rfam, $norrna, $notrna,
+	     $metagenome, $compliant, $listdb, $citation);
+setOptions();
+
+# . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
+# welcome message
+
+msg("This is $EXE $VERSION");
+msg("Written by $AUTHOR");
+msg("Victorian Bioinformatics Consortium - $URL");
+msg("Local time is $starttime");
+msg("You are", $ENV{USER} || 'not telling me who you are!');
+msg("Operating system is $OPSYS");
+
+# . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
+# check BioPerl version 
+
+my $minbpver = "1.006002"; # for Bio::SearcIO::hmmer3
+my $bpver = $Bio::Root::Version::VERSION;
+msg("You have BioPerl $bpver");
+err("Please install BioPerl $minbpver or higher") if $bpver < $minbpver;
+
+# . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
+# Determine CPU cores available
+
+my $num_cores = num_cpu();
+msg("System has $num_cores cores.");
+if (!defined $cpus or $cpus < 0) {
+  $cpus = 1;
+}
+elsif ($cpus == 0) {
+  $cpus = $num_cores;
+}
+elsif ($cpus > $num_cores) {
+  msg("Option --cpu asked for $cpus cores, but system only has $num_cores");
+  $cpus = $num_cores;
+}
+msg("Will use maximum of $cpus cores.");
+
+# . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
+# set up options based on --mode
+
+if ($kingdom =~ m/bac|prok/i) {
+  $kingdom = 'Bacteria';
+  $gcode ||= 11;
+  $rnammer_mode = 'bac';
+}
+elsif ($kingdom =~ m/arch/i) {
+  $kingdom = 'Archaea';  
+  $gcode ||= 11;
+  $gram = '';
+  $rnammer_mode = 'arc';
+}
+elsif ($kingdom =~ m/vir/i) {
+  $kingdom = 'Viruses';
+  $gcode ||= 1;  # std
+  $gram = '';
+  $rnammer_mode = '';
+}
+elsif ($kingdom =~ m/mito|mt/i) {
+  $kingdom = 'Mitochondria';
+  $gcode ||= 5;  # metazoa
+  $aragorn_opt = '-mt';
+  $gram = '';
+  $rnammer_mode = 'euk';
+  # delete $tools{'barrnap'}; # does not support mtDNA rRNA
+}
+else {
+  err("Can't parse --mode '$kingdom'. Choose from: Bacteria Archaea Virus");
+}
+msg("Annotating as >>> $kingdom <<<");
+
+# . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
+# check options
+
+if ($compliant) {
+  msg("Enabling options to ensure Genbank/ENA/DDJB submission compliance.");
+  $addgenes = 1;
+  $centre ||= 'Prokka';
+  $mincontiglen = 200;
+}
+
+#$centre or err("You must set --centre or the NCBI tbl2asn tool won't work properly, sorry.");
+($gcode < 1 or $gcode > 24) and err("Invalid genetic code, must be 1..24");
+$evalue >= 0 or err("Invalid --evalue, must be >= 0");
+#($coverage >= 0 and $coverage <= 100) or err("Invalid --coverage, must be 0..100");
+$increment >= 1 or err("Invalid --increment, must be >= 1");
+$locustag ||= uc($EXE);
+# http://www.ncbi.nlm.nih.gov/genomes/static/Annotation_pipeline_README.txt
+$prefix ||= $locustag.'_'.(localtime->mdy('')); # NCBI wants US format, ech.
+$outdir ||= $prefix;
+if (-d $outdir) {
+  if ($force) { 
+    msg("Re-using existing --outdir $outdir")
+  }
+  else {
+   err("Folder '$outdir' already exists! Please change --outdir or use --force");
+  }
+}
+else {    
+  msg("Creating new output folder: $outdir");
+  runcmd("mkdir -p \Q$outdir\E");
+}
+msg("Using filename prefix: $prefix.XXX");
+# canonical names
+$genus = ucfirst(lc($genus)) if $genus;
+$species = lc($species) if $strain;
+
+msg("Setting HMMER_NCPU=1");
+$ENV{HMMER_NCPU} = 1;
+
+# . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
+# set up log file
+
+my $logfile = "$outdir/$prefix.log";
+msg("Writing log to: $logfile");
+open LOG, '>', $logfile or err("Can't open logfile");
+
+msg("Command: @CMDLINE");
+
+# . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
+# add our included binaries to the END of the PATH
+
+if (-d $BINDIR) {
+  msg("Extending PATH: $BINDIR");
+  $ENV{PATH} .= ":$BINDIR";
+}
+
+
+# . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
 # get (and check) versions of tools
 
 for my $toolname (sort keys %tools) {
@@ -346,11 +357,14 @@ while (my $seq = $fin->next_seq) {
   }
   my $s = $seq->seq;
   $s = uc($s);
-  $s =~ s/[*-]//g;      # replace pads/gaps with nothing$s =~ s/[^ACTG]/N/g;
+  $s =~ s/[*-]//g;      # replace pads/gaps with nothing
   $s =~ s/[^ACTG]/N/g;  # replace wacky IUPAC with N
   $seq->seq($s);
   $seq->desc(undef);
   $fout->write_seq($seq);
+  if (exists $seq{$seq->id}) {
+    err("Uh oh! Sequence file '$in' contains duplicate sequence ID:", $seq->id);
+  }
   $seq{ $seq->id }{DNA} = $seq;
 }
 $ncontig > 0 or err("FASTA file '$in' contains no suitable sequence entries");
@@ -365,7 +379,7 @@ if ($notrna) {
 }
 else {
   msg("Predicting tRNAs and tmRNAs");
-  my $cmd = "aragorn -gc$gcode -w $outdir/$prefix.fna"; # -t/-m 
+  my $cmd = "aragorn -gc$gcode $aragorn_opt -w $outdir/$prefix.fna"; # -t/-m 
   msg("Running: $cmd");
   my $num_trna=0;
   open TRNA, "$cmd |";
@@ -591,7 +605,7 @@ while (<CDS>) {
     next;
   }
   elsif (m/^>\d+_(\d+)_(\d+)_([+-])$/) {   
-    my $tool = "Prodigal:".$tools{prodigal}->{VERSION};
+    my $tool = "Prodigal:".$tools{prodigal}->{VERSION}; # FIXME: why inner loop?
     my $cds = Bio::SeqFeature::Generic->new( 
       -primary    => 'CDS',
       -seq_id     => $sid,
@@ -613,13 +627,19 @@ while (<CDS>) {
 	last;
       }	
     }
-    if ($overlap) {
+    # mitochondria are highly packed, so don't exclude as CDS/tRNA often overlap.
+    if ($overlap and $kingdom ne 'Mitochondria') {
       my $type = $overlap->primary_tag;
       msg("Excluding CDS which overlaps existing RNA ($type) at $sid:$1..$2 on $3 strand");
     }
     else {
       $num_cds++;
       push @{$seq{$sid}{FEATURE}}, $cds;
+      ## BUG James Doonan - ensure no odd features extending beyond contig
+      if ($cds->end > $seq{$cds->seq_id}{DNA}->length )  { 
+        err("CDS end", $cds->end, "is beyond length", $seq{$sid}{DNA}->length, "in contig $sid") 
+      }
+      
     }
   }
 }
@@ -1230,10 +1250,10 @@ sub show_citation {
   
 If you use Prokka in your work, please cite:
 
-    Seemann T (2013)
+    Seemann T
     Prokka: Rapid Prokaryotic Genome Annotation
-    Bioinformatics 
-    (in review)
+    Bioinformatics 2014
+    doi:10.1093/bioinformatics/btu153
     
 Thank you.
 

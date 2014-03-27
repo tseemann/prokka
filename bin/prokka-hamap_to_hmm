@@ -1,0 +1,142 @@
+#!/usr/bin/perl
+use strict;
+use warnings;
+use Bio::SeqIO;
+use Data::Dumper;
+use File::Temp qw(tempdir);
+
+my(@Options, $verbose, $datadir, $hypo, $sep, $blank, $pseudo, $minlen);
+setOptions();
+
+$datadir or die "please specify HAMAP --datadir";
+-d $datadir or die "--datadir $datadir is not a valid folder";
+
+my $dir = tempdir(CLEANUP=>1);
+print STDERR "Using $dir as temp folder.\n";
+
+my %DESC;
+my $ali_fh = get_file("alignment_id.dat", "alignment /gene /product info");
+while (<$ali_fh>) {
+  chomp;
+  my @x = split m/\t/;
+  next if $x[5] =~ m/UPF\d+|homolog|[@<\[]/;
+  $x[5] =~ s/^probable\s+//gi;
+  $DESC{ $x[1] } = "$sep$x[4]$sep$x[5]";
+}
+printf STDERR "Accepted descriptions for %d families\n", scalar keys %DESC;
+
+my $fam_fh = get_file("hamap_families.dat", "alignment /EC_number");
+my($AC,$EC,$Bac);
+while (<$fam_fh>) {
+  chomp;
+  if (m{^//}) {
+    #print STDERR "AC=$AC EC=$EC Bac=$Bac\n";
+    if ($AC and $EC and exists $DESC{$AC}) {
+      $DESC{$AC} = $EC.$DESC{$AC}; 
+    }
+    if ($AC and ! $Bac) {
+      print STDERR "Removing $AC as non-Bacterial\n";
+      delete $DESC{$AC};
+    }
+    $AC = $EC = $Bac = '';
+  }
+  elsif (m/^AC\s+(\w+)/) {
+    $AC = $1;
+  }
+  elsif (m/EC=([\d.]+);/) {
+    $EC = $1;
+  }
+  elsif (m/^ Bacteria/) {
+    $Bac = 1;
+  }
+}
+printf STDERR "%d models made it through filtering\n", scalar keys %DESC;
+
+my $aln_file = "$datadir/hamap_seed_alignments.tar.gz";
+if (-r $aln_file) {
+  print STDERR "Extracting $aln_file.\n";
+  system("tar -C $dir --strip-components 1 -zxf $aln_file");
+  my @msa = <$dir/*.msa>;
+  printf STDERR "Found %d MSA files.\n", scalar(@msa);
+  for my $msa (@msa) {
+    $msa =~ m/(\w+).msa$/ or die "can't extract ID from filename '$msa'";
+    my $id = $1;
+    my $desc = $DESC{$id};
+    if ($desc) {
+      print STDERR "Building HMM for $id: $desc\n";
+      $desc =~ s{'}{\\'}g;
+      system("hmmbuild -o /dev/null -n $id /dev/stdout $msa | sed '3i DESC  \Q$desc\E' > $dir/$id.hmm");
+#      if ($id eq 'MF_00023') {
+#        system("head -20 $dir/$id.hmm");
+#        last;
+#      }
+    }
+    else {
+      print STDERR "Skipping $id - has dodgy /product name\n";
+    }
+  }
+}
+else {
+  print STDERR "Could not read file: $aln_file\n";
+  exit 1;
+}
+
+my $dest = 'HAMAP.hmm';
+print STDERR "Combining into $dest\n";
+system("cat $dir/*.hmm > $dest");
+
+
+print STDERR "Done.\n";
+
+#----------------------------------------------------------------------
+
+sub get_file {
+  my($pattern, $desc) = @_;
+  my($first) = glob("$datadir/$pattern");
+  if ($first and -r $first) {
+    print STDERR "Found $desc: $first\n";
+    open my $fh, '<', $first;
+    return $fh;
+  }
+  die "Problem finding $pattern in $datadir ($desc)";
+}
+
+#----------------------------------------------------------------------
+# Option setting routines
+
+sub setOptions {
+  use Getopt::Long;
+
+  @Options = (
+    {OPT=>"help",      VAR=>\&usage,                   DESC=>"This help"},
+    {OPT=>"verbose!",  VAR=>\$verbose, DEFAULT=>0,     DESC=>"Verbose progress"},
+    {OPT=>"datadir=s", VAR=>\$datadir, DEFAULT=>'',    DESC=>"Path to downloaded HAMAP folder (ftp://ftp.expasy.org/databases/hamap/)" },
+    {OPT=>"sep=s",     VAR=>\$sep,     DEFAULT=>'~~~', DESC=>"Separator between EC/gene/product" },
+    {OPT=>"blank=s",   VAR=>\$blank,   DEFAULT=>'',    DESC=>"Replace empty EC/gene/product with this"},
+#    {OPT=>"pseudo!",   VAR=>\$pseudo,  DEFAULT=>0,     DESC=>"Include /pseudo genes"},
+#    {OPT=>"hypo!",     VAR=>\$hypo,    DEFAULT=>0,     DESC=>"Include 'hypothetical protein' genes"},
+#    {OPT=>"minlen=i",  VAR=>\$minlen,  DEFAULT=>0,     DESC=>"Minimum peptide length"},
+  );
+
+  #(!@ARGV) && (usage());
+
+  &GetOptions(map {$_->{OPT}, $_->{VAR}} @Options) || usage();
+
+  # Now setup default values.
+  foreach (@Options) {
+    if (defined($_->{DEFAULT}) && !defined(${$_->{VAR}})) {
+      ${$_->{VAR}} = $_->{DEFAULT};
+    }
+  }
+}
+
+sub usage {
+  print "Usage: $0 [options] [--datadir hamap_data_subdir] > hamap.hmm\n";
+  foreach (@Options) {
+    printf "  --%-13s %s%s.\n",$_->{OPT},$_->{DESC},
+           defined($_->{DEFAULT}) ? " (default '$_->{DEFAULT}')" : "";
+  }
+  exit(1);
+}
+ 
+#----------------------------------------------------------------------

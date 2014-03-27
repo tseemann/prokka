@@ -2,6 +2,28 @@
 Prokka ChangeLog
 ----------------
 
+TODO:
+* use 'assembly_gap' for Ns
+* annotate possible frame-shifts
+* FAQ about annotation transfer
+* use included binary if PATH one is wrong version [Simon Gladman]
+* reconsider !~m/a-z/ rule in cleanup_product() [Roderick Felsheim]
+* all Kingdom=ALL or ANY for metagenomes [Andreas Bremges]
+* make --cleanup option  for /product names [Andreas Bremges]
+* support for barrnap 0.3 with Archaea support [Lionel Guy]
+* check databases exist before spawning blast/hmmer
+* locus_tag rules: http://www.ncbi.nlm.nih.gov/genomes/locustag/Proposal.pdf
+
+v1.9 - March 2014
+* MAJOR: Bug in prokka-uniprot_to_fasta_db: was allowing Altname instead of Recname
+         This affected the /product names that were used in the core protein database!
+* Updated kingdom databases (sprot)
+* Updated 'cmscan' binaries from 1.1rc to 1.1 (linux + darwin)
+* Fixed bug when input fasta has duplicate sequence IDs [James Doonan]
+* Removed linux/nhmmer binary as it is not used by Prokka
+* Experimental --kingdom Mitochondria
+* prokka-uniprot_to_fasta_db now has --term empty as default
+
 v1.8 - Nov 2013
 * Added support for 'minced' CRISPR finder [Connor Skennerton]
 * If --cpus > no. cores in system, reduce it down
