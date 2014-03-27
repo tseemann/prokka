@@ -40,7 +40,7 @@ my @CMDLINE = @ARGV;
 my $OPSYS = $^O;
 my $BINDIR = "$FindBin::RealBin/../binaries/$OPSYS";
 my $EXE = $FindBin::RealScript;
-my $VERSION = "1.7.1";
+my $VERSION = "1.7.2";
 my $AUTHOR = 'Torsten Seemann <torsten.seemann@monash.edu>';
 my $URL = 'http://www.vicbioinformatics.com';
 my $DBDIR = "$FindBin::RealBin/../db";
@@ -902,6 +902,7 @@ msg("Fixed $num_collide colliding /gene names.");
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
 # Add locus_tags and protein_id[CDS only] (and Parent genes if asked)
 
+msg("Adding /locus_tag identifiers");
 my $num_lt=0;
 for my $sid (sort keys %seq) {
   for my $f ( sort { $a->start <=> $b->start } @{ $seq{$sid}{FEATURE} }) {
@@ -915,11 +916,16 @@ for my $sid (sort keys %seq) {
       $f->add_tag_value('protein_id', "gnl|$centre|$ID")
     }
     if ($addgenes) {
-      my $g = $f->clone;
-      $g->primary_tag('gene');
-      $g->source_tag($EXE);
-      $g->remove_tag($_) for $g->get_all_tags;
-      $g->add_tag_value('locus_tag', $ID);
+      # make a 'sister' gene feature for the CDS feature
+      # (ideally it would encompass the UTRs as well, but we don't know them)
+      my $g = Bio::SeqFeature::Generic->new(
+        -primary    => 'gene',
+        -start      => $f->start,
+        -end        => $f->end,
+        -strand     => $f->strand,
+        -source_tag => $EXE,
+        -tag        => { 'locus_tag '=> $ID },
+      );
       if (my $gENE = TAG($f, 'gene')) {
    	$g->add_tag_value('gene', $gENE);
       }
