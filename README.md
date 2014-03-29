@@ -8,6 +8,57 @@ Whole genome annotation is the process of identifying features of interest in a 
 
 ##Installation
 
+###Download
+
+Download the latest prokka-1.x.tar.gz archive from http://www.bioinformatics.net.au/
+
+###Extract
+
+Choose somewhere to put it, for example: /opt
+Untar it: sudo tar -C /opt prokka-1.x.tar.gz
+Check it is there: ls /opt/prokka-1.x/
+
+###Add to PATH
+
+Add the following line to your $HOME/.bashrc file, or to /etc/profile.d/prokka.sh to make it available to all users:
+export PATH=$PATH:/opt/prokka-1.x
+
+###Install dependencies
+
+Consult the list of dependencies.
+
+###Choose a rRNA predictor
+
+####Option 1 - Don't use one
+
+If Prokka can't find a predictor for rRNA featues (either Barrnap or RNAmmer below) then it simply won't annotate any. Most people don't care that much about them anyway,
+
+####Option 2 - Barrnap
+
+This was written by the author of Prokka and is recommended if you prefer speed over absolute accuracy. It uses the new multi-core NHMMER for DNA:DNA profile searches. Download it here.
+
+####Option 3 - RNAmmer
+
+RNAmmer was written when HMMER 2.x was the latest release. Since them, HMMER 3.x has been released, and uses the same executable binary names. Prokka needs HMMER3 and RNAmmer (and hence HMMER2) so you need to edit your RNAmmer script to explicitly point your HMMER2 binary instead of using the HMMER3 binary which is more likely to be in your PATH first.
+
+Type which rnammer to find the script, and then edit it with your favourite editor. Find the following lines at the top:
+
+    if ( $uname eq "Linux" ) {
+    #       $HMMSEARCH_BINARY = "/usr/cbs/bio/bin/linux64/hmmsearch";    # OLD
+            $HMMSEARCH_BINARY = "/path/to/my/hmmer-2.3.2/bin/hmmsearch"; # NEW (yours)
+    }
+
+If you are using Mac OS X, you'll also have to change the "Linux" to "Darwin" too..
+
+As you can see, I have commented out the original part, and replaced it with the location of my HMMER2 hmmsearch tool, so it doesn't run the HMMER3 one. You need to ensure HMMER3 is in your PATH before the old HMMER2 too.
+
+###Test
+
+Type prokka and it should output it's help screen.
+Type prokka --version and you should see an output like prokka 1.x.
+Type prokka --listdb and it will show you what databases it has installed to use.
+
+
 ##Invoking Prokka
 
 ###Beginner
@@ -129,138 +180,159 @@ Whole genome annotation is the process of identifying features of interest in a 
 
 ##Dependencies
 
-GNU Parallel
-A shell tool for executing jobs in parallel using one or more computers
+* __GNU Parallel__  
+A shell tool for executing jobs in parallel using one or more computers  
 O. Tange, GNU Parallel - The Command-Line Power Tool, ;login: The USENIX Magazine, Feb 2011:42-47.
-BioPerl
-Used for input/output of various file formats
+* __BioPerl__  
+Used for input/output of various file formats  
 Stajich et al, The Bioperl toolkit: Perl modules for the life sciences. Genome Res. 2002 Oct;12(10):1611-8.
-Aragorn
-Finds transfer RNA features (tRNA)
+* __Aragorn__  
+Finds transfer RNA features (tRNA)  
 Laslett D, Canback B. ARAGORN, a program to detect tRNA genes and tmRNA genes in nucleotide sequences. Nucleic Acids Res. 2004 Jan 2;32(1):11-6.
-Barrnap
-Used to predict ribosomal RNA features (rRNA). My licence-free replacement for RNAmmmer.
+* __Barrnap__  
+Used to predict ribosomal RNA features (rRNA). My licence-free replacement for RNAmmmer.  
 Manuscript under preparation.
-RNAmmer
-Finds ribosomal RNA features (rRNA)
+* __RNAmmer__  
+Finds ribosomal RNA features (rRNA)  
 Lagesen K et al. RNAmmer: consistent and rapid annotation of ribosomal RNA genes. Nucleic Acids Res. 2007;35(9):3100-8.
-Prodigal
-Finds protein-coding features (CDS)
+* __Prodigal__  
+Finds protein-coding features (CDS)  
 Hyatt D et al. Prodigal: prokaryotic gene recognition and translation initiation site identification. BMC Bioinformatics. 2010 Mar 8;11:119.
-SignalP >= 4.0
-Finds signal peptide features in CDS (sig_peptide)
+* __SignalP__  
+Finds signal peptide features in CDS (sig_peptide)  
 Petersen TN et al. SignalP 4.0: discriminating signal peptides from transmembrane regions. Nat Methods. 2011 Sep 29;8(10):785-6.
-BLAST+
-Used for similarity searching against protein sequence libraries
+* __BLAST+__  
+Used for similarity searching against protein sequence libraries  
 Camacho C et al. BLAST+: architecture and applications. BMC Bioinformatics. 2009 Dec 15;10:421.
-HMMER3
-Used for similarity searching against protein family profiles
+* __HMMER3__  
+Used for similarity searching against protein family profiles  
 Finn RD et al. HMMER web server: interactive sequence similarity searching. Nucleic Acids Res. 2011 Jul;39(Web Server issue):W29-37.
-Infernal
-Used for similarity searching against ncRNA family profiles
+* __Infernal__  
+Used for similarity searching against ncRNA family profiles  
 D. L. Kolbe, S. R. Eddy. Fast Filtering for RNA Homology Search. Bioinformatics, 27:3102-3109, 2011.
-Databases
 
-The Core Databases
+
+##Databases
+
+###The Core (BLAST+) Databases
 
 Prokka uses a variety of databases when trying to assign function to the predicted CDS features. It takes a hierarchial approach to make it fast. A small, core set of well characterized proteins are first searched using BLAST+. This combination of small database and fast search typically completes about 70% of the workload. Then a series of slower but more sensitive HMM databases are searched using HMMER3.
 
 The initial core databases are derived from UniProtKB; there is one per "kingdom" supported. To qualify for inclusion, a protein must be (1) from Bacteria (or Archaea or Viruses); (2) not be "Fragment" entries; and (3) have an evidence level ("PE") of 2 or lower, which corresponds to experimental mRNA or proteomics evidence.
 
-Making a Core Databases
+####Making a Core Databases
 
 If you want to modify these core databases, the included script prokka-uniprot_to_fasta_db, along with the official uniprot_sprot.dat, can be used to generate a new database to put in /path/to/prokka/db/kingdom/. If you add new ones, the command prokka --listdb will show you whether it has been detected properly.
 
-The Genus Databases
+####The Genus Databases
 
 If you enable --usegenus and also provide a Genus via --genus then it will first use a BLAST database which is Genus specific. Prokka comes with a set of databases for the most common Bacterial genera; type prokka --listdb to see what they are.
 
-Adding a Genus Databases
+####Adding a Genus Databases
 
 If you have a set of Genbank files and want to create a new Genus database, Prokka comes with a tool called prokka-genbank_to_fasta_db to help. For example, if you had four annotated "Coccus" genomes, you could do the following:
 
-% quokka-genbank_to_fasta_db Coccus1.gbk Coccus2.gbk Coccus3.gbk Coccus4.gbk > Coccus.faa
-% cd-hit -i Coccus.faa -o Coccus -T 0 -M 0 -g 1 -s 0.8 -c 0.9
-% rm -fv Coccus.faa Coccus.bak.clstr Coccus.clstr
-% makeblastdb -dbtype prot -in Coccus
-% mv Coccus.p* /path/to/prokka/db/genus/
-The HMM Databases
+    % prokka-genbank_to_fasta_db Coccus1.gbk Coccus2.gbk Coccus3.gbk Coccus4.gbk > Coccus.faa
+    % cd-hit -i Coccus.faa -o Coccus -T 0 -M 0 -g 1 -s 0.8 -c 0.9
+    % rm -fv Coccus.faa Coccus.bak.clstr Coccus.clstr
+    % makeblastdb -dbtype prot -in Coccus
+    % mv Coccus.p* /path/to/prokka/db/genus/
+ 
+###The HMM Databases
 
 Prokka comes with a bunch of HMM libraries for HMMER3. They are mostly Bacteria-specific. They are searched after the core and genus databases. You can add more simply by putting them in /path/to/prokka/db/hmm. Type prokka --listdb to confirm they are recognised.
 
-Database format
+###Database format
 
 Prokka understands two annotation tag formats, a plain one and a detailed one.
 
 The plain one is a standard FASTA-like line with the ID after the > sign, and the protein "/product" after the ID (the "description" part of the line):
 
->SeqID product
+    >SeqID product
+
 The detailed one consists of a special encoded three-part description line. The parts are the /EC_number, the /gene code, then the /product - and they are separated by a special "~~~" sequence:
 
->SeqID EC_number~~~gene~~~product
+    >SeqID EC_number~~~gene~~~product
+
 Here are some examples. Note that not all parts need to be present, but the "~~~" should still be there:
 
->YP_492693.1 2.1.1.48~~~ermC~~~rRNA adenine N-6-methyltransferase
-MNEKNIKHSQNFITSKHNIDKIMTNIRLNEHDNIFEIGSGKGHFTLELVQRCNFVTAIEI
-DHKLCKTTENKLVDHDNFQVLNKDILQFKFPKNQSYKIFGNIPYNISTDIIRKIVF*
->YP_492697.1 ~~~traB~~~transfer complex protein TraB
-MIKKFSLTTVYVAFLSIVLSNITLGAENPGPKIEQGLQQVQTFLTGLIVAVGICAGVWIV
-LKKLPGIDDPMVKNEMFRGVGMVLAGVAVGAALVWLVPWVYNLFQ*
->YP_492694.1 ~~~~~~transposase
-MNYFRYKQFNKDVITVAVGYYLRYALSYRDISEILRGRGVNVHHSTVYRWVQEYAPILYQ
-QSINTAKNTLKGIECIYALYKKNRRSLQIYGFSPCHEISIMLAS*
+    >YP_492693.1 2.1.1.48~~~ermC~~~rRNA adenine N-6-methyltransferase
+    MNEKNIKHSQNFITSKHNIDKIMTNIRLNEHDNIFEIGSGKGHFTLELVQRCNFVTAIEI
+    DHKLCKTTENKLVDHDNFQVLNKDILQFKFPKNQSYKIFGNIPYNISTDIIRKIVF*
+    >YP_492697.1 ~~~traB~~~transfer complex protein TraB
+    MIKKFSLTTVYVAFLSIVLSNITLGAENPGPKIEQGLQQVQTFLTGLIVAVGICAGVWIV
+    LKKLPGIDDPMVKNEMFRGVGMVLAGVAVGAALVWLVPWVYNLFQ*
+    >YP_492694.1 ~~~~~~transposase
+    MNYFRYKQFNKDVITVAVGYYLRYALSYRDISEILRGRGVNVHHSTVYRWVQEYAPILYQ
+    QSINTAKNTLKGIECIYALYKKNRRSLQIYGFSPCHEISIMLAS*
+
 The same description lines apply to HMM models, except the "NAME" and "DESC" fields are used:
 
-NAME  PRK00001
-ACC   PRK00001
-DESC  2.1.1.48~~~ermC~~~rRNA adenine N-6-methyltransferase
-LENG  284
-FAQ
+    NAME  PRK00001
+    ACC   PRK00001
+    DESC  2.1.1.48~~~ermC~~~rRNA adenine N-6-methyltransferase
+    LENG  284
+    
+    
+##FAQ
 
-Where does the name "Prokka" come from?
+* Where does the name "Prokka" come from?  
 Prokka is a contraction of "prokaryotic annotation". It's also relatively unique within Google, and also rhymes with a native Australian marsupial called the quokka.
-Can I annotate by eukaryote genome with Prokka?
+
+* Can I annotate by eukaryote genome with Prokka?  
 No. Prokka is specifically designed for Bacteria, Archaea and Viruses. It can't handle multi-exon gene models; I would recommend using MAKER 2 for that purpose.
-Why does Prokka keeps on crashing when it gets to tge "tbl2asn" stage?
+
+* Why does Prokka keeps on crashing when it gets to tge "tbl2asn" stage?  
 It seems that the tbl2asn program from NCBI "expires" after 12 months, and refuses to run. Unfortunately you need to install a newer version which you can download from here.
-The hmmscan step seems to hang and do nothing?
+
+* The hmmscan step seems to hang and do nothing?    
 The problem here is GNU Parallel. It seems the Debian package for hmmer has modified it to require the --gnu option to behave in the 'default' way. There is no clear reason for this. The only way to restore normal behaviour is to edit the prokka script and change "parallel" to "parallel --gnu".
-Why does prokka fail when it gets to hmmscan?
+
+* Why does prokka fail when it gets to hmmscan?  
 Unfortunately HMMER keeps changing it's database format, and they aren't upward compatible. If you upgraded HMMER (from 3.0 to 3.1 say) then you need to "re-press" the files. This can be done as follows:
-cd /path/to/prokka/db/hmm
-mkdir new
-for D in *.hmm ; do hmmconvert $D > new/$D ; done
-cd new
-for D in *.hmm ; do hmmpress $D ; done
-mv * ..
-rmdir new
-Why does Prokka take so long to download?
+    cd /path/to/prokka/db/hmm
+    mkdir new
+    for D in *.hmm ; do hmmconvert $D > new/$D ; done
+    cd new
+    for D in *.hmm ; do hmmpress $D ; done
+    mv * ..
+    rmdir new
+
+* Why does Prokka take so long to download?  
 Our server is in Australia, and the international pipes aren't always flowing as well as we'd like. I try to put it on GoogleDrive. Dropbox is no longer possible due to bandwidth quotas. If you are able to mirror Prokka (~2 GB) outside please let me know.
-Why can't I load Prokka .GBK files into Mauve?
-Mauve is very picky about Genbank files.
-It does not like long contig names, like those from Velvet or Spades. The simple solution is to use "--centre XXX" in Prokka and it will rename all your contigs to be NCBI (and Mauve) compliant.
 
+* Why can't I load Prokka .GBK files into Mauve?  
+Mauve is very picky about Genbank files. It does not like long contig names, like those from Velvet or Spades. The simple solution is to use "--centre XXX" in Prokka and it will rename all your contigs to be NCBI (and Mauve) compliant.
 It does not like the ACCESSION and VERSION strings that Prokka produces via the "tbl2asn" tool. The following Unix command will fix them: 
-egrep -v '^(ACCESSION|VERSION)' prokka.gbk > mauve.gbk
+    egrep -v '^(ACCESSION|VERSION)' prokka.gbk > mauve.gbk
 
-Still To Do
 
-Check for large genomic tracts which are unannotated. Sometimes Prodigal misses big genes.
-Add an example input/output so users can check their copy is producing similar results.
-Output potential homopolymer assembly errors near CDS flanks
-Add the CLUSTERS "PHA" library to Viruses mode.
-Option to include ribosomal binding sites (RBS) as features.
-Check input contigs for runs of Ns, and either complain, or split the file, or additionally create a .AGP scaffold file. (Mitchell Stanton-Cook has done this, need to incorporate)
-Add hyperlinks to tool references in Manual
-Changes
+##Still To Do
+
+* Check for large genomic tracts which are unannotated. Sometimes Prodigal misses big genes.
+* Add an example input/output so users can check their copy is producing similar results.
+* Output potential homopolymer assembly errors near CDS flanks
+* Add the CLUSTERS "PHA" library to Viruses mode.
+* Option to include ribosomal binding sites (RBS) as features.
+* Check input contigs for runs of Ns, and either complain, or split the file, or additionally create a .AGP scaffold file. (Mitchell Stanton-Cook has done this, need to incorporate)
+* Add hyperlinks to tool references in Manual
+
+
+##Changes
 
 See the ChangeLog.txt file in the doc/ subdirectory of Prokka.
 
-Bugs
+##Bugs
 
-tbl2asn seems to be removing the "(anti-codon)" part in my tRNA /product values
-tbl2asn putting space in /inference for Infernal
-Citation
+* tbl2asn seems to be removing the "(anti-codon)" part in my tRNA /product values
+* tbl2asn putting space in /inference for Infernal
 
-The manuscript is currently being prepared. If you use Prokka in your research before then, please cite:
-Prokka: Prokaryotic Genome Annotation System - http://vicbioinformatics.com/
+##Citation
+
+Seemann T.  
+*Prokka: rapid prokaryotic genome annotation*  
+**Bioinformatics**  
+2014 Mar 18. [Epub ahead of print]  
+[PMID:24642063](http://www.ncbi.nlm.nih.gov/pubmed/24642063)  
+
+
