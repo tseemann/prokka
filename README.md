@@ -1,10 +1,11 @@
-# Prokka
+# Prokka: rapid prokaryotic genome annotation  
 
-Rapid prokaryotic genome annotation
+Torsten Seemann <torsten.seemann@monash.edu>  
+Victorian Bioinformatics Consortium, AUSTRALIA <http://vicbioinformatics.com>
 
 ##Introduction
 
-Whole genome annotation is the process of identifying features of interest in a set of genomic DNA sequences, and labelling them with useful information. Prokka is a software tool to annotate bacterial, archaeal and viral genomes quickly to produce standards-compliant output files.
+Whole genome annotation is the process of identifying features of interest in a set of genomic DNA sequences, and labelling them with useful information. Prokka is a software tool to annotate bacterial, archaeal and viral genomes quickly and produce standards-compliant output files.
 
 ##Installation
 
@@ -130,7 +131,7 @@ If you are using Mac OS X, you'll also have to change the `"Linux"` to `"Darwin"
 
 | Extension | Description |
 | --------- | ----------- |
-| `.gff` | This is the master annotation in GFF3 format, containing both sequences and annotations. It can be viewed directly in Artemis or IGV. |
+| .gff | This is the master annotation in GFF3 format, containing both sequences and annotations. It can be viewed directly in Artemis or IGV. |
 | .gbk | This is a standard Genbank file derived from the master .gff. If the input to prokka was a multi-FASTA, then this will be a multi-Genbank, with one record for each sequence. |
 | .fna | Nucleotide FASTA file of the input contig sequences. |
 | .faa | Protein FASTA file of the translated CDS sequences. |
