@@ -81,7 +81,7 @@ while (<ARGV>)
   $gene ||= $blank;
   $prod ||= $blank;
   
-  print STDERR join("\t", $entry->AC, $ec, $gene, $prod), "\n";
+  print STDERR join("\t", $entry->AC, $ec, $gene, $prod), "\n" if $verbose;
   print ">", $entry->AC, " $ec$sep$gene$sep$prod\n", $entry->SQs->seq, "\n";
   
   $out++;
