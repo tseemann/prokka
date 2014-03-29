@@ -1221,27 +1221,27 @@ sub showdoc {
 #----------------------------------------------------------------------
 
 sub kingdoms {
-  return map { s{^.*/}{}; $_ } glob("$DBDIR/kingdom/*");
+  return map { m{kingdom/(\w+?)/}; $1 } glob("$DBDIR/kingdom/*/*.pin");
 }
 
 sub genera {
-  return map { s{^.*/}{}; s{.pin$}{}; $_ } glob("$DBDIR/genus/*.pin");
+  return map { m{([^/]+).pin$}; $1 } glob("$DBDIR/genus/*.pin");
 }
 
 sub hmms {
-  return map { s{^.*/}{}; s{.hmm.h3m$}{}; $_ } glob("$DBDIR/hmm/*.h3m");
+  return map { m{([^/]+).hmm.h3m$}; $1 } glob("$DBDIR/hmm/*.h3m");
 }
 
 sub cms {
-  return map { s{^.*/}{}; s{.i1m$}{}; $_ } glob("$DBDIR/cm/*.i1m");
+  return map { m{([^/]+).i1m$}; $1 } glob("$DBDIR/cm/*.i1m");
 }
 
 sub show_databases {
-  msg( "Databases: $DBDIR" );
-  msg( "Kingdoms: ", kingdoms() );
-  msg( "Genera:", genera() );
-  msg( "HMMs:", hmms() );
-  msg( "CMs:", cms() );
+  msg( "Looking for databased in: $DBDIR" );
+  msg( "* Kingdoms:", kingdoms() );
+  msg( "* Genera:", genera() );
+  msg( "* HMMs:", hmms() );
+  msg( "* CMs:", cms() );
   exit;
 }
 
