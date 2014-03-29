@@ -1,31 +1,39 @@
-# Prokka
+# Prokka: rapid prokaryotic genome annotation  
 
-Rapid prokaryotic genome annotation
+Torsten Seemann <torsten.seemann@monash.edu>  
+Victorian Bioinformatics Consortium, AUSTRALIA <http://vicbioinformatics.com>
 
 ##Introduction
 
-Whole genome annotation is the process of identifying features of interest in a set of genomic DNA sequences, and labelling them with useful information. Prokka is a software tool to annotate bacterial, archaeal and viral genomes quickly to produce standards-compliant output files.
+Whole genome annotation is the process of identifying features of interest in a set of genomic DNA sequences, and labelling them with useful information. Prokka is a software tool to annotate bacterial, archaeal and viral genomes quickly and produce standards-compliant output files.
 
 ##Installation
 
 ###Download
 
-Download the latest prokka-1.x.tar.gz archive from http://www.bioinformatics.net.au/
+Download the latest `prokka-1.x.tar.gz` archive from http://www.bioinformatics.net.au/software.prokka.shtml
 
 ###Extract
 
-Choose somewhere to put it, for example: /opt
-Untar it: sudo tar -C /opt prokka-1.x.tar.gz
-Check it is there: ls /opt/prokka-1.x/
+Choose somewhere to put it, for example: `/opt`
+
+    # Untar it
+    % sudo tar -C /opt prokka-1.x.tar.gz
+    # Check it is there: 
+    ls /opt/prokka-1.x/
 
 ###Add to PATH
 
-Add the following line to your $HOME/.bashrc file, or to /etc/profile.d/prokka.sh to make it available to all users:
-export PATH=$PATH:/opt/prokka-1.x
+Add the following line to your `$HOME/.bashrc` file, 
+or to `/etc/profile.d/prokka.sh` to make it available to all users:
+
+    export PATH=$PATH:/opt/prokka-1.x
 
 ###Install dependencies
 
-Consult the list of dependencies.
+Prokka comes with many binaries for Linux and Mac OS X. It will always use your existing installed versions if they exist, but will use the included ones if that fails. For some older systems (eg. Centos 4.x) some of them won't work due to them being dynamically linked against new GLIBC libraries you don't have. 
+
+You can consult the list of dependencies later in this document.
 
 ###Choose a rRNA predictor
 
@@ -48,15 +56,13 @@ Type which rnammer to find the script, and then edit it with your favourite edit
             $HMMSEARCH_BINARY = "/path/to/my/hmmer-2.3.2/bin/hmmsearch"; # NEW (yours)
     }
 
-If you are using Mac OS X, you'll also have to change the "Linux" to "Darwin" too..
-
-As you can see, I have commented out the original part, and replaced it with the location of my HMMER2 hmmsearch tool, so it doesn't run the HMMER3 one. You need to ensure HMMER3 is in your PATH before the old HMMER2 too.
+If you are using Mac OS X, you'll also have to change the `"Linux"` to `"Darwin"` too. As you can see, I have commented out the original part, and replaced it with the location of my HMMER2 hmmsearch tool, so it doesn't run the HMMER3 one. You need to ensure HMMER3 is in your PATH before the old HMMER2 too.
 
 ###Test
 
-Type prokka and it should output it's help screen.
-Type prokka --version and you should see an output like prokka 1.x.
-Type prokka --listdb and it will show you what databases it has installed to use.
+* Type `prokka` and it should output it's help screen.
+* Type `prokka --version` and you should see an output like prokka 1.x.
+* Type `prokka --listdb` and it will show you what databases it has installed to use.
 
 
 ##Invoking Prokka
@@ -182,34 +188,43 @@ Type prokka --listdb and it will show you what databases it has installed to use
 
 * __GNU Parallel__  
 A shell tool for executing jobs in parallel using one or more computers  
-O. Tange, GNU Parallel - The Command-Line Power Tool, ;login: The USENIX Magazine, Feb 2011:42-47.
+_O. Tange, GNU Parallel - The Command-Line Power Tool, ;login: The USENIX Magazine, Feb 2011:42-47._
+
 * __BioPerl__  
 Used for input/output of various file formats  
-Stajich et al, The Bioperl toolkit: Perl modules for the life sciences. Genome Res. 2002 Oct;12(10):1611-8.
+_Stajich et al, The Bioperl toolkit: Perl modules for the life sciences. Genome Res. 2002 Oct;12(10):1611-8._
+
 * __Aragorn__  
 Finds transfer RNA features (tRNA)  
-Laslett D, Canback B. ARAGORN, a program to detect tRNA genes and tmRNA genes in nucleotide sequences. Nucleic Acids Res. 2004 Jan 2;32(1):11-6.
+_Laslett D, Canback B. ARAGORN, a program to detect tRNA genes and tmRNA genes in nucleotide sequences. Nucleic Acids Res. 2004 Jan 2;32(1):11-6._
+
 * __Barrnap__  
 Used to predict ribosomal RNA features (rRNA). My licence-free replacement for RNAmmmer.  
-Manuscript under preparation.
+_Manuscript under preparation._
+
 * __RNAmmer__  
 Finds ribosomal RNA features (rRNA)  
-Lagesen K et al. RNAmmer: consistent and rapid annotation of ribosomal RNA genes. Nucleic Acids Res. 2007;35(9):3100-8.
+_Lagesen K et al. RNAmmer: consistent and rapid annotation of ribosomal RNA genes. Nucleic Acids Res. 2007;35(9):3100-8._
+
 * __Prodigal__  
 Finds protein-coding features (CDS)  
-Hyatt D et al. Prodigal: prokaryotic gene recognition and translation initiation site identification. BMC Bioinformatics. 2010 Mar 8;11:119.
+_Hyatt D et al. Prodigal: prokaryotic gene recognition and translation initiation site identification. BMC Bioinformatics. 2010 Mar 8;11:119._
+
 * __SignalP__  
 Finds signal peptide features in CDS (sig_peptide)  
-Petersen TN et al. SignalP 4.0: discriminating signal peptides from transmembrane regions. Nat Methods. 2011 Sep 29;8(10):785-6.
+_Petersen TN et al. SignalP 4.0: discriminating signal peptides from transmembrane regions. Nat Methods. 2011 Sep 29;8(10):785-6._
+
 * __BLAST+__  
 Used for similarity searching against protein sequence libraries  
-Camacho C et al. BLAST+: architecture and applications. BMC Bioinformatics. 2009 Dec 15;10:421.
+_Camacho C et al. BLAST+: architecture and applications. BMC Bioinformatics. 2009 Dec 15;10:421._
+
 * __HMMER3__  
 Used for similarity searching against protein family profiles  
-Finn RD et al. HMMER web server: interactive sequence similarity searching. Nucleic Acids Res. 2011 Jul;39(Web Server issue):W29-37.
+_Finn RD et al. HMMER web server: interactive sequence similarity searching. Nucleic Acids Res. 2011 Jul;39(Web Server issue):W29-37._
+
 * __Infernal__  
 Used for similarity searching against ncRNA family profiles  
-D. L. Kolbe, S. R. Eddy. Fast Filtering for RNA Homology Search. Bioinformatics, 27:3102-3109, 2011.
+_D. L. Kolbe, S. R. Eddy. Fast Filtering for RNA Homology Search. Bioinformatics, 27:3102-3109, 2011._
 
 
 ##Databases
@@ -222,15 +237,16 @@ The initial core databases are derived from UniProtKB; there is one per "kingdom
 
 ####Making a Core Databases
 
-If you want to modify these core databases, the included script prokka-uniprot_to_fasta_db, along with the official uniprot_sprot.dat, can be used to generate a new database to put in /path/to/prokka/db/kingdom/. If you add new ones, the command prokka --listdb will show you whether it has been detected properly.
+If you want to modify these core databases, the included script `prokka-uniprot_to_fasta_db`, along with the official `uniprot_sprot.dat`, can be used to generate a new database to put in `/opt/prokka/db/kingdom/`. If you add new ones, the command `prokka --listdb` will show you whether it has been detected properly.
 
 ####The Genus Databases
 
-If you enable --usegenus and also provide a Genus via --genus then it will first use a BLAST database which is Genus specific. Prokka comes with a set of databases for the most common Bacterial genera; type prokka --listdb to see what they are.
+If you enable `--usegenus` and also provide a Genus via `--genus` then it will first use a BLAST database which is Genus specific. Prokka comes with a set of databases for the most common Bacterial genera; type prokka `--listdb` to see what they are.
 
 ####Adding a Genus Databases
 
-If you have a set of Genbank files and want to create a new Genus database, Prokka comes with a tool called prokka-genbank_to_fasta_db to help. For example, if you had four annotated "Coccus" genomes, you could do the following:
+If you have a set of Genbank files and want to create a new Genus database, Prokka comes with a tool called 
+`prokka-genbank_to_fasta_db` to help. For example, if you had four annotated "Coccus" genomes, you could do the following:
 
     % prokka-genbank_to_fasta_db Coccus1.gbk Coccus2.gbk Coccus3.gbk Coccus4.gbk > Coccus.faa
     % cd-hit -i Coccus.faa -o Coccus -T 0 -M 0 -g 1 -s 0.8 -c 0.9
@@ -240,17 +256,19 @@ If you have a set of Genbank files and want to create a new Genus database, Prok
  
 ###The HMM Databases
 
-Prokka comes with a bunch of HMM libraries for HMMER3. They are mostly Bacteria-specific. They are searched after the core and genus databases. You can add more simply by putting them in /path/to/prokka/db/hmm. Type prokka --listdb to confirm they are recognised.
+Prokka comes with a bunch of HMM libraries for HMMER3. They are mostly Bacteria-specific. They are searched after the core and genus databases. You can add more simply by putting them in `/opt/prokka/db/hmm`. Type `prokka --listdb` to confirm they are recognised.
 
 ###Database format
 
 Prokka understands two annotation tag formats, a plain one and a detailed one.
 
-The plain one is a standard FASTA-like line with the ID after the > sign, and the protein "/product" after the ID (the "description" part of the line):
+The plain one is a standard FASTA-like line with the ID after the `>` sign, and the protein `/product` 
+after the ID (the "description" part of the line):
 
     >SeqID product
 
-The detailed one consists of a special encoded three-part description line. The parts are the /EC_number, the /gene code, then the /product - and they are separated by a special "~~~" sequence:
+The detailed one consists of a special encoded three-part description line. The parts are the `/EC_number`, 
+the `/gene` code, then the `/product` - and they are separated by a special "~~~" sequence:
 
     >SeqID EC_number~~~gene~~~product
 
@@ -276,19 +294,19 @@ The same description lines apply to HMM models, except the "NAME" and "DESC" fie
     
 ##FAQ
 
-* Where does the name "Prokka" come from?  
+* __Where does the name "Prokka" come from?__  
 Prokka is a contraction of "prokaryotic annotation". It's also relatively unique within Google, and also rhymes with a native Australian marsupial called the quokka.
 
-* Can I annotate by eukaryote genome with Prokka?  
+* __Can I annotate by eukaryote genome with Prokka?__  
 No. Prokka is specifically designed for Bacteria, Archaea and Viruses. It can't handle multi-exon gene models; I would recommend using MAKER 2 for that purpose.
 
-* Why does Prokka keeps on crashing when it gets to tge "tbl2asn" stage?  
+* __Why does Prokka keeps on crashing when it gets to tge "tbl2asn" stage?__  
 It seems that the tbl2asn program from NCBI "expires" after 12 months, and refuses to run. Unfortunately you need to install a newer version which you can download from here.
 
-* The hmmscan step seems to hang and do nothing?    
-The problem here is GNU Parallel. It seems the Debian package for hmmer has modified it to require the --gnu option to behave in the 'default' way. There is no clear reason for this. The only way to restore normal behaviour is to edit the prokka script and change "parallel" to "parallel --gnu".
+* __The hmmscan step seems to hang and do nothing?__      
+The problem here is GNU Parallel. It seems the Debian package for hmmer has modified it to require the `--gnu` option to behave in the 'default' way. There is no clear reason for this. The only way to restore normal behaviour is to edit the prokka script and change `parallel` to `parallel --gnu`.
 
-* Why does prokka fail when it gets to hmmscan?  
+* __Why does prokka fail when it gets to hmmscan?__  
 Unfortunately HMMER keeps changing it's database format, and they aren't upward compatible. If you upgraded HMMER (from 3.0 to 3.1 say) then you need to "re-press" the files. This can be done as follows:
     cd /path/to/prokka/db/hmm
     mkdir new
@@ -298,13 +316,12 @@ Unfortunately HMMER keeps changing it's database format, and they aren't upward 
     mv * ..
     rmdir new
 
-* Why does Prokka take so long to download?  
+* __Why does Prokka take so long to download?__  
 Our server is in Australia, and the international pipes aren't always flowing as well as we'd like. I try to put it on GoogleDrive. Dropbox is no longer possible due to bandwidth quotas. If you are able to mirror Prokka (~2 GB) outside please let me know.
 
-* Why can't I load Prokka .GBK files into Mauve?  
-Mauve is very picky about Genbank files. It does not like long contig names, like those from Velvet or Spades. The simple solution is to use "--centre XXX" in Prokka and it will rename all your contigs to be NCBI (and Mauve) compliant.
-It does not like the ACCESSION and VERSION strings that Prokka produces via the "tbl2asn" tool. The following Unix command will fix them: 
-    egrep -v '^(ACCESSION|VERSION)' prokka.gbk > mauve.gbk
+* __Why can't I load Prokka .GBK files into Mauve?__  
+Mauve is very picky about Genbank files. It does not like long contig names, like those from Velvet or Spades. The simple solution is to use `--centre XXX` in Prokka and it will rename all your contigs to be NCBI (and Mauve) compliant.
+It does not like the ACCESSION and VERSION strings that Prokka produces via the "tbl2asn" tool. The following Unix command will fix them: `egrep -v '^(ACCESSION|VERSION)' prokka.gbk > mauve.gbk`
 
 
 ##Still To Do
