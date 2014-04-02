@@ -14,6 +14,13 @@ TODO:
 * check databases exist before spawning blast/hmmer
 * locus_tag rules: http://www.ncbi.nlm.nih.gov/genomes/locustag/Proposal.pdf
 
+v1.9.1. - April 2014
+* Enabled annotation of several EC numbers per CDS: prokka-biocyc_to_fasta_db,
+  prokka-genbank_to_fasta_db, prokka-hamap_to_hmm, and prokka-uniprot_to_fasta_db
+  will include those (separated by semicolons) in the database format. prokka
+  can add them to the features.
+* /gene and /EC_numbers will be removed from hypothetical proteins
+
 v1.9 - March 2014
 * MAJOR: Bug in prokka-uniprot_to_fasta_db: was allowing Altname instead of Recname
          This affected the /product names that were used in the core protein database!
