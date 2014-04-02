@@ -55,11 +55,9 @@ while (<ARGV>)
 #  my $prod = 'hypothetical protein'; 
   my $prod = ''; 
 
-  if (1) {  
     for my $de ($entry->DEs->elements) {
       if ($de->type eq 'EC') {
-	$ec = $de->text;
-	$ec =~ s/^\D*//;
+	$ec .= $de->text;
 #	last;
       }
       elsif ($de->type eq 'Full' and $de->category eq 'RecName') {
@@ -68,9 +66,9 @@ while (<ARGV>)
 	  $prod = $HYPO;
 	}
       }
-      last if $prod and $ec;  # we have some data now, exit out
     }
-  }
+      $ec =~ s/^\D*//;
+      $ec =~ s/EC /;/g;
   
   $prod ||= $HYPO;
 

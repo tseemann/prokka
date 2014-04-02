@@ -276,6 +276,7 @@ my $logfile = "$outdir/$prefix.log";
 msg("Writing log to: $logfile");
 open LOG, '>', $logfile or err("Can't open logfile");
 
+msg("This is $EXE $VERSION");
 msg("Command: @CMDLINE");
 
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
@@ -866,26 +867,31 @@ else {
     my $bls = Bio::SearchIO->new(-file=>$bls_name, -format=>$db->{FMT}, -version=>$db->{VERSION});
     while (my $res = $bls->next_result) {
       my $hit = $res->next_hit or next;
-      my($pid,$prod,$gene,$EC) = ($res->query_name, $hit->description, '', '');
+      my($pid,$prod,$gene,$EC,@ec_numbers) = ($res->query_name, $hit->description, '', '', '');
       if ($prod =~ m/~~~/) {
-	($EC,$gene,$prod) = split m/~~~/, $prod;
-	$EC =~ s/n\d+/-/g; # collapse transitionary EC numbers
+          ($EC,$gene,$prod) = split m/~~~/, $prod;
+          @ec_numbers = split m/;/, $EC;
+          foreach (@ec_numbers) {
+              $_ =~ s/n\d+/-/g; # collapse transitionary EC numbers
+          }
       }
       my $cleanprod = cleanup_product($prod);      
+      $cds{$pid}->add_tag_value('product', $cleanprod);
+      foreach my $ec (@ec_numbers) {
+          $cds{$pid}->add_tag_value('EC_number', $ec) if $ec;
+      }
+      $cds{$pid}->add_tag_value('gene', $gene) if $gene;
+      $cds{$pid}->add_tag_value('inference', $db->{SRC}.$hit->name);
       if ($cleanprod ne $prod) {
         msg("Modify product: $prod => $cleanprod");
         # we remove any special /gene or /EC if the /product is 'hypothetical protein' !
 	if ($cleanprod eq $HYPO) {
    	  $cds{$pid}->add_tag_value('note', $prod);
   	  $cds{$pid}->remove_tag('gene') if $cds{$pid}->has_tag('gene');
-	  $cds{$pid}->remove_tag('EC_number') if $cds{$pid}->has_tag('EC_number');
+	  $cds{$pid}->remove_tag('EC_number') if $cds{$pid}->has_tag('EC_number'); # removes all EC numbers
 	}
 	$num_cleaned++;
       }
-      $cds{$pid}->add_tag_value('product', $cleanprod);
-      $cds{$pid}->add_tag_value('EC_number', $EC) if $EC;
-      $cds{$pid}->add_tag_value('gene', $gene) if $gene;
-      $cds{$pid}->add_tag_value('inference', $db->{SRC}.$hit->name);
     }
     msg("Cleaned $num_cleaned /product names") if $num_cleaned > 0;
     for my $fn ($faa_name, $bls_name) {

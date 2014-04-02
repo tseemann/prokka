@@ -44,7 +44,8 @@ while (<$fam_fh>) {
     $AC = $1;
   }
   elsif (m/EC=([\d.]+);/) {
-    $EC = $1;
+    $EC = $1 if (!$EC);
+    $EC .= ";$1" if ($EC);
   }
   elsif (m/^ Bacteria/) {
     $Bac = 1;
@@ -131,7 +132,7 @@ sub setOptions {
 }
 
 sub usage {
-  print "Usage: $0 [options] [--datadir hamap_data_subdir] > hamap.hmm\n";
+  print "Usage: $0 [options] [--datadir hamap_data_subdir]\n";
   foreach (@Options) {
     printf "  --%-13s %s%s.\n",$_->{OPT},$_->{DESC},
            defined($_->{DEFAULT}) ? " (default '$_->{DEFAULT}')" : "";
