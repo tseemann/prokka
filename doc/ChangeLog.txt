@@ -20,6 +20,7 @@ v1.9.1. - April 2014
   will include those (separated by semicolons) in the database format. prokka
   can add them to the features.
 * /gene and /EC_numbers will be removed from hypothetical proteins
+* lower the case for initials in /product descriptions
 
 v1.9 - March 2014
 * MAJOR: Bug in prokka-uniprot_to_fasta_db: was allowing Altname instead of Recname
