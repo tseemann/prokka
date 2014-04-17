@@ -1,0 +1,93 @@
+#!/usr/bin/perl -w
+use strict;
+use Bio::SeqIO;
+
+my(@Options, $verbose, $format, $hypo, $idtag, $sep, $blank, $pseudo, $minlen);
+setOptions();
+
+my $in = Bio::SeqIO->new(-fh=>\*ARGV, -format=>$format);
+my $out = Bio::SeqIO->new(-fh=>\*STDOUT, -format=>'Fasta');
+
+while (my $seq = $in->next_seq) {
+#  print STDERR "\rParsing: ",$seq->display_id;
+  my $counter = 0;
+  for my $f ($seq->get_SeqFeatures)   {
+    
+    next unless $f->primary_tag eq 'Protein';
+        
+    next unless $f->length >= $minlen;
+    
+    next if !$pseudo and $f->has_tag('pseudo');
+
+    my $prod = TAG($f, 'product') || $blank;
+
+    next if $prod eq 'hypothetical protein';
+
+    my $cds = $f->seq;  # don't forget eukaryotes!
+
+#    my $id = TAG($f, $idtag) or die "feature #$counter does not have /$idtag tag!";
+   my $id = $seq->accession;
+   
+    $counter++;
+    print STDERR "Processing: ", $seq->display_id, " | $counter | $id | $prod\n" if $verbose;
+    
+    my $ec = TAG($f, 'EC_number') || $blank;
+    my $gene = TAG($f, 'gene') || $blank;
+    
+    $cds->desc("$ec$sep$gene$sep$prod");
+    $cds->display_id($id);
+    
+    $out->write_seq($cds);
+  }
+  print STDERR "\n";
+}
+print STDERR "\nDone\n";
+
+#----------------------------------------------------------------------
+
+sub TAG {
+  my($f, $tag) = @_;
+  return unless $f->has_tag($tag);
+  return ($f->get_tag_values($tag))[0];
+}
+
+#----------------------------------------------------------------------
+# Option setting routines
+
+sub setOptions {
+  use Getopt::Long;
+
+  @Options = (
+    {OPT=>"help",      VAR=>\&usage,               DESC=>"This help"},
+    {OPT=>"verbose!",  VAR=>\$verbose, DEFAULT=>0, DESC=>"Verbose progress"},
+    {OPT=>"format=s",  VAR=>\$format,  DEFAULT=>'genbank', DESC=>"Input format"},
+#    {OPT=>"idtag=s",   VAR=>\$idtag,   DEFAULT=>'protein_id', DESC=>"What tag to use as Fasta ID"},
+    {OPT=>"sep=s",     VAR=>\$sep,     DEFAULT=>'~~~', DESC=>"Separator between EC/gene/product" },
+    {OPT=>"blank=s",   VAR=>\$blank,   DEFAULT=>'',    DESC=>"Replace empty EC/gene/product with this"},
+    {OPT=>"pseudo!",   VAR=>\$pseudo,  DEFAULT=>0,     DESC=>"Include /pseudo genes"},
+    {OPT=>"hypo!",     VAR=>\$hypo,    DEFAULT=>0,     DESC=>"Include 'hypothetical protein' genes"},
+    {OPT=>"minlen=i",  VAR=>\$minlen,  DEFAULT=>0,     DESC=>"Minimum peptide length"},
+  );
+
+  (!@ARGV) && (usage());
+
+  &GetOptions(map {$_->{OPT}, $_->{VAR}} @Options) || usage();
+
+  # Now setup default values.
+  foreach (@Options) {
+    if (defined($_->{DEFAULT}) && !defined(${$_->{VAR}})) {
+      ${$_->{VAR}} = $_->{DEFAULT};
+    }
+  }
+}
+
+sub usage {
+  print "Usage: $0 [options] [genome1.gbp ...] > proteins.faa\n";
+  foreach (@Options) {
+    printf "  --%-13s %s%s.\n",$_->{OPT},$_->{DESC},
+           defined($_->{DEFAULT}) ? " (default '$_->{DEFAULT}')" : "";
+  }
+  exit(1);
+}
+ 
+#----------------------------------------------------------------------
