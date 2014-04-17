@@ -1,0 +1,100 @@
+#!/usr/bin/env perl
+
+use strict;
+use warnings;
+
+
+# These are most/all of the types of lines we need to clean up
+# so that the DESC line has a clean /product we can annotate with
+#
+#DESC  OrgA_MxiK: type III secretion apparatus protein OrgA/MxiK
+#DESC  cas_TM1802: CRISPR-associated protein, TM1802 family
+#DESC  TIGR03089: TIGR03089 family protein
+#DESC  trio_acet_GNAT: GNAT-family acetyltransferase TIGR03103
+#DESC  PEPCTERM_chp_1: TIGR03118 family protein
+#DESC  YCCS: hypothetical membrane protein, TIGR01666
+#DESC  phage_TIGR01671: phage conserved hypothetical protein TIGR01671
+#DESC  chp_P_marinus_1: conserved hypothetical protein, TIGR03894 family
+#DESC  TIGR00162: TIGR00162 family protein
+
+# Read an entire record at a time
+local $/ = "\n//\n";
+
+while (my $model = <ARGV>) 
+{
+  next unless $model =~ m/ ^ ( 
+				(DESC\s{2}) 
+				(?:(\S+):\s+)? 
+				(.*) 
+			   ) $ 
+                         /xm; 
+  my($line,$tag,$nick,$desc) = ($1,$2,$3,$4);
+
+  # skip uninformative "TIGR03894 family protein" et al
+  next if $desc =~ m/^TIGR\d{5}\s+family*/;
+  next if $desc =~ m/hypothetical|uncharacteri|plasmodium/i;
+
+  # skip obvious non-bacterial families
+  next if $desc =~ m/mitochondria|chloroplast|photosy/;
+
+  # consistify uncertainty
+  $desc =~ s/^probable\s+//;
+  $desc =~ s/^proposed /putative /;
+
+  # remove ", TIGR03894 family" suffix
+  $desc =~ s/,\s\w+\s+family\s*$//;
+
+  # remove " TIGR03894" suffix
+  $desc =~ s/\s+TIGR\d{5}\s*$//;
+
+  # remove other crud
+  $desc =~ s/arCOG\d+\s*//;
+
+  # check if the nickname could be a /gene (THIS IS UNRELIABLE)
+  #if ($nick and $nick =~ m/^\w{3,4}$/) {
+  #  $desc = "~~~$nick~~~$desc";  
+  #}
+
+  # progress info
+  print STDERR "[$.] $desc\n";
+
+  # replace old line with new line
+  $model =~ s/\Q$line/$tag$desc/;
+  
+  # print out the new model
+  print $model;  
+}
+
+### This is what a record looks like:
+
+__DATA__
+
+HMMER3/b [3.0 | March 2010]
+NAME  TIGR00001
+ACC   TIGR00001
+DESC  rpmI_bact: ribosomal protein L35
+LENG  63
+ALPH  amino
+RF    no
+CS    no
+MAP   yes
+DATE  Sun Apr 11 21:57:51 2010
+NSEQ  24
+EFFN  3.407227
+CKSUM 3207865750
+GA    51.20 51.20;
+TC    51.20 51.20;
+NC    23.65 23.65;
+STATS LOCAL MSV       -8.6865  0.71888
+STATS LOCAL VITERBI   -9.0285  0.71888
+STATS LOCAL FORWARD   -3.9486  0.71888
+HMM          A        C        D        E        F        G        H
+I        K        L        M        N        P        Q        R        S
+T        V        W        Y   
+            m->m     m->i     m->d     i->m     i->i     d->m     d->d
+  COMPO   2.54856  4.84574  3.44949  2.99298  3.59062  3.07590  3.24663
+3.11999  1.88001  2.52139  3.58753  3.14951  3.62012  3.13253  2.42536
+2.65593  2.78154  2.90018  5.42329  3.8471
+<snip>
+//
+
