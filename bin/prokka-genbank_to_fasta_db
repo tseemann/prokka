@@ -64,7 +64,7 @@ print STDERR "\nDone\n";
 sub TAG {
   my($f, $tag) = @_;
   return unless $f->has_tag($tag);
-  return ($f->get_tag_values($tag))[0];
+  return join(';', $f->get_tag_values($tag));
 }
 
 #----------------------------------------------------------------------

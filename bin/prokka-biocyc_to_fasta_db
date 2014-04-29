@@ -32,7 +32,12 @@ while (<$ec_fh>) {
   my @x = split m/\t/;
   next unless exists $seq{ $x[1] };
   next unless $x[7] =~ m/^EC:(.*)$/;
-  $seq{$x[1]}{EC} = $1;  
+  if ($seq{$x[1]}{EC}) {
+      next if ($seq{$x[1]}{EC} =~ /$1/); # skip EC numbers that are already included
+      $seq{$x[1]}{EC} .= ";$1";
+  } else {
+      $seq{$x[1]}{EC} = $1;
+  }
 }
 
 while (<$gene_fh>) {
