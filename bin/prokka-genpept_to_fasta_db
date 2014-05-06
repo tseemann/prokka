@@ -39,7 +39,7 @@ while (my $seq = $in->next_seq) {
     
     $out->write_seq($cds);
   }
-  print STDERR "\n";
+#  print STDERR "\n";
 }
 print STDERR "\nDone\n";
 

@@ -1,0 +1,108 @@
+#!/usr/bin/perl -w
+use strict;
+use Data::Dumper;
+use File::Temp qw(tempdir);
+
+#HMMER3/b [3.0b2 | June 2009]
+#NAME  1-cysPrx_C
+#ACC   PF10417.2
+#DESC  C-terminal domain of 1-Cys peroxiredoxin
+#LENG  40
+#ALPH  amino
+
+my(@Options, $verbose, $srcdir, $lib, $outdir);
+setOptions();
+
+-d $srcdir or die "can't read --srcdir: $srcdir";
+$lib or die "please specify --lib: PHA PRK ...";
+-d "$srcdir/$lib" or die "invalid --lib: $lib";
+
+# check we have available external commands
+for my $exe (qw(tar hmmbuild hmmpress)) {
+  qx(which $exe 2> /dev/null) or die "ERROR: can't see '$exe' in \$PATH";
+}
+
+my $tmp = tempdir(CLEANUP=>1);
+
+my $summ_fn = "$srcdir/$lib/${lib}_summary.txt";
+die "ERROR: can't open '$summ_fn'" unless -r $summ_fn;
+
+my $aln_fn = "$srcdir/$lib/${lib}_Clusters.aln.tgz";
+die "ERROR: can't open '$aln_fn'" unless -r $aln_fn;
+
+die "ERROR: outdir '$outdir' does not exist" unless -d $outdir;
+
+print STDERR "Reading: $summ_fn\n";
+open my $summ_fh, '<', $summ_fn;
+my %desc_of;
+while (<$summ_fh>) {
+  my @x = split m/\t/;
+  next unless $x[1] =~ m/^$lib/;
+  $desc_of{$x[1]} = $x[3];
+}
+print STDERR "Found ", scalar(keys %desc_of), " $lib descriptions.\n";
+
+my $cmd = "tar -C $tmp -zxf \Q$aln_fn\E";
+print STDERR "Extracting alignments: $cmd\n";
+system($cmd);
+my @msa = <$tmp/*.aln>;
+print STDERR "Found ", scalar(@msa), " alignment files.\n";
+
+my $out_fn = "$outdir/$lib.hmm";
+print STDERR "Creating: $out_fn\n";
+open my $out_fh, '>', $out_fn;
+
+for my $msa (@msa) {
+  $msa =~ m{($lib\d+)\.aln$};
+  my $id = $1 or next;
+  $cmd = "hmmbuild --informat afa -o /dev/null /dev/stdout \Q$msa\E 2> /dev/null";
+  print STDERR "\rProcessing: $id";
+  my @hmm = qx($cmd);
+  if (@hmm < 10) {
+    print STDERR "\nWARNING: problem with the $id.aln file, too small, skipping.\n";
+    next;
+  }
+  splice @hmm, 2, 0, ("ACC   $id\n", "DESC  $desc_of{$id}\n");
+  print $out_fh @hmm;
+}
+print STDERR "\nPressing indices: $out_fn\n";
+system("hmmpress $out_fn");
+
+print STDERR "\rDone - results in $out_fn\n";
+
+#----------------------------------------------------------------------
+# Option setting routines
+
+sub setOptions {
+  use Getopt::Long;
+
+  @Options = (
+    {OPT=>"help",    VAR=>\&usage,             DESC=>"This help"},
+    {OPT=>"verbose!",  VAR=>\$verbose, DEFAULT=>0, DESC=>"Verbose output"},
+    {OPT=>"dir=s",  VAR=>\$srcdir, DEFAULT=>'/bio/data/CLUSTERS/latest', DESC=>"Source CLUSTERS folder"},
+    {OPT=>"lib=s",  VAR=>\$lib, DEFAULT=>'', DESC=>"Library: PHA PRK ..."},
+    {OPT=>"outdir=s",  VAR=>\$outdir, DEFAULT=>'.', DESC=>"Output folder for .hmm files and indices"},
+  );
+
+  #(!@ARGV) && (usage());
+
+  &GetOptions(map {$_->{OPT}, $_->{VAR}} @Options) || usage();
+
+  # Now setup default values.
+  foreach (@Options) {
+    if (defined($_->{DEFAULT}) && !defined(${$_->{VAR}})) {
+      ${$_->{VAR}} = $_->{DEFAULT};
+    }
+  }
+}
+
+sub usage {
+  print "Usage: $0 [options]\n";
+  foreach (@Options) {
+    printf "  --%-13s %s%s.\n",$_->{OPT},$_->{DESC},
+           defined($_->{DEFAULT}) ? " (default '$_->{DEFAULT}')" : "";
+  }
+  exit(1);
+}
+ 
+#----------------------------------------------------------------------

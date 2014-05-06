@@ -55,7 +55,7 @@ printf STDERR "%d models made it through filtering\n", scalar keys %DESC;
 my $aln_file = "$datadir/hamap_seed_alignments.tar.gz";
 if (-r $aln_file) {
   print STDERR "Extracting $aln_file.\n";
-  system("tar -C $dir --strip-components 1 -zxf $aln_file");
+  system("tar -C $dir --strip-components 1 -zxf $aln_file")==0 or die "ERROR: $?";
   my @msa = <$dir/*.msa>;
   printf STDERR "Found %d MSA files.\n", scalar(@msa);
   for my $msa (@msa) {
@@ -65,14 +65,14 @@ if (-r $aln_file) {
     if ($desc) {
       print STDERR "Building HMM for $id: $desc\n";
       $desc =~ s{'}{\\'}g;
-      system("hmmbuild -o /dev/null -n $id /dev/stdout $msa | sed '3i DESC  \Q$desc\E' > $dir/$id.hmm");
+      system( "hmmbuild -o /dev/null -n $id /dev/stdout $msa | sed \"3i DESC  $desc\" > $dir/$id.hmm" )==0 or die "ERROR: $?";
 #      if ($id eq 'MF_00023') {
 #        system("head -20 $dir/$id.hmm");
 #        last;
 #      }
     }
     else {
-      print STDERR "Skipping $id - has dodgy /product name\n";
+      print STDERR "Skipping $id - undesirable /product name\n";
     }
   }
 }
