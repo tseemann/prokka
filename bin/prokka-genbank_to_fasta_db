@@ -1,6 +1,7 @@
 #!/usr/bin/perl -w
 use strict;
 use Bio::SeqIO;
+use Data::Dumper;
 
 my(@Options, $verbose, $format, $hypo, $idtag, $sep, $blank, $pseudo, $minlen);
 setOptions();
@@ -9,7 +10,7 @@ my $in = Bio::SeqIO->new(-fh=>\*ARGV, -format=>$format);
 my $out = Bio::SeqIO->new(-fh=>\*STDOUT, -format=>'Fasta');
 
 while (my $seq = $in->next_seq) {
-#  print STDERR "\rParsing: ",$seq->display_id;
+  print STDERR "\rParsing: ",$seq->display_id;
   my $counter = 0;
   for my $f ($seq->get_SeqFeatures)   {
     
@@ -27,7 +28,7 @@ while (my $seq = $in->next_seq) {
 
     my $id = TAG($f, $idtag) or die "feature #$counter does not have /$idtag tag!";
     $counter++;
-    print STDERR "Processing: ", $seq->display_id, " | $counter | $id | $prod\n" if $verbose;
+    print STDERR "Processing: [$counter] ", $seq->display_id, " | $id | $prod\n" if $verbose;
     
     # HANDLE CODON START FOR FUZZY FEATURES!
     if ($f->has_tag('codon_start')) {
@@ -38,6 +39,7 @@ while (my $seq = $in->next_seq) {
       }
     }
     #END
+
 
     # DNA -> AA    
     $cds = $cds->translate;
@@ -64,7 +66,10 @@ print STDERR "\nDone\n";
 sub TAG {
   my($f, $tag) = @_;
   return unless $f->has_tag($tag);
-  return ($f->get_tag_values($tag))[0];
+  # Seems new submissions have 2 protein IDs - one useful and one annoying!
+  # /protein_id="REF_PRJNA193299:EFAU085_p1001"
+  # /protein_id="YP_008390691.1"
+  return ( grep { ! m/PRJNA/ } $f->get_tag_values($tag) ) [0];
 }
 
 #----------------------------------------------------------------------
