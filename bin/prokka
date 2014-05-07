@@ -753,7 +753,7 @@ if ($tools{signalp}->{HAVE}) {
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
 # Annotate CDS
 
-#my %dbof = ( 'PF'=>'Pfam', 'TIGR'=>'TIGRFAMs', 'PRK'=>'Cdd', 'COG'=>'COG' );
+#my %dbof = ( 'PF'=>'Pfam', 'TIGR'=>'TIGRFAMs', 'PRK'=>'Cdd', 'COG'=>'COG', 'MF_'=>'HAMAP' );
 
 # primary data source is a curated subset of uniprot (evidence <= 1 per Phylum)
 my @database = (
@@ -767,7 +767,7 @@ my @database = (
 
 # secondary sources are a series of HMMs
 unless ($kingdom eq 'Viruses') {
-  for my $name (qw(CLUSTERS TIGRFAMs Cdd Pfam)) {
+  for my $name (qw(HAMAP CLUSTERS TIGRFAMs Cdd Pfam)) {
     push @database, {
       DB  => "$DBDIR/hmm/$name.hmm",
       SRC => "protein motif:$name:",
@@ -1084,6 +1084,7 @@ close $txtFh;
 
 # NOTE: the -A and -N  fake accession and version needed for Mauve!
 # BUT: -A xxx has a bug where it uses xxx as the LOCUS (contig) ID for 1st contig
+# SO: *sigh*
 
 msg("Generating Genbank and Sequin files");
 #runcmd("tbl2asn -a s -q F -A $prefix -N 1 -y 'Annotated using $EXE $VERSION from $URL' -Z $outdir/$prefix.err -M n -V b -i $outdir/$prefix.fsa -f $outdir/$prefix.tbl 2> /dev/null");
