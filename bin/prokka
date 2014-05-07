@@ -753,8 +753,6 @@ if ($tools{signalp}->{HAVE}) {
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
 # Annotate CDS
 
-#my %dbof = ( 'PF'=>'Pfam', 'TIGR'=>'TIGRFAMs', 'PRK'=>'Cdd', 'COG'=>'COG', 'MF_'=>'HAMAP' );
-
 # primary data source is a curated subset of uniprot (evidence <= 1 per Phylum)
 my @database = (
   {
@@ -767,7 +765,7 @@ my @database = (
 
 # secondary sources are a series of HMMs
 unless ($kingdom eq 'Viruses') {
-  for my $name (qw(HAMAP CLUSTERS TIGRFAMs Cdd Pfam)) {
+  for my $name (qw(HAMAP CLUSTERS TIGRFAMs Pfam)) {
     push @database, {
       DB  => "$DBDIR/hmm/$name.hmm",
       SRC => "protein motif:$name:",
