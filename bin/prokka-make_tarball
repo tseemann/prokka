@@ -18,7 +18,9 @@ fi
 mkdir "$FOLDER"
 
 echo "Converting HTML manual to TXT"
-links -dump ../doc/prokka-manual.html > ../doc/prokka-manual.txt
+#links -dump ../doc/prokka-manual.html > ../doc/prokka-manual.txt
+pandoc --from=markdown --to=html ../README.md > ../doc/prokka-manual.html
+pandoc --from=markdown --to=plain ../README.md > ../doc/prokka-manual.txt
 
 echo "Copying files to: $FOLDER"
 cp -rv ../bin ../doc ../db ../binaries "$FOLDER"
