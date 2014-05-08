@@ -29,6 +29,10 @@ or to `/etc/profile.d/prokka.sh` to make it available to all users:
 
     export PATH=$PATH:/opt/prokka-1.x
 
+###Index the sequence databases
+
+    prokka --setupdb
+
 ###Install dependencies
 
 Prokka comes with many binaries for Linux and Mac OS X. It will always use your existing installed versions if they exist, but will use the included ones if that fails. For some older systems (eg. Centos 4.x) some of them won't work due to them being dynamically linked against new GLIBC libraries you don't have. 
