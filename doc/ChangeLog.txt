@@ -14,7 +14,7 @@ TODO:
 * check databases exist before spawning blast/hmmer
 * locus_tag rules: http://www.ncbi.nlm.nih.gov/genomes/locustag/Proposal.pdf
 
-v1.9 - March 2014
+v1.9 - 
 * MAJOR: Bug in prokka-uniprot_to_fasta_db: was allowing Altname instead of Recname
          This affected the /product names that were used in the core protein database!
 * Updated kingdom databases (sprot)
@@ -23,6 +23,13 @@ v1.9 - March 2014
 * Removed linux/nhmmer binary as it is not used by Prokka
 * Experimental --kingdom Mitochondria
 * prokka-uniprot_to_fasta_db now has --term empty as default
+* More prokka-XXXX_to_fasta_db scripts (not for general use just yet)
+* New --setupdb function to press/index databases ready for Prokka to use
+* New --cleandb function to remove all redundant indices (useful for making tarball)
+* Introduction of 'HAMAP' HMM before CLUSTERS as smaller, faster, reliable
+* Removal of 'Cdd' HMM as no longer maintained
+* Removal of 'TIGRFAMs' HMM as doesn't add much
+* New dependencies of hmmpress and cmpress to support --setupdb
 
 v1.8 - Nov 2013
 * Added support for 'minced' CRISPR finder [Connor Skennerton]

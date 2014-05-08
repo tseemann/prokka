@@ -119,8 +119,20 @@ my %tools = (
     MINVER  => "1.1",
     NEEDED  => 0,  # only if --rfam used
   },
+  'cmpress' => {
+    GETVER  => "cmpress -h | grep '^# INFERNAL'",
+    REGEXP  => qr/INFERNAL\s+($BIDEC)/,
+    MINVER  => "1.1",
+    NEEDED  => 0,  
+  },
   'hmmscan' => {
     GETVER  => "hmmscan -h | grep '^# HMMER'",
+    REGEXP  => qr/HMMER\s+($BIDEC)/,
+    MINVER  => "3.1",
+    NEEDED  => 1,
+  },
+  'hmmpress' => {
+    GETVER  => "hmmpress -h | grep '^# HMMER'",
     REGEXP  => qr/HMMER\s+($BIDEC)/,
     MINVER  => "3.1",
     NEEDED  => 1,
@@ -765,7 +777,7 @@ my @database = (
 
 # secondary sources are a series of HMMs
 unless ($kingdom eq 'Viruses') {
-  for my $name (qw(HAMAP CLUSTERS TIGRFAMs Pfam)) {
+  for my $name (qw(HAMAP CLUSTERS Pfam)) {
     push @database, {
       DB  => "$DBDIR/hmm/$name.hmm",
       SRC => "protein motif:$name:",
@@ -886,10 +898,7 @@ else {
       $cds{$pid}->add_tag_value('inference', $db->{SRC}.$hit->name);
     }
     msg("Cleaned $num_cleaned /product names") if $num_cleaned > 0;
-    for my $fn ($faa_name, $bls_name) {
-      msg("Deleting temporary file: $fn");
-      unlink $fn;
-    }
+    delfile( $faa_name, $bls_name);
   }
 }
 
@@ -1198,7 +1207,7 @@ sub runcmd {
 
 sub delfile {
   for my $file (@_) {
-    msg("Deleting temporary file:", $file);
+    msg("Deleting unwanted file:", $file);
     unlink $file;
   }
 }
@@ -1235,8 +1244,8 @@ sub cms {
   return map { m{([^/]+).i1m$}; $1 } glob("$DBDIR/cm/*.i1m");
 }
 
-sub show_databases {
-  msg( "Looking for databased in: $DBDIR" );
+sub show_db {
+  msg( "Looking for databases in: $DBDIR" );
   msg( "* Kingdoms:", kingdoms() );
   msg( "* Genera:", genera() );
   msg( "* HMMs:", hmms() );
@@ -1262,6 +1271,43 @@ EOCITE
 }
 
 #----------------------------------------------------------------------
+
+sub setup_db {
+  
+  clean_db();
+  
+  for my $sprot (<$DBDIR/kingdom/*/sprot>) {
+    msg("Making kingdom BLASTP database: $sprot");
+    runcmd("makeblastdb -dbtype prot -in '$sprot' -logfile /dev/null");
+  }
+  for my $genus (<$DBDIR/genus/*>) {
+    msg("Making genus BLASTP database: $genus");
+    runcmd("makeblastdb -dbtype prot -in '$genus' -logfile /dev/null");
+  }
+  for my $hmm (<$DBDIR/hmm/*.hmm>) {
+    msg("Pressing HMM database: $hmm");
+    runcmd("hmmpress '$hmm'");
+  }
+  for my $cm (<$DBDIR/cm/{Viruses,Bacteria}>) {
+    msg("Pressing CM database: $cm");    
+    runcmd("cmpress '$cm'");
+  }
+  
+  show_db();
+  
+  exit;
+}
+
+#----------------------------------------------------------------------
+
+sub clean_db {
+  delfile( <$DBDIR/kingdom/*/sprot.p??> );
+  delfile( <$DBDIR/genus/*.p??> );
+  delfile( <$DBDIR/hmm/*h3?> );
+  delfile( <$DBDIR/cm/*.i1?> );
+}
+
+#----------------------------------------------------------------------
 # Option setting routines
 
 sub setOptions {
@@ -1272,9 +1318,12 @@ sub setOptions {
     {OPT=>"help",    VAR=>\&usage,             DESC=>"This help"},
     {OPT=>"version", VAR=>\&version, DESC=>"Print version and exit"},
     {OPT=>"docs",    VAR=>\&showdoc,           DESC=>"Show full manual/documentation"},
-    {OPT=>"listdb",  VAR=>\&show_databases,    DESC=>"List all configured databases"},
     {OPT=>"citation",VAR=>\&show_citation,     DESC=>"Print citation for referencing Prokka"},
     {OPT=>"quiet!",  VAR=>\$quiet, DEFAULT=>0, DESC=>"No screen output"},
+    'Database setup:',
+    {OPT=>"listdb",   VAR=>\&show_db,    DESC=>"List all configured databases"},
+    {OPT=>"setupdb",  VAR=>\&setup_db,         DESC=>"Index all installed databases"},
+    {OPT=>"cleandb",  VAR=>\&clean_db,         DESC=>"Remove all database indices"},
     'Outputs:',
     {OPT=>"outdir=s",  VAR=>\$outdir, DEFAULT=>'', DESC=>"Output folder [auto]"},
     {OPT=>"force!",  VAR=>\$force, DEFAULT=>0, DESC=>"Force overwriting existing output folder"},
