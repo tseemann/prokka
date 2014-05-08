@@ -356,6 +356,8 @@ msg("Loading and checking input file: $in");
 my $fin = Bio::SeqIO->new(-file=>$in, -format=>'fasta');
 my $fout = Bio::SeqIO->new(-file=>">$outdir/$prefix.fna", -format=>'fasta');
 my $ncontig = 0;
+my $contigprefix = $locustag || $prefix || $outdir || $strain || '';
+$contigprefix .= '_' if $contigprefix;
 while (my $seq = $fin->next_seq) {
   if ($seq->length < $mincontiglen) {
     msg("Skipping short (<$mincontiglen bp) contig:",$seq->display_id);
@@ -365,7 +367,7 @@ while (my $seq = $fin->next_seq) {
   # http://www.ncbi.nlm.nih.gov/genomes/static/Annotation_pipeline_README.txt
   # leave contigs names as-is unless they are in --compliant mode or want --centre set
   if ($centre) {  
-    $seq->id( sprintf "gnl|$centre|contig%06d", $ncontig );
+    $seq->id( sprintf "gnl|$centre|${contigprefix}contig%06d", $ncontig );
   }
   my $s = $seq->seq;
   $s = uc($s);

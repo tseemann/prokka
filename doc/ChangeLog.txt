@@ -30,6 +30,8 @@ v1.9 -
 * Removal of 'Cdd' HMM as no longer maintained
 * Removal of 'TIGRFAMs' HMM as doesn't add much
 * New dependencies of hmmpress and cmpress to support --setupdb
+* Fixed bug with parsing "X.Yb" version format with signalp [Peter Cock]
+* Put unique prefix on contig names in --compliant mode [Peter Cock]
 
 v1.8 - Nov 2013
 * Added support for 'minced' CRISPR finder [Connor Skennerton]
