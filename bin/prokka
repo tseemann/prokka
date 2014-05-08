@@ -243,6 +243,13 @@ else {
 msg("Annotating as >>> $kingdom <<<");
 
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
+# check if --setupdb has been run
+
+if ( !  -r "$DBDIR/kingdom/$kingdom/sprot.pin" or ! "$DBDIR/hmm/HAMAP.hmm.h3i") {
+  err("The sequence databases have not been indexed. Please run 'prokka --setupdb' first.");
+}
+
+# . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
 # check options
 
 if ($compliant) {
@@ -1231,31 +1238,6 @@ sub showdoc {
 
 #----------------------------------------------------------------------
 
-sub kingdoms {
-  return map { m{kingdom/(\w+?)/}; $1 } glob("$DBDIR/kingdom/*/*.pin");
-}
-
-sub genera {
-  return map { m{([^/]+).pin$}; $1 } glob("$DBDIR/genus/*.pin");
-}
-
-sub hmms {
-  return map { m{([^/]+).hmm.h3m$}; $1 } glob("$DBDIR/hmm/*.h3m");
-}
-
-sub cms {
-  return map { m{([^/]+).i1m$}; $1 } glob("$DBDIR/cm/*.i1m");
-}
-
-sub show_db {
-  msg( "Looking for databases in: $DBDIR" );
-  msg( "* Kingdoms:", kingdoms() );
-  msg( "* Genera:", genera() );
-  msg( "* HMMs:", hmms() );
-  msg( "* CMs:", cms() );
-  exit;
-}
-
 sub show_citation {
   print STDERR << "EOCITE";
   
@@ -1277,8 +1259,37 @@ EOCITE
 
 #----------------------------------------------------------------------
 
+sub kingdoms {
+  return map { m{kingdom/(\w+?)/}; $1 } glob("$DBDIR/kingdom/*/*.pin");
+}
+
+sub genera {
+  return map { m{([^/]+).pin$}; $1 } glob("$DBDIR/genus/*.pin");
+}
+
+sub hmms {
+  return map { m{([^/]+).hmm.h3m$}; $1 } glob("$DBDIR/hmm/*.h3m");
+}
+
+sub cms {
+  return map { m{([^/]+).i1m$}; $1 } glob("$DBDIR/cm/*.i1m");
+}
+
+#----------------------------------------------------------------------
+
+sub list_db {
+  msg( "Looking for databases in: $DBDIR" );
+  msg( "* Kingdoms:", kingdoms() );
+  msg( "* Genera:", genera() );
+  msg( "* HMMs:", hmms() );
+  msg( "* CMs:", cms() );
+  exit(0);
+}
+
+#----------------------------------------------------------------------
+
 sub setup_db {
-  
+
   clean_db();
   
   for my $sprot (<$DBDIR/kingdom/*/sprot>) {
@@ -1298,18 +1309,18 @@ sub setup_db {
     runcmd("cmpress '$cm'");
   }
   
-  show_db();
-  
-  exit;
+  list_db();
 }
 
 #----------------------------------------------------------------------
 
 sub clean_db {
+  msg("Cleaning databases in $DBDIR");
   delfile( <$DBDIR/kingdom/*/sprot.p??> );
   delfile( <$DBDIR/genus/*.p??> );
   delfile( <$DBDIR/hmm/*h3?> );
   delfile( <$DBDIR/cm/*.i1?> );
+  msg("Cleaning complete.");
 }
 
 #----------------------------------------------------------------------
@@ -1326,7 +1337,7 @@ sub setOptions {
     {OPT=>"citation",VAR=>\&show_citation,     DESC=>"Print citation for referencing Prokka"},
     {OPT=>"quiet!",  VAR=>\$quiet, DEFAULT=>0, DESC=>"No screen output"},
     'Database setup:',
-    {OPT=>"listdb",   VAR=>\&show_db,    DESC=>"List all configured databases"},
+    {OPT=>"listdb",   VAR=>\&list_db,    DESC=>"List all configured databases"},
     {OPT=>"setupdb",  VAR=>\&setup_db,         DESC=>"Index all installed databases"},
     {OPT=>"cleandb",  VAR=>\&clean_db,         DESC=>"Remove all database indices"},
     'Outputs:',
