@@ -103,7 +103,7 @@ my %tools = (
   'signalp' => {
     # this is so long-winded as -v changed meaning (3.0=version, 4.0=verbose !?)
     GETVER  => "signalp -v < /dev/null 2>&1 | egrep ',|# SignalP' | sed 's/^# SignalP-//'",
-    REGEXP  => qr/^(.*?)[,\s]/,
+    REGEXP  => qr/^($BIDEC)/,
     MINVER  => "3.0",
     NEEDED  => 0,  # only if --gram used
   },
