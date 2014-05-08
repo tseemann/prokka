@@ -31,21 +31,12 @@ TARBALL="$DESTDIR/$NAME.tar.gz"
 echo "Creating: $TARBALL"
 tar -C "$DESTDIR" -vcf - "$NAME" | pigz > "$TARBALL"
 
-BZIPBALL="$DESTDIR/$NAME.tar.bz2";
-echo "Creating: $BZIPBALL"
-tar -C "$DESTDIR" -vcf - "$NAME" | pbzip2 > "$BZIPBALL"
-
-
 echo "Cleaning up: $FOLDER"
 rm -r "$FOLDER"
 
 echo "Checking tarball: $TARBALL"
 ls -l $TARBALL 
 
-echo "Checking bzipball: $TARBALL"
-ls -l $BZIPBALL
-#tar ztf $TARBALL
-
 echo "Your tarball is here: $TARBALL"
-echo "Your bzipball is here: $BZIPBALL"
+
 echo "Done."
