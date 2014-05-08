@@ -17,8 +17,7 @@ if [ -f "$FOLDER" ]; then
 fi
 mkdir "$FOLDER"
 
-echo "Converting HTML manual to TXT"
-#links -dump ../doc/prokka-manual.html > ../doc/prokka-manual.txt
+echo "Converting Markdown docs to HTML and TXT in doc/ folder"
 pandoc --from=markdown --to=html ../README.md > ../doc/prokka-manual.html
 pandoc --from=markdown --to=plain ../README.md > ../doc/prokka-manual.txt
 
