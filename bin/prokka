@@ -47,6 +47,7 @@ my $URL = 'http://www.vicbioinformatics.com';
 my $DBDIR = "$FindBin::RealBin/../db";
 my $HYPO = 'hypothetical protein';
 my $UNANN = 'unannotated protein';
+my $MAXCONTIGIDLEN = 38;  # Genbank rule
 
 # these should accept .faa on STDIN and write report to STDOUT
 my $BLASTPCMD = "blastp -query - -db %d -evalue %e -num_threads 1 -num_descriptions 1 -num_alignments 1";
@@ -363,8 +364,14 @@ msg("Loading and checking input file: $in");
 my $fin = Bio::SeqIO->new(-file=>$in, -format=>'fasta');
 my $fout = Bio::SeqIO->new(-file=>">$outdir/$prefix.fna", -format=>'fasta');
 my $ncontig = 0;
+
 my $contigprefix = $locustag || $prefix || $outdir || $strain || '';
 $contigprefix .= '_' if $contigprefix;
+my $contig_name_len = length($centre) + 1 + length($contigprefix) + 6;
+if ($compliant and $contig_name_len > $MAXCONTIGIDLEN) {
+  err("Genbank contig IDs are $contig_name_len chars, must be <= $MAXCONTIGIDLEN. Prefix is: $contigprefix");
+}
+
 while (my $seq = $fin->next_seq) {
   if ($seq->length < $mincontiglen) {
     msg("Skipping short (<$mincontiglen bp) contig:",$seq->display_id);
@@ -375,6 +382,9 @@ while (my $seq = $fin->next_seq) {
   # leave contigs names as-is unless they are in --compliant mode or want --centre set
   if ($centre) {  
     $seq->id( sprintf "gnl|$centre|${contigprefix}contig%06d", $ncontig );
+  }
+  if (length($seq->id) > $MAXCONTIGIDLEN) {
+    msg("WARNING: Contig IDs must be less than 38 characters for Genbank compliance")
   }
   my $s = $seq->seq;
   $s = uc($s);
