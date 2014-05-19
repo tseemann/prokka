@@ -53,6 +53,7 @@ my $MAXCONTIGIDLEN = 38;  # Genbank rule
 my $BLASTPCMD = "blastp -query - -db %d -evalue %e -num_threads 1 -num_descriptions 1 -num_alignments 1";
 my $HMMER3CMD = "hmmscan --noali --notextw --acc -E %e --cpu 1 %d /dev/stdin";
 my $rnammer_mode = 'bac';
+my $barrnap_mode = 'bac';
 my $aragorn_opt = '';
 
 # debian package broke compatibility so have to force it now *grumble*
@@ -92,7 +93,7 @@ my %tools = (
   'barrnap' => {
     GETVER  => "barrnap --version 2>&1",
     REGEXP  => qr/($BIDEC)/,
-    MINVER  => "0.1",
+    MINVER  => "0.4",
     NEEDED  => 0,
   },
   'prodigal' => {
@@ -217,18 +218,21 @@ if ($kingdom =~ m/bac|prok/i) {
   $kingdom = 'Bacteria';
   $gcode ||= 11;
   $rnammer_mode = 'bac';
+  $barrnap_mode = 'bac';
 }
 elsif ($kingdom =~ m/arch/i) {
   $kingdom = 'Archaea';  
   $gcode ||= 11;
   $gram = '';
   $rnammer_mode = 'arc';
+  $barrnap_mode = 'bac';
 }
 elsif ($kingdom =~ m/vir/i) {
   $kingdom = 'Viruses';
   $gcode ||= 1;  # std
   $gram = '';
   $rnammer_mode = '';
+  $barrnap_mode = '';
 }
 elsif ($kingdom =~ m/mito|mt/i) {
   $kingdom = 'Mitochondria';
@@ -236,10 +240,10 @@ elsif ($kingdom =~ m/mito|mt/i) {
   $aragorn_opt = '-mt';
   $gram = '';
   $rnammer_mode = 'euk';
-  # delete $tools{'barrnap'}; # does not support mtDNA rRNA
+  $barrnap_mode = 'mito';
 }
 else {
-  err("Can't parse --mode '$kingdom'. Choose from: Bacteria Archaea Virus");
+  err("Can't parse --mode '$kingdom'. Choose from: Bacteria Archaea Virus Mitochondria");
 }
 msg("Annotating as >>> $kingdom <<<");
 
@@ -482,7 +486,7 @@ if ($kingdom ne 'Viruses' and !$norrna) {
     msg("Running Barrnap with $cpus threads");
     my $num_rrna=0;
     my $gff = Bio::Tools::GFF->new(
-      -file => "barrnap --threads $cpus --quiet $outdir/$prefix.fna  |",
+      -file => "barrnap --kingdom $barrnap_mode --threads $cpus --quiet $outdir/$prefix.fna  |",
       -gff_version => 3,
     );
     while (my $feat = $gff->next_feature) {
