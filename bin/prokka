@@ -1339,6 +1339,18 @@ sub clean_db {
 }
 
 #----------------------------------------------------------------------
+
+sub list_depends {
+  for my $t (sort keys %tools) {
+    my $ver = $tools{$t}{MINVER} || '0';
+    my $opt = $tools{$t}{NEEDED} ? 'compulsory' : 'optional';
+    my $inc = -x "$BINDIR/$t" ? 'bundled' : 'not bundled';
+    print "$t >= $ver ($opt, $inc)\n";
+  }
+  exit(0);
+}
+
+#----------------------------------------------------------------------
 # Option setting routines
 
 sub setOptions {
@@ -1351,10 +1363,11 @@ sub setOptions {
     {OPT=>"docs",    VAR=>\&showdoc,           DESC=>"Show full manual/documentation"},
     {OPT=>"citation",VAR=>\&show_citation,     DESC=>"Print citation for referencing Prokka"},
     {OPT=>"quiet!",  VAR=>\$quiet, DEFAULT=>0, DESC=>"No screen output"},
-    'Database setup:',
+    'Setup:',
     {OPT=>"listdb",   VAR=>\&list_db,    DESC=>"List all configured databases"},
     {OPT=>"setupdb",  VAR=>\&setup_db,         DESC=>"Index all installed databases"},
     {OPT=>"cleandb",  VAR=>\&clean_db,         DESC=>"Remove all database indices"},
+    {OPT=>"depends",  VAR=>\&list_depends,     DESC=>"List all software dependencies"},
     'Outputs:',
     {OPT=>"outdir=s",  VAR=>\$outdir, DEFAULT=>'', DESC=>"Output folder [auto]"},
     {OPT=>"force!",  VAR=>\$force, DEFAULT=>0, DESC=>"Force overwriting existing output folder"},
