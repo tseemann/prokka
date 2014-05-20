@@ -1009,6 +1009,7 @@ for my $sid (sort keys %seq) {
       # (ideally it would encompass the UTRs as well, but we don't know them)
       my $g = Bio::SeqFeature::Generic->new(
         -primary    => 'gene',
+        -seq_id     => $f->seq_id,
         -start      => $f->start,
         -end        => $f->end,
         -strand     => $f->strand,
