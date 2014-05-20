@@ -1166,8 +1166,8 @@ sub cleanup_product {
   $p =~ s/\s*\w+\d{4,}//; # remove possible locus tags
   $p =~ s/ and (inactivated|related) \w+//;
 
-  $p =~ s/^(possible|probable|predicted|uncharacteri.ed)/putative/i;
-  if ($p =~ m/(domain|family|binding|fold|like)\s*$/i and $p !~ m/,/)  {
+  $p =~ s/^(potential|possible|probable|predicted|uncharacteri.ed)/putative/i;
+  if ($p =~ m/(domain|family|binding|fold|like|motif|repeat)\s*$/i and $p !~ m/,/)  {
     $p .= " protein";
   }
   return $p;
