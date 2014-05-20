@@ -918,8 +918,10 @@ else {
         # we remove any special /gene or /EC if the /product is 'hypothetical protein' !
 	if ($cleanprod eq $HYPO) {
    	  $cds{$pid}->add_tag_value('note', $prod);
+          # I think I still need to do this to cope with dodgy anno sources 
   	  $cds{$pid}->remove_tag('gene') if $cds{$pid}->has_tag('gene');
 	  $cds{$pid}->remove_tag('EC_number') if $cds{$pid}->has_tag('EC_number');
+	  $EC = $gene = undef;
 	}
 	$num_cleaned++;
       }
