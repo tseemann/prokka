@@ -166,6 +166,41 @@ my %tools = (
 );  
 
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
+# get (and check) versions of tools
+
+sub check_tool {
+  my($toolname) = @_;
+  my $t = $tools{$toolname};
+  my $fp = find_exe($toolname);
+  err("Can't find required '$toolname' in your \$PATH") if !$fp and $t->{NEEDED};
+  if ($fp) {
+    $t->{HAVE} = $fp;
+    msg("Looking for '$toolname' - found $fp");
+    if ($t->{GETVER}) {
+      my($s) = qx($t->{GETVER});
+      if (defined $s) {
+        $s =~ $t->{REGEXP};
+        $t->{VERSION} = $1 if defined $1;
+        msg("Determined $toolname version is $t->{VERSION}");
+        if ($t->{VERSION} < $t->{MINVER}) {
+          err("Prokka needs $toolname $t->{MINVER} or higher. Please install it and try again.");
+        }
+      }
+      else {
+        err("Could not determine version of $toolname - please install version",
+            $t->{MINVER}, "or higher");
+      }
+    }
+  }
+}
+
+sub check_all_tools {
+  for my $toolname (sort keys %tools) {
+    check_tool($toolname);
+  }
+}
+
+# . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
 # command line options
 
 my(@Options, $quiet, $kingdom, $fast, $force, $outdir, $prefix, $cpus, $addgenes,
@@ -310,34 +345,7 @@ if (-d $BINDIR) {
   $ENV{PATH} .= ":$BINDIR:$BINDIR/../common";
 }
 
-
-# . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
-# get (and check) versions of tools
-
-for my $toolname (sort keys %tools) {
-  my $t = $tools{$toolname};
-  my $fp = find_exe($toolname);
-  err("Can't find required '$toolname' in your \$PATH") if !$fp and $t->{NEEDED};
-  if ($fp) {
-    $t->{HAVE} = $fp;
-    msg("Looking for '$toolname' - found $fp");
-    if ($t->{GETVER}) {
-      my($s) = qx($t->{GETVER});
-      if (defined $s) {
-        $s =~ $t->{REGEXP};
-        $t->{VERSION} = $1 if defined $1;
-        msg("Determined $toolname version is $t->{VERSION}");
-        if ($t->{VERSION} < $t->{MINVER}) {
-          err("Prokka needs $toolname $t->{MINVER} or higher. Please install it and try again.");
-        }
-      }
-      else {
-        err("Could not determine version of $toolname - please install version",
-            $t->{MINVER}, "or higher");
-      }
-    }
-  }
-}
+check_all_tools();
 
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
 # check if optional tools are installed if the option was enabled
@@ -1307,8 +1315,9 @@ sub list_db {
 sub setup_db {
 
   clean_db();
-  
-  for my $sprot (<$DBDIR/kingdom/*/sprot>) {
+
+  check_tool('makeblastdb');
+   for my $sprot (<$DBDIR/kingdom/*/sprot>) {
     msg("Making kingdom BLASTP database: $sprot");
     runcmd("makeblastdb -dbtype prot -in '$sprot' -logfile /dev/null");
   }
@@ -1316,10 +1325,14 @@ sub setup_db {
     msg("Making genus BLASTP database: $genus");
     runcmd("makeblastdb -dbtype prot -in '$genus' -logfile /dev/null");
   }
+
+  check_tool('hmmpress');
   for my $hmm (<$DBDIR/hmm/*.hmm>) {
     msg("Pressing HMM database: $hmm");
     runcmd("hmmpress '$hmm'");
   }
+
+  check_tool('cmpress');
   for my $cm (<$DBDIR/cm/{Viruses,Bacteria}>) {
     msg("Pressing CM database: $cm");    
     runcmd("cmpress '$cm'");
