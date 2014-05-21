@@ -176,7 +176,7 @@ If you are using Mac OS X, you'll also have to change the `"Linux"` to `"Darwin"
       --gcode [N]       Genetic code / Translation table (set if --kingdom is set) (default '0')
       --gram [X]        Gram: -/neg +/pos (default '')
       --usegenus        Use genus-specific BLAST databases (needs --genus) (default OFF)
-      --proteins [X]    Fasta file of trusted proteins to first annotate from (default '')
+      --proteins [X]    FASTA file (see FASTA database format) of trusted proteins to first annotate from (default '')
       --metagenome      Improve gene predictions for highly fragmented genomes (default OFF)
     Computation:
       --fast            Fast mode - skip CDS /product searching (default OFF)
@@ -262,7 +262,7 @@ If you have a set of Genbank files and want to create a new Genus database, Prok
 
 Prokka comes with a bunch of HMM libraries for HMMER3. They are mostly Bacteria-specific. They are searched after the core and genus databases. You can add more simply by putting them in `/opt/prokka/db/hmm`. Type `prokka --listdb` to confirm they are recognised.
 
-###Database format
+###FASTA database format
 
 Prokka understands two annotation tag formats, a plain one and a detailed one.
 
