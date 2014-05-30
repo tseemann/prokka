@@ -12,7 +12,17 @@ TODO:
 * check databases exist before spawning blast/hmmer
 * locus_tag rules: http://www.ncbi.nlm.nih.gov/genomes/locustag/Proposal.pdf
 
-v1.9.1 - 
+v1.9.2 - 30 May 2014
+* Enabled annotation of several EC numbers per CDS:
+  *prokka-biocyc_to_fasta_db*, *prokka-genbank_to_fasta_db*,
+  *prokka-genpept_to_fasta_db*, *prokka-hamap_to_hmm*, and
+  *prokka-uniprot_to_fasta_db* will include those (separated by
+  semicolons) in the database format. *prokka* can add them to the
+  features.
+* /gene and /EC_numbers will be removed from hypothetical proteins
+* Lower the case for initials in /product descriptions
+
+v1.9.1 -
 * Support for barrnap 0.4 with Archaea and Mito support [Lionel Guy]
 * New legal assembly_gap feature in gbk, sqn, tbl files [Connor Skennerton]
 * Bug fix for hypos with /gene and /EC [Connor Skennerton]
