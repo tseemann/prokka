@@ -32,7 +32,7 @@ while (<$fam_fh>) {
   if (m{^//}) {
     #print STDERR "AC=$AC EC=$EC Bac=$Bac\n";
     if ($AC and $EC and exists $DESC{$AC}) {
-      $DESC{$AC} = $EC.$DESC{$AC}; 
+      $DESC{$AC} = $EC.$DESC{$AC};
     }
     if ($AC and ! $Bac) {
       print STDERR "Removing $AC as non-Bacterial\n";
@@ -44,7 +44,8 @@ while (<$fam_fh>) {
     $AC = $1;
   }
   elsif (m/EC=([\d.]+);/) {
-    $EC = $1;
+    $EC .= ";$1" if ($EC && $EC !~ $1); # include each EC_number only once
+    $EC = $1 if (!$EC);
   }
   elsif (m/^ Bacteria/) {
     $Bac = 1;
@@ -131,12 +132,12 @@ sub setOptions {
 }
 
 sub usage {
-  print "Usage: $0 [options] [--datadir hamap_data_subdir] > hamap.hmm\n";
+  print "Usage: $0 [options] [--datadir hamap_data_subdir]\n";
   foreach (@Options) {
     printf "  --%-13s %s%s.\n",$_->{OPT},$_->{DESC},
            defined($_->{DEFAULT}) ? " (default '$_->{DEFAULT}')" : "";
   }
   exit(1);
 }
- 
+
 #----------------------------------------------------------------------

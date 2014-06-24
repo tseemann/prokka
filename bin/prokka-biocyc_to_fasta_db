@@ -32,7 +32,12 @@ while (<$ec_fh>) {
   my @x = split m/\t/;
   next unless exists $seq{ $x[1] };
   next unless $x[7] =~ m/^EC:(.*)$/;
-  $seq{$x[1]}{EC} = $1;  
+  if ($seq{$x[1]}{EC}) { # concatenate EC_numbers via ';' if several present
+      next if ($seq{$x[1]}{EC} =~ /$1/); # skip EC numbers that are already included
+      $seq{$x[1]}{EC} .= ";$1";
+  } else {
+      $seq{$x[1]}{EC} = $1;
+  }
 }
 
 while (<$gene_fh>) {
@@ -41,7 +46,7 @@ while (<$gene_fh>) {
   # remove HTML markup
   $x[3] =~ s/<.*?>//g;
   # special case for regular entities
-  $x[3] =~ s/&(alpha|beta|gamma|delta|epsilon);/$1/g; 
+  $x[3] =~ s/&(alpha|beta|gamma|delta|epsilon);/$1/g;
   # http://stackoverflow.com/questions/576095/how-can-i-decode-html-entities
   $x[3] = unidecode(decode_entities($x[3]));
   $seq{$id}{PRODUCT} = $x[3];
@@ -112,5 +117,5 @@ sub usage {
   }
   exit(1);
 }
- 
+
 #----------------------------------------------------------------------

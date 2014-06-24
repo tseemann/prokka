@@ -12,11 +12,11 @@ while (my $seq = $in->next_seq) {
 #  print STDERR "\rParsing: ",$seq->display_id;
   my $counter = 0;
   for my $f ($seq->get_SeqFeatures)   {
-    
+
     next unless $f->primary_tag eq 'Protein';
-        
+
     next unless $f->length >= $minlen;
-    
+
     next if !$pseudo and $f->has_tag('pseudo');
 
     my $prod = TAG($f, 'product') || $blank;
@@ -27,16 +27,16 @@ while (my $seq = $in->next_seq) {
 
 #    my $id = TAG($f, $idtag) or die "feature #$counter does not have /$idtag tag!";
    my $id = $seq->accession;
-   
+
     $counter++;
     print STDERR "Processing: ", $seq->display_id, " | $counter | $id | $prod\n" if $verbose;
-    
+
     my $ec = TAG($f, 'EC_number') || $blank;
     my $gene = TAG($f, 'gene') || $blank;
-    
+
     $cds->desc("$ec$sep$gene$sep$prod");
     $cds->display_id($id);
-    
+
     $out->write_seq($cds);
   }
 #  print STDERR "\n";
@@ -48,6 +48,7 @@ print STDERR "\nDone\n";
 sub TAG {
   my($f, $tag) = @_;
   return unless $f->has_tag($tag);
+  return join(';', $f->get_tag_values($tag)) if ($tag eq 'EC_number'); # concatenate EC_numbers via ';' if several present
   return ($f->get_tag_values($tag))[0];
 }
 
@@ -89,5 +90,5 @@ sub usage {
   }
   exit(1);
 }
- 
+
 #----------------------------------------------------------------------
