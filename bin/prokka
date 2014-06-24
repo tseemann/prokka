@@ -1174,7 +1174,7 @@ sub cleanup_product {
   $p =~ s/\s*\w+\d{4,}//; # remove possible locus tags
   $p =~ s/ and (inactivated|related) \w+//;
 
-  $p =~ s/(^|\s+|\()([A-Z][a-z]{3,})/$1\l$2/g; # lower the case for protein desc initials
+  $p =~ s/\b([A-Z][a-z]{3,})/\l$1/g; # lower the case for protein desc initials
   $p =~ s/(rossman|willebrand)/\u$1/; # exception to the rule
 
   $p =~ s/^(potential|possible|probable|predicted|uncharacteri.ed)/putative/i;
