@@ -26,7 +26,7 @@ Choose somewhere to put it, for example: `/opt`
 Add the following line to your `$HOME/.bashrc` file, 
 or to `/etc/profile.d/prokka.sh` to make it available to all users:
 
-    export PATH=$PATH:/opt/prokka-1.9
+    export PATH=$PATH:$HOME/prokka-1.9
 
 ###Index the sequence databases
 
