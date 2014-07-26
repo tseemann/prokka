@@ -437,7 +437,7 @@ else {
   my $cmd = "aragorn -gc$gcode $aragorn_opt -w $outdir/$prefix.fna"; # -t/-m 
   msg("Running: $cmd");
   my $num_trna=0;
-  open TRNA, "$cmd |";
+  open TRNA, '-|', $cmd;
   my $sid;
   while (<TRNA>) {
     chomp;
@@ -505,10 +505,8 @@ if ($kingdom ne 'Viruses' and !$norrna) {
   if ($tools{'barrnap'}->{HAVE}) {
     msg("Running Barrnap with $cpus threads");
     my $num_rrna=0;
-    my $gff = Bio::Tools::GFF->new(
-      -file => "barrnap --kingdom $barrnap_mode --threads $cpus --quiet $outdir/$prefix.fna  |",
-      -gff_version => 3,
-    );
+    open my $BARRNAP, '-|', "barrnap --kingdom $barrnap_mode --threads $cpus --quiet $outdir/$prefix.fna";
+    my $gff = Bio::Tools::GFF->new(-fh => $BARRNAP, -gff_version => 3);
     while (my $feat = $gff->next_feature) {
       $feat->remove_tag('Name'); # only want /product
       push @{$seq{$feat->seq_id}{FEATURE}}, $feat;
@@ -569,7 +567,7 @@ if ($rfam) {
     my $num_ncrna = 0;
     my $tool = "Infernal:".$tools{'cmscan'}->{VERSION};
     my $icpu = $cpus || 1;
-    open INFERNAL, "cmscan --cpu $icpu -E $evalue --tblout /dev/stdout -o /dev/null --noali $cmdb $outdir/$prefix.fna |";
+    open INFERNAL, '-|', "cmscan --cpu $icpu -E $evalue --tblout /dev/stdout -o /dev/null --noali $cmdb $outdir/$prefix.fna";
     while (<INFERNAL>) {
       next if m/^#/;       # ignore comments
       my @x = split ' ';   # magic Perl whitespace splitter
@@ -620,10 +618,8 @@ msg("Total of", scalar(@allrna), "tRNA + rRNA features");
 if ($tools{'minced'}->{HAVE}) {
   msg("Searching for CRISPR repeats");
   my $num_crispr=0;
-  my $gff = Bio::Tools::GFF->new(
-    -file => "minced -gff '$outdir/$prefix.fna' |",
-    -gff_version => 3,
-  );
+  open my $MINCED, '-|', "minced -gff $outdir/$prefix.fna";
+  my $gff = Bio::Tools::GFF->new(-fh => $MINCED, -gff_version => 3);
   while (my $feat = $gff->next_feature) {
     # format it properly for NCBI
     $feat->primary_tag("repeat_region");
@@ -651,9 +647,9 @@ msg("Contigs total $totalbp bp, so using $prodigal_mode mode");
 my $num_cds=0;
 my $cmd = "prodigal -i $outdir/$prefix.fna -c -m -g $gcode -p $prodigal_mode -f sco -q";
 msg("Running: $cmd");
-open CDS, "$cmd |";
+open my $PRODIGAL, '-|', $cmd;
 my $sid;
-while (<CDS>) {
+while (<$PRODIGAL>) {
   if (m/seqhdr="([^\s\"]+)"/) {  
     $sid = $1;
 #    msg("CDS $sid");
@@ -740,7 +736,7 @@ if ($tools{signalp}->{HAVE}) {
       msg("Running: $cmd");
       my $tool = "SignalP:".$tools{signalp}->{VERSION};
       my $num_sigpep = 0;
-      open SIGNALP, "$cmd |";
+      open SIGNALP, '-|', $cmd;
       while (<SIGNALP>) {
         my @x = split m/\s+/;
         if ($sigpver == 3) {
