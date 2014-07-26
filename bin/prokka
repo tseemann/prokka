@@ -113,7 +113,7 @@ my %tools = (
   'minced' => {
      GETVER => "minced --version | sed -n '1p'",
      REGEXP => qr/minced\s+\d+\.(\d+\.\d+)/,
-     MINVER => "1.3",
+     MINVER => "1.6",
      NEEDED => 0,
    },
   'cmscan' => {
@@ -1087,7 +1087,7 @@ for my $sid (sort keys %seq) {
         print {$tbl_fh} "\t\t\t$tag\t$value\n";
       }
     }
-    
+
     my $p = $seq{$sid}{DNA}->trunc($f->location);
     $p->display_id( TAG($f, 'locus_tag') );
     $p->desc( TAG($f, 'product') ) if $f->has_tag('product');
