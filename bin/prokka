@@ -1024,7 +1024,7 @@ for my $sid (sort keys %seq) {
         -end        => $f->end,
         -strand     => $f->strand,
         -source_tag => $EXE,
-        -tag        => { 'locus_tag '=> $ID },
+        -tag        => { 'locus_tag'=> $ID },
       );
       if (my $gENE = TAG($f, 'gene')) {
    	$g->add_tag_value('gene', $gENE);
