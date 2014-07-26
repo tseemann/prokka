@@ -100,6 +100,7 @@ my %tools = (
     GETVER  => "prodigal -v 2>&1 | grep -i '^Prodigal V'",
     REGEXP  => qr/($BIDEC)/,
     MINVER  => "2.6",
+    MAXVER  => "2.69",  # changed cmdline options in 2.70 git :-/
     NEEDED  => 1,
   },
   'signalp' => {
@@ -182,8 +183,11 @@ sub check_tool {
         $s =~ $t->{REGEXP};
         $t->{VERSION} = $1 if defined $1;
         msg("Determined $toolname version is $t->{VERSION}");
-        if ($t->{VERSION} < $t->{MINVER}) {
-          err("Prokka needs $toolname $t->{MINVER} or higher. Please install it and try again.");
+        if (defined $t->{MINVER} and $t->{VERSION} < $t->{MINVER}) {
+          err("Prokka needs $toolname $t->{MINVER} or higher. Please upgrade and try again.");
+        }
+        if (defined $t->{MAXVER} and $t->{VERSION} > $t->{MAXVER}) {
+          err("Prokka needs a version of $toolname between $t->{MINVER} and $t->{MAXVER}. Please downgrade and try again."); 
         }
       }
       else {
