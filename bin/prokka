@@ -1270,7 +1270,7 @@ sub show_citation {
 If you use Prokka in your work, please cite:
 
   Seemann T, "Prokka: Rapid Prokaryotic Genome Annotation", 
-  Bioinformatics, March 18, 2014 [Epub]
+  Bioinformatics, 2014 Jul 15;30(14):2068-9.
 
   PMID:24642063
   doi:10.1093/bioinformatics/btu153
