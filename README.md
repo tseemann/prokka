@@ -17,21 +17,20 @@ Download the latest `prokka-1.x.tar.gz` archive from http://www.bioinformatics.n
 
 Choose somewhere to put it, for example: `/opt`
 
-    # Untar it
-    % sudo tar -C /opt prokka-1.x.tar.gz
-    # Check it is there: 
-    ls /opt/prokka-1.x/
+    % cd $HOME
+    % tar -zxvf prokka-1.9.tar.gz
+    % ls prokka-1.9
 
 ###Add to PATH
 
 Add the following line to your `$HOME/.bashrc` file, 
 or to `/etc/profile.d/prokka.sh` to make it available to all users:
 
-    export PATH=$PATH:/opt/prokka-1.x
+    export PATH=$PATH:$HOME/prokka-1.9
 
 ###Index the sequence databases
 
-    prokka --setupdb
+    % prokka --setupdb
 
 ###Install dependencies
 
