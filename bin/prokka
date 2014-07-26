@@ -215,7 +215,7 @@ my(@Options, $quiet, $kingdom, $fast, $force, $outdir, $prefix, $cpus, $addgenes
              $gcode, $gram, $gffver, $locustag, $increment, $mincontiglen, $evalue, $coverage,
              $genus, $species, $strain, $plasmid, 
              $usegenus, $proteins, $centre, $scaffolds,
-             $rfam, $norrna, $notrna,
+             $rfam, $norrna, $notrna, $rnammer,
 	     $metagenome, $compliant, $listdb, $citation);
 setOptions();
 
@@ -345,7 +345,15 @@ open LOG, '>', $logfile or err("Can't open logfile");
 
 msg("Command: @CMDLINE");
 
+# . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
+# now check the tools and make the adjustments
+
 check_all_tools();
+
+if ($rnammer and $tools{'rnammer'}->{HAVE}) {
+  msg("Will use RNAmmer instead of Barrnap for rRNA prediction");
+  $tools{'barrnap'}->{HAVE} = 0;
+}
 
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
 # check if optional tools are installed if the option was enabled
@@ -1416,6 +1424,7 @@ sub setOptions {
     {OPT=>"rfam",  VAR=>\$rfam, DEFAULT=>0, DESC=>"Enable searching for ncRNAs with Infernal+Rfam (SLOW!)"},
     {OPT=>"norrna!",  VAR=>\$norrna, DEFAULT=>0, DESC=>"Don't run rRNA search"},
     {OPT=>"notrna!",  VAR=>\$notrna, DEFAULT=>0, DESC=>"Don't run tRNA search"},
+    {OPT=>"rnammer!",  VAR=>\$rnammer, DEFAULT=>0, DESC=>"Prefer RNAmmer over Barrnap for rRNA prediction"},
   );
 
   (!@ARGV) && (usage());
