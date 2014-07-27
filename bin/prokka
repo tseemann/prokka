@@ -219,7 +219,7 @@ my(@Options, $quiet, $kingdom, $fast, $force, $outdir, $prefix, $cpus, $addgenes
              $gcode, $gram, $gffver, $locustag, $increment, $mincontiglen, $evalue, $coverage,
              $genus, $species, $strain, $plasmid, 
              $usegenus, $proteins, $centre, $scaffolds,
-             $rfam, $norrna, $notrna, $rnammer,
+             $rfam, $norrna, $notrna, $rnammer, $rawproduct,
 	     $metagenome, $compliant, $listdb, $citation);
 setOptions();
 
@@ -920,7 +920,7 @@ else {
 	($EC,$gene,$prod) = split m/~~~/, $prod;
 	$EC =~ s/n\d+/-/g; # collapse transitionary EC numbers
       }
-      my $cleanprod = cleanup_product($prod);      
+      my $cleanprod = $rawproduct ? $prod : cleanup_product($prod);      
       if ($cleanprod ne $prod) {
         msg("Modify product: $prod => $cleanprod");
         # we remove any special /gene or /EC if the /product is 'hypothetical protein' !
@@ -1415,6 +1415,7 @@ sub setOptions {
     {OPT=>"usegenus!",  VAR=>\$usegenus, DEFAULT=>0, DESC=>"Use genus-specific BLAST databases (needs --genus)"},
     {OPT=>"proteins=s",  VAR=>\$proteins, DEFAULT=>'', DESC=>"Fasta file of trusted proteins to first annotate from"},
     {OPT=>"metagenome!",  VAR=>\$metagenome, DEFAULT=>0, DESC=>"Improve gene predictions for highly fragmented genomes"},
+    {OPT=>"rawproduct!",  VAR=>\$rawproduct, DEFAULT=>0, DESC=>"Do not clean up /product annotation"},
     'Computation:',
     {OPT=>"fast!",  VAR=>\$fast, DEFAULT=>0, DESC=>"Fast mode - skip CDS /product searching"},
     {OPT=>"cpus=i",  VAR=>\$cpus, DEFAULT=>8, DESC=>"Number of CPUs to use [0=all]"},

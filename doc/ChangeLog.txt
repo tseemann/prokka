@@ -16,6 +16,7 @@ v1.9.1 -
 * Bug fix: --setupdb doesn't have bundled binaries in PATH [Connor Skennerton]
 * Command line and other improvements [Shaun Jackman]
 * Added --rnammer switch to prefer RNAmmer over Barrnap 
+* Added --rawproduct to turn off /product cleaning
 
 v1.9 - 8 May 2014
 * MAJOR: Bug in prokka-uniprot_to_fasta_db: was allowing Altname instead of Recname
