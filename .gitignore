@@ -15,3 +15,8 @@ META.yml
 MYMETA.yml
 nytprof.out
 pm_to_blib
+doc/prokka-*
+bug/
+db/cm/*.i1*
+db/kingdom/*/sprot.p*
+db/hmm
