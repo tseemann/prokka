@@ -15,7 +15,7 @@ Download the latest `prokka-1.x.tar.gz` archive from http://www.bioinformatics.n
 
 ###Extract
 
-Choose somewhere to put it, for example: `/opt`
+Choose somewhere to put it, for example in your home directory (no root access required):
 
     % cd $HOME
     % tar -zxvf prokka-1.9.tar.gz
