@@ -12,4 +12,5 @@ Prokka Wishlist
 * locus_tag rules: http://www.ncbi.nlm.nih.gov/genomes/locustag/Proposal.pdf
 * Add .PTT file output [Andrew Buultjens]
 * Bug: "existing RNA (repeat_region)" CRISPR is not RNA ?
-
+* Allow --proteins to be a .GBK or .GFF3 file ie. extract the CDS annotations
+* Factor out some functions into modules!
