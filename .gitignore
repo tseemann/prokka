@@ -20,3 +20,5 @@ bug/
 db/cm/*.i1*
 db/kingdom/*/sprot.p*
 db/hmm
+db/genus
+
