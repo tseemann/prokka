@@ -434,7 +434,7 @@ if ($notrna) {
 }
 else {
   msg("Predicting tRNAs and tmRNAs");
-  my $cmd = "aragorn -gc$gcode $aragorn_opt -w $outdir/$prefix.fna"; # -t/-m 
+  my $cmd = "aragorn -gc$gcode $aragorn_opt -w \Q$outdir/$prefix.fna\E"; # -t/-m 
   msg("Running: $cmd");
   my $num_trna=0;
   open TRNA, '-|', $cmd;
@@ -505,7 +505,7 @@ if ($kingdom ne 'Viruses' and !$norrna) {
   if ($tools{'barrnap'}->{HAVE}) {
     msg("Running Barrnap with $cpus threads");
     my $num_rrna=0;
-    open my $BARRNAP, '-|', "barrnap --kingdom $barrnap_mode --threads $cpus --quiet $outdir/$prefix.fna";
+    open my $BARRNAP, '-|', "barrnap --kingdom $barrnap_mode --threads $cpus --quiet \Q$outdir/$prefix.fna\E";
     my $gff = Bio::Tools::GFF->new(-fh => $BARRNAP, -gff_version => 3);
     while (my $feat = $gff->next_feature) {
       $feat->remove_tag('Name'); # only want /product
@@ -520,7 +520,7 @@ if ($kingdom ne 'Viruses' and !$norrna) {
     my $rnammerfn = "$outdir/rnammer.xml";
     my $num_rrna = 0;
     my $rnammer_opt = $cpus != 1 ? "-multi" : "";
-    runcmd("rnammer -S $rnammer_mode $rnammer_opt -xml $rnammerfn $outdir/$prefix.fna");
+    runcmd("rnammer -S $rnammer_mode $rnammer_opt -xml \Q$rnammerfn\E \Q$outdir/$prefix.fna\E");
     my $xml = XML::Simple->new(ForceArray => 1);
     my $data = $xml->XMLin($rnammerfn);
     for my $entry (@{$data->{entries}[0]->{entry}}) {
@@ -567,7 +567,7 @@ if ($rfam) {
     my $num_ncrna = 0;
     my $tool = "Infernal:".$tools{'cmscan'}->{VERSION};
     my $icpu = $cpus || 1;
-    open INFERNAL, '-|', "cmscan --cpu $icpu -E $evalue --tblout /dev/stdout -o /dev/null --noali $cmdb $outdir/$prefix.fna";
+    open INFERNAL, '-|', "cmscan --cpu $icpu -E $evalue --tblout /dev/stdout -o /dev/null --noali $cmdb \Q$outdir/$prefix.fna\E";
     while (<INFERNAL>) {
       next if m/^#/;       # ignore comments
       my @x = split ' ';   # magic Perl whitespace splitter
@@ -618,7 +618,7 @@ msg("Total of", scalar(@allrna), "tRNA + rRNA features");
 if ($tools{'minced'}->{HAVE}) {
   msg("Searching for CRISPR repeats");
   my $num_crispr=0;
-  open my $MINCED, '-|', "minced -gff $outdir/$prefix.fna";
+  open my $MINCED, '-|', "minced -gff \Q$outdir/$prefix.fna\E";
   my $gff = Bio::Tools::GFF->new(-fh => $MINCED, -gff_version => 3);
   while (my $feat = $gff->next_feature) {
     # format it properly for NCBI
@@ -645,7 +645,7 @@ my $totalbp = sum( map { $seq{$_}{DNA}->length } keys %seq);
 my $prodigal_mode = ($totalbp >= 100000 && !$metagenome) ? 'single' : 'meta';
 msg("Contigs total $totalbp bp, so using $prodigal_mode mode");
 my $num_cds=0;
-my $cmd = "prodigal -i $outdir/$prefix.fna -c -m -g $gcode -p $prodigal_mode -f sco -q";
+my $cmd = "prodigal -i \Q$outdir/$prefix.fna\E -c -m -g $gcode -p $prodigal_mode -f sco -q";
 msg("Running: $cmd");
 open my $PRODIGAL, '-|', $cmd;
 my $sid;
@@ -718,7 +718,8 @@ if ($tools{signalp}->{HAVE}) {
       msg("Looking for signal peptides at start of predicted proteins");
       msg("Treating $kingdom as $gram");
       my $spoutfn = "$outdir/signalp.faa";
-      my $spout = Bio::SeqIO->new(-file=>">$spoutfn", -format=>'fasta');
+      open my $spoutfh, '>', $spoutfn;
+      my $spout = Bio::SeqIO->new(-fh=>$spoutfh, -format=>'fasta');
       my %cds;
       my $count=0;
       for my $sid (sort keys %seq) {
@@ -731,7 +732,7 @@ if ($tools{signalp}->{HAVE}) {
         }
       }
       my $opts = $sigpver==3 ? '-m hmm' : '';
-      my $cmd = "signalp -t $gram -f short $opts $spoutfn 2> /dev/null";
+      my $cmd = "signalp -t $gram -f short $opts \Q$spoutfn\E 2> /dev/null";
       
       msg("Running: $cmd");
       my $tool = "SignalP:".$tools{signalp}->{VERSION};
@@ -851,7 +852,7 @@ else {
 # if user supplies a trusted set of proteins, we try these first!
 if (-r $proteins) {
   msg("Preparing user-supplied primary annotation source: $proteins");
-  runcmd("makeblastdb -dbtype prot -in '$proteins' -out '$outdir/proteins' -logfile /dev/null");
+  runcmd("makeblastdb -dbtype prot -in \Q$proteins\E -out \Q$outdir/proteins\E -logfile /dev/null");
   my $src = $proteins;
   $src =~ s{^.*/}{};
   msg("Using /inference source as '$src'");
@@ -909,7 +910,10 @@ else {
     my $paropts = $cpus > 0 ? " -j $cpus" : "";
 
     my $bls_name = "$outdir/proteins.bls";
-    runcmd("cat $faa_name | ${PARALLELCMD}$paropts --block $bsize --recstart '>' --pipe $cmd > $bls_name 2> /dev/null"); 
+    runcmd(
+      "cat \Q$faa_name\E | ${PARALLELCMD}$paropts --block $bsize --recstart '>' --pipe". 
+      " $cmd > \Q$bls_name\E 2> /dev/null" 
+    ); 
 
     my $num_cleaned=0;
     my $bls = Bio::SearchIO->new(-file=>$bls_name, -format=>$db->{FMT}, -version=>$db->{VERSION});
@@ -1139,7 +1143,10 @@ msg("Generating Genbank and Sequin files");
 #runcmd("tbl2asn -a s -q F -A $prefix -N 1 -y 'Annotated using $EXE $VERSION from $URL' -Z $outdir/$prefix.err -M n -V b -i $outdir/$prefix.fsa -f $outdir/$prefix.tbl 2> /dev/null");
 #runcmd("tbl2asn -V b -a s -A $prefix -N 1 -y 'Annotated using $EXE $VERSION from $URL' -Z $outdir/$prefix.err -i $outdir/$prefix.fsa");
 #runcmd("tbl2asn -V b -a s -N 1 -y 'Annotated using $EXE $VERSION from $URL' -Z $outdir/$prefix.err -i $outdir/$prefix.fsa 2> /dev/null");
-runcmd("tbl2asn -V b -a r10k -l paired-ends -M n -N 1 -y 'Annotated using $EXE $VERSION from $URL' -Z $outdir/$prefix.err -i $outdir/$prefix.fsa 2> /dev/null");
+runcmd(
+  "tbl2asn -V b -a r10k -l paired-ends -M n -N 1 -y 'Annotated using $EXE $VERSION from $URL' -Z".
+  " \Q$outdir/$prefix.err\E -i \Q$outdir/$prefix.fsa\E 2> /dev/null"
+);
 delfile("$outdir/errorsummary.val");
 delfile( map { "$outdir/$prefix.$_" } qw(dr fixedproducts ecn val) );
 move("$outdir/$prefix.gbf", "$outdir/$prefix.gbk"); # rename XXX.gbf to XXX.gbk
@@ -1148,7 +1155,7 @@ move("$outdir/$prefix.gbf", "$outdir/$prefix.gbk"); # rename XXX.gbf to XXX.gbk
 # Some final log output
 
 msg("Output files:");
-foreach (qx(find $outdir -type f -name "$prefix.*")) {
+foreach (qx(find \Q$outdir\E -type f -name "$prefix.*")) {
   chomp;
   msg($_);
 }
@@ -1329,23 +1336,23 @@ sub setup_db {
   check_tool('makeblastdb');
    for my $sprot (<$DBDIR/kingdom/*/sprot>) {
     msg("Making kingdom BLASTP database: $sprot");
-    runcmd("makeblastdb -dbtype prot -in '$sprot' -logfile /dev/null");
+    runcmd("makeblastdb -dbtype prot -in \Q$sprot\E -logfile /dev/null");
   }
   for my $genus (<$DBDIR/genus/*>) {
     msg("Making genus BLASTP database: $genus");
-    runcmd("makeblastdb -dbtype prot -in '$genus' -logfile /dev/null");
+    runcmd("makeblastdb -dbtype prot -in \Q$genus\E -logfile /dev/null");
   }
 
   check_tool('hmmpress');
   for my $hmm (<$DBDIR/hmm/*.hmm>) {
     msg("Pressing HMM database: $hmm");
-    runcmd("hmmpress '$hmm'");
+    runcmd("hmmpress \Q$hmm\E");
   }
 
   check_tool('cmpress');
   for my $cm (<$DBDIR/cm/{Viruses,Bacteria}>) {
     msg("Pressing CM database: $cm");    
-    runcmd("cmpress '$cm'");
+    runcmd("cmpress \Q$cm\E");
   }
   
   list_db();
