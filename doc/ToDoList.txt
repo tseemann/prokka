@@ -1,0 +1,15 @@
+
+Prokka Wishlist
+---------------
+
+* annotate possible frame-shifts
+* FAQ about annotation transfer
+* use included binary if PATH one is wrong version [Simon Gladman]
+* reconsider !~m/a-z/ rule in cleanup_product() [Roderick Felsheim]
+* all Kingdom=ALL or ANY for metagenomes [Andreas Bremges]
+* make --cleanup option  for /product names [Andreas Bremges]
+* check databases exist before spawning blast/hmmer
+* locus_tag rules: http://www.ncbi.nlm.nih.gov/genomes/locustag/Proposal.pdf
+* Add .PTT file output [Andrew Buultjens]
+* Bug: "existing RNA (repeat_region)" CRISPR is not RNA ?
+

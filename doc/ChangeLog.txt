@@ -2,25 +2,20 @@
 Prokka ChangeLog
 ----------------
 
-TODO:
-* annotate possible frame-shifts
-* FAQ about annotation transfer
-* use included binary if PATH one is wrong version [Simon Gladman]
-* reconsider !~m/a-z/ rule in cleanup_product() [Roderick Felsheim]
-* all Kingdom=ALL or ANY for metagenomes [Andreas Bremges]
-* make --cleanup option  for /product names [Andreas Bremges]
-* check databases exist before spawning blast/hmmer
-* locus_tag rules: http://www.ncbi.nlm.nih.gov/genomes/locustag/Proposal.pdf
-
 v1.9.1 - 
 * Support for barrnap 0.4 with Archaea and Mito support [Lionel Guy]
 * New legal assembly_gap feature in gbk, sqn, tbl files [Connor Skennerton]
-* Bug fix for hypos with /gene and /EC [Connor Skennerton]
+* Bug fix: for hypos with /gene and /EC [Connor Skennerton]
 * Improved cleanup_product [Connor Skennerton]
-* Bug fix for aragorn tmRNA parsing [Connor Skennerton]
+* Bug fix: aragorn tmRNA parsing [Connor Skennerton]
 * New --depends option to list all dependencies
 * Check for exes needed for --setupdb before attemping it [nsoranzo]
 * Bug fix: missing ID on 'gene' feature tytpes [Chris Fields]
+* Upgraded minced to 0.1.6 to avoid out-by-1 bug
+* Bug fix: Bio::RootI file handle issues in latest BioPerl [Chris Fields]
+* Bug fix: --setupdb doesn't have bundled binaries in PATH [Connor Skennerton]
+* Command line and other improvements [Shaun Jackman]
+* Added --rnammer switch to prefer RNAmmer over Barrnap 
 
 v1.9 - 8 May 2014
 * MAJOR: Bug in prokka-uniprot_to_fasta_db: was allowing Altname instead of Recname
