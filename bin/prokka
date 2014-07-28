@@ -408,7 +408,7 @@ while (my $seq = $fin->next_seq) {
     $seq->id( sprintf "gnl|$centre|${contigprefix}contig%06d", $ncontig );
   }
   if (length($seq->id) > $MAXCONTIGIDLEN) {
-    msg("WARNING: Contig IDs must be less than 38 characters for Genbank compliance")
+    msg("WARNING: Contig IDs must be less than 38 characters for Genbank compliance - ".$seq->id)
   }
   my $s = $seq->seq;
   $s = uc($s);
