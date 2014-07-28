@@ -11,22 +11,22 @@ Whole genome annotation is the process of identifying features of interest in a 
 
 ###Download
 
-Download the latest `prokka-1.x.tar.gz` archive from http://www.bioinformatics.net.au/software.prokka.shtml
+Download the latest `prokka-1.xx.tar.gz` archive from http://www.bioinformatics.net.au/software.prokka.shtml
 
 ###Extract
 
 Choose somewhere to put it, for example in your home directory (no root access required):
 
     % cd $HOME
-    % tar -zxvf prokka-1.9.tar.gz
-    % ls prokka-1.9
+    % tar zxvf prokka-1.xx.tar.gz
+    % ls prokka-1.xx
 
 ###Add to PATH
 
 Add the following line to your `$HOME/.bashrc` file, 
 or to `/etc/profile.d/prokka.sh` to make it available to all users:
 
-    export PATH=$PATH:$HOME/prokka-1.9
+    export PATH=$PATH:$HOME/prokka-1.xx/bin
 
 ###Index the sequence databases
 
@@ -46,7 +46,7 @@ If Prokka can't find a predictor for rRNA featues (either Barrnap or RNAmmer bel
 
 ####Option 2 - Barrnap
 
-This was written by the author of Prokka and is recommended if you prefer speed over absolute accuracy. It uses the new multi-core NHMMER for DNA:DNA profile searches. Download it here.
+This was written by the author of Prokka and is recommended if you prefer speed over absolute accuracy. It uses the new multi-core NHMMER for DNA:DNA profile searches. Download it from http://www.vicbioinformatics.com/software.barrnap.shtml
 
 ####Option 3 - RNAmmer
 
@@ -64,7 +64,7 @@ If you are using Mac OS X, you'll also have to change the `"Linux"` to `"Darwin"
 ###Test
 
 * Type `prokka` and it should output it's help screen.
-* Type `prokka --version` and you should see an output like prokka 1.x.
+* Type `prokka --version` and you should see an output like `prokka 1.x`
 * Type `prokka --listdb` and it will show you what databases it has installed to use.
 
 
@@ -152,9 +152,12 @@ If you are using Mac OS X, you'll also have to change the `"Linux"` to `"Darwin"
       --help            This help
       --version         Print version and exit
       --docs            Show full manual/documentation
-      --listdb          List all configured databases
       --citation        Print citation for referencing Prokka
       --quiet           No screen output (default OFF)
+    Database setup:
+      --listdb          List all configured databases
+      --setupdb         Index all installed databases
+      --cleandb         Remove all database indices
     Outputs:
       --outdir [X]      Output folder [auto] (default '')
       --force           Force overwriting existing output folder (default OFF)
@@ -171,11 +174,11 @@ If you are using Mac OS X, you'll also have to change the `"Linux"` to `"Darwin"
       --strain [X]      Strain name (default 'strain')
       --plasmid [X]     Plasmid name or identifier (default '')
     Annotations:
-      --kingdom [X]     Annotation mode: Archaea|Bacteria|Viruses (default 'Bacteria')
+      --kingdom [X]     Annotation mode: Archaea|Bacteria|Mitochondria|Viruses (default 'Bacteria')
       --gcode [N]       Genetic code / Translation table (set if --kingdom is set) (default '0')
       --gram [X]        Gram: -/neg +/pos (default '')
       --usegenus        Use genus-specific BLAST databases (needs --genus) (default OFF)
-      --proteins [X]    FASTA file (see FASTA database format) of trusted proteins to first annotate from (default '')
+      --proteins [X]    Fasta file of trusted proteins to first annotate from (default '')
       --metagenome      Improve gene predictions for highly fragmented genomes (default OFF)
     Computation:
       --fast            Fast mode - skip CDS /product searching (default OFF)
@@ -185,7 +188,6 @@ If you are using Mac OS X, you'll also have to change the `"Linux"` to `"Darwin"
       --rfam            Enable searching for ncRNAs with Infernal+Rfam (SLOW!) (default '0')
       --norrna          Don't run rRNA search (default OFF)
       --notrna          Don't run tRNA search (default OFF)
-
 
 ##Dependencies
 
@@ -329,18 +331,14 @@ It does not like the ACCESSION and VERSION strings that Prokka produces via the 
 
 ##Still To Do
 
-* Check for large genomic tracts which are unannotated. Sometimes Prodigal misses big genes.
-* Add an example input/output so users can check their copy is producing similar results.
-* Output potential homopolymer assembly errors near CDS flanks
-* Add the CLUSTERS "PHA" library to Viruses mode.
-* Option to include ribosomal binding sites (RBS) as features.
-* Check input contigs for runs of Ns, and either complain, or split the file, or additionally create a .AGP scaffold file. (Mitchell Stanton-Cook has done this, need to incorporate)
-* Add hyperlinks to tool references in Manual
+* ToDoList.txt: https://github.com/Victorian-Bioinformatics-Consortium/prokka/blob/master/doc/ToDoList.txt
+
 
 
 ##Changes
 
-See the ChangeLog.txt file in the doc/ subdirectory of Prokka.
+* ChangeLog.txt: https://raw.githubusercontent.com/Victorian-Bioinformatics-Consortium/prokka/master/doc/ChangeLog.txt
+* Github commits: https://github.com/Victorian-Bioinformatics-Consortium/prokka/commits/master
 
 ##Bugs
 
