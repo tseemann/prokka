@@ -349,8 +349,6 @@ It does not like the ACCESSION and VERSION strings that Prokka produces via the 
 
 Seemann T.  
 *Prokka: rapid prokaryotic genome annotation*  
-**Bioinformatics**  
-2014 Mar 18. [Epub ahead of print]  
+**Bioinformatics** 2014 Jul 15;30(14):2068-9.
 [PMID:24642063](http://www.ncbi.nlm.nih.gov/pubmed/24642063)  
-
-
+[DOI](doi:10.1093/bioinformatics/btu153)
