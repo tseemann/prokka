@@ -92,8 +92,8 @@ my %tools = (
   },
   'barrnap' => {
     GETVER  => "barrnap --version 2>&1",
-    REGEXP  => qr/($BIDEC)/,
-    MINVER  => "0.5",
+    REGEXP  => qr/($BIDEC)/,  
+    MINVER  => "0.4",  
     NEEDED  => 0,
   },
   'prodigal' => {
