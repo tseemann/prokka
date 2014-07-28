@@ -2,7 +2,7 @@
 Prokka ChangeLog
 ----------------
 
-v1.9.1 - 
+v1.10 - 28 July 2014
 * Support for barrnap 0.4 with Archaea and Mito support [Lionel Guy]
 * New legal assembly_gap feature in gbk, sqn, tbl files [Connor Skennerton]
 * Bug fix: for hypos with /gene and /EC [Connor Skennerton]
@@ -17,6 +17,7 @@ v1.9.1 -
 * Command line and other improvements [Shaun Jackman]
 * Added --rnammer switch to prefer RNAmmer over Barrnap 
 * Added --rawproduct to turn off /product cleaning
+* Typo in help for --compliant [Haruo Suzuki]
 
 v1.9 - 8 May 2014
 * MAJOR: Bug in prokka-uniprot_to_fasta_db: was allowing Altname instead of Recname

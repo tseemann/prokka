@@ -1165,8 +1165,9 @@ my $walltime = $endtime - $starttime;
 #msg("Walltime used:", $walltime->pretty);  # Heikki says this method only came with 1.20
 my $pretty = sprintf "%.2f minutes", $walltime->minutes;
 msg("Walltime used: $pretty");
-msg("If you use this result please cite the Prokka paper.");
-msg("Type 'prokka --citation' for details.");
+msg("If you use this result please cite the Prokka paper:");
+msg("Seemann T (2014) Prokka: rapid prokaryotic genome annotation. Bioinformatics. 30(14):2068-9.");
+msg("Type 'prokka --citation' for more details.");
 msg($walltime % 2 ? "Share and enjoy!" : "Thank you, come again.");
 #EXIT
 
@@ -1408,7 +1409,7 @@ sub setOptions {
     {OPT=>"locustag=s",  VAR=>\$locustag, DEFAULT=>uc($EXE), DESC=>"Locus tag prefix"},
     {OPT=>"increment=i",  VAR=>\$increment, DEFAULT=>1, DESC=>"Locus tag counter increment"},
     {OPT=>"gffver=i",  VAR=>\$gffver, DEFAULT=>3, DESC=>"GFF version"},
-    {OPT=>"compliant!",  VAR=>\$compliant, DEFAULT=>0, DESC=>"Force Genbank/ENA/DDJB compliance: --genes --mincontiglen 200 --centre XXX"},
+    {OPT=>"compliant!",  VAR=>\$compliant, DEFAULT=>0, DESC=>"Force Genbank/ENA/DDJB compliance: --addgenes --mincontiglen 200 --centre XXX"},
     {OPT=>"centre=s",  VAR=>\$centre, DEFAULT=>'', DESC=>"Sequencing centre ID."},
 #    {OPT=>"scaffolds!",  VAR=>\$scaffolds, DEFAULT=>0, DESC=>"Break scaffoldings into contigs and create .AGP file"},
     'Organism details:',
