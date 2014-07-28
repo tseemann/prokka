@@ -154,10 +154,11 @@ If you are using Mac OS X, you'll also have to change the `"Linux"` to `"Darwin"
       --docs            Show full manual/documentation
       --citation        Print citation for referencing Prokka
       --quiet           No screen output (default OFF)
-    Database setup:
+    Setup:
       --listdb          List all configured databases
       --setupdb         Index all installed databases
       --cleandb         Remove all database indices
+      --depends         List all software dependencies
     Outputs:
       --outdir [X]      Output folder [auto] (default '')
       --force           Force overwriting existing output folder (default OFF)
@@ -180,6 +181,7 @@ If you are using Mac OS X, you'll also have to change the `"Linux"` to `"Darwin"
       --usegenus        Use genus-specific BLAST databases (needs --genus) (default OFF)
       --proteins [X]    Fasta file of trusted proteins to first annotate from (default '')
       --metagenome      Improve gene predictions for highly fragmented genomes (default OFF)
+      --rawproduct      Do not clean up /product annotation (default OFF)
     Computation:
       --fast            Fast mode - skip CDS /product searching (default OFF)
       --cpus [N]        Number of CPUs to use [0=all] (default '8')
@@ -188,6 +190,7 @@ If you are using Mac OS X, you'll also have to change the `"Linux"` to `"Darwin"
       --rfam            Enable searching for ncRNAs with Infernal+Rfam (SLOW!) (default '0')
       --norrna          Don't run rRNA search (default OFF)
       --notrna          Don't run tRNA search (default OFF)
+      --rnammer         Prefer RNAmmer over Barrnap for rRNA prediction (default OFF)
 
 ##Dependencies
 
