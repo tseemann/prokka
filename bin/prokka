@@ -93,7 +93,7 @@ my %tools = (
   'barrnap' => {
     GETVER  => "barrnap --version 2>&1",
     REGEXP  => qr/($BIDEC)/,
-    MINVER  => "0.4",
+    MINVER  => "0.5",
     NEEDED  => 0,
   },
   'prodigal' => {
@@ -272,7 +272,7 @@ elsif ($kingdom =~ m/arch/i) {
   $gcode ||= 11;
   $gram = '';
   $rnammer_mode = 'arc';
-  $barrnap_mode = 'bac';
+  $barrnap_mode = 'arc';
 }
 elsif ($kingdom =~ m/vir/i) {
   $kingdom = 'Viruses';
