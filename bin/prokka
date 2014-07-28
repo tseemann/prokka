@@ -50,7 +50,7 @@ my $UNANN = 'unannotated protein';
 my $MAXCONTIGIDLEN = 38;  # Genbank rule
 
 # these should accept .faa on STDIN and write report to STDOUT
-my $BLASTPCMD = "blastp -query - -db %d -evalue %e -num_threads 1 -num_descriptions 1 -num_alignments 1";
+my $BLASTPCMD = "blastp -query - -db %d -evalue %e -num_threads 1 -num_descriptions 1 -num_alignments 1 -seg no";
 my $HMMER3CMD = "hmmscan --noali --notextw --acc -E %e --cpu 1 %d /dev/stdin";
 my $rnammer_mode = 'bac';
 my $barrnap_mode = 'bac';
