@@ -203,11 +203,12 @@ sub check_all_tools {
     check_tool($toolname);
   }
 }
+
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
 # add our included binaries to the END of the PATH
 
 if (-d $BINDIR) {
-  msg("Extending PATH: $BINDIR");
+#  msg("Extending PATH: $BINDIR");
   $ENV{PATH} .= ":$BINDIR:$BINDIR/../common";
 }
 
