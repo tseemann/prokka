@@ -7,7 +7,7 @@ if [ ! -d "../db" ]; then
   exit 1
 fi
 
-NAME=$(prokka --version 2>&1 | sed 's/ /-/g')
+NAME=$(./prokka --version 2>&1 | sed 's/ /-/g')
 echo "Using name: $NAME"
 
 FOLDER="$DESTDIR/$NAME"
@@ -26,6 +26,11 @@ cp -rv ../bin ../doc ../db ../binaries "$FOLDER"
 
 echo "Removing unwanted backup files in: $FOLDER"
 find "$FOLDER" -name "*~" -exec rm -f {} \;
+
+for PATTERN in '*.p??' '*.i1?' '*.h3?' ; do
+  echo "Removing $PATTERN index files"
+  find "$FOLDER/db" -name "$PATTERN" -delete -print
+done
 
 TARBALL="$DESTDIR/$NAME.tar.gz"
 echo "Creating: $TARBALL"
