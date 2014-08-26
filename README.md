@@ -3,9 +3,26 @@
 Torsten Seemann <torsten.seemann@monash.edu>  
 Victorian Bioinformatics Consortium, AUSTRALIA <http://vicbioinformatics.com>
 
+##Contents
+
+- [Introduction](#introduction)
+- [Installation](#installation)
+- [Invoking Prokka](#invoking-prokka)
+- [Output Files](#output-files)
+- [Command line options](#command-line-options)
+- [Dependencies](#dependencies)
+- [Databases](#databases)
+- [FAQ](#faq)
+- [Still To Do](#still-to-do)
+- [Changes](#changes)
+- [Citation](#citation)
+
 ##Introduction
 
-Whole genome annotation is the process of identifying features of interest in a set of genomic DNA sequences, and labelling them with useful information. Prokka is a software tool to annotate bacterial, archaeal and viral genomes quickly and produce standards-compliant output files.
+Whole genome annotation is the process of identifying features of interest
+in a set of genomic DNA sequences, and labelling them with useful
+information. Prokka is a software tool to annotate bacterial, archaeal and
+viral genomes quickly and produce standards-compliant output files.
 
 ##Installation
 
@@ -328,8 +345,13 @@ Unfortunately HMMER keeps changing it's database format, and they aren't upward 
 Our server is in Australia, and the international pipes aren't always flowing as well as we'd like. I try to put it on GoogleDrive. Dropbox is no longer possible due to bandwidth quotas. If you are able to mirror Prokka (~2 GB) outside please let me know.
 
 * __Why can't I load Prokka .GBK files into Mauve?__  
-Mauve is very picky about Genbank files. It does not like long contig names, like those from Velvet or Spades. The simple solution is to use `--centre XXX` in Prokka and it will rename all your contigs to be NCBI (and Mauve) compliant.
-It does not like the ACCESSION and VERSION strings that Prokka produces via the "tbl2asn" tool. The following Unix command will fix them: `egrep -v '^(ACCESSION|VERSION)' prokka.gbk > mauve.gbk`
+Mauve uses BioJava to parse GenBank files, and it is very picky about Genbank files. 
+It does not like long contig names,
+like those from Velvet or Spades. One solution is to use `--centre XXX` 
+in Prokka and it will rename all your contigs to be NCBI (and Mauve)
+compliant. It does not like the ACCESSION and VERSION strings that Prokka
+produces via the "tbl2asn" tool. The following Unix command will fix them:
+`egrep -v '^(ACCESSION|VERSION)' prokka.gbk > mauve.gbk`
 
 
 ##Still To Do
@@ -337,16 +359,10 @@ It does not like the ACCESSION and VERSION strings that Prokka produces via the 
 * ToDoList.txt: https://github.com/Victorian-Bioinformatics-Consortium/prokka/blob/master/doc/ToDoList.txt
 
 
-
 ##Changes
 
 * ChangeLog.txt: https://raw.githubusercontent.com/Victorian-Bioinformatics-Consortium/prokka/master/doc/ChangeLog.txt
 * Github commits: https://github.com/Victorian-Bioinformatics-Consortium/prokka/commits/master
-
-##Bugs
-
-* tbl2asn seems to be removing the "(anti-codon)" part in my tRNA /product values
-* tbl2asn putting space in /inference for Infernal
 
 ##Citation
 
@@ -354,4 +370,3 @@ Seemann T.
 *Prokka: rapid prokaryotic genome annotation*  
 **Bioinformatics** 2014 Jul 15;30(14):2068-9.
 [PMID:24642063](http://www.ncbi.nlm.nih.gov/pubmed/24642063)  
-[DOI](doi:10.1093/bioinformatics/btu153)
