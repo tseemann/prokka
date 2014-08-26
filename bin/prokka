@@ -222,7 +222,7 @@ my(@Options, $quiet, $kingdom, $fast, $force, $outdir, $prefix, $cpus, $addgenes
              $genus, $species, $strain, $plasmid, 
              $usegenus, $proteins, $centre, $scaffolds,
              $rfam, $norrna, $notrna, $rnammer, $rawproduct,
-	     $metagenome, $compliant, $listdb, $citation);
+	     $metagenome, $partialgenes, $compliant, $listdb, $citation);
 setOptions();
 
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
@@ -646,10 +646,11 @@ msg("Predicting coding sequences");
 my $tool = "Prodigal:".$tools{prodigal}->{VERSION};
 my $totalbp = sum( map { $seq{$_}{DNA}->length } keys %seq);
 my $prodigal_mode = ($totalbp >= 100000 && !$metagenome) ? 'single' : 'meta';
-msg("Contigs total $totalbp bp, so using $prodigal_mode mode");
+my $prodigal_closedends = $partialgenes ? '' : '-c';
+msg("Contigs total $totalbp bp, so using $prodigal_mode mode, " . 
+	($partialgenes ? 'not' : '') . " allowing genes to run off contig edges.");
 my $num_cds=0;
-#my $cmd = "prodigal -i \Q$outdir/$prefix.fna\E -c -m -g $gcode -p $prodigal_mode -f gff -q";
-my $cmd = "prodigal -i \Q$outdir/$prefix.fna\E -m -g $gcode -p $prodigal_mode -f gff -q";
+my $cmd = "prodigal -i \Q$outdir/$prefix.fna\E $prodigal_closedends -m -g $gcode -p $prodigal_mode -f gff -q";
 msg("Running: $cmd");
 open my $PRODIGAL, '-|', $cmd;
 my $gff_in = Bio::Tools::GFF->new(-fh => $PRODIGAL,
@@ -709,9 +710,8 @@ while (my $cds = $gff_in->next_feature){
 	push @{$seq{$sid}{FEATURE}}, $cds;
 	## BUG James Doonan - ensure no odd features extending beyond contig
 	#(my $cds_end = $cds->end) =~ s/^>//;
-	my $cds_end = $cds->end;
-	if ($cds_end > $seq{$cds->seq_id}{DNA}->length )  { 
-	    err("CDS end", $cds_end, "is beyond length", 
+	if ($cds->end > $seq{$cds->seq_id}{DNA}->length )  { 
+	    err("CDS end", $cds->end, "is beyond length", 
 		$seq{$sid}{DNA}->length, "in contig $sid") 
 	}
     }
@@ -911,10 +911,7 @@ else {
 	next unless $f->primary_tag eq 'CDS';
 	next if $f->has_tag('product');
 	$cds{++$count} = $f;
-	my $frame = 1;
-	($frame) = $f->get_tag_values('codon_start')
-	    if $f->has_tag('codon_start');
-	print $faa ">$count\n",$f->seq->translate(-frame => $frame-1)->seq,"\n";
+	print $faa ">$count\n",$f->seq->translate->seq,"\n";
       }
     }
     close $faa;
@@ -1059,9 +1056,6 @@ for my $sid (sort keys %seq) {
       my $g = Bio::SeqFeature::Generic->new(
         -primary    => 'gene',
         -seq_id     => $f->seq_id,
-        # -start      => $f->start,
-        # -end        => $f->end,
-        # -strand     => $f->strand,
         -source_tag => $EXE,
         -tag        => { 'locus_tag'=> $ID },
       );
@@ -1104,11 +1098,6 @@ for my $sid (sort keys %seq) {
     if ($f->primary_tag eq 'CDS' and not $f->has_tag('product')) {
       $f->add_tag_value('product', $HYPO);
     }
-    ## DEBUG  ##
-    if ($f->seq_id eq "contig000005"){
-	print "HERE";
-    }
-    ### END DEBUG ##
 
     print $gff_fh $f->gff_string($gff_factory),"\n";
 
@@ -1461,6 +1450,7 @@ sub setOptions {
     {OPT=>"usegenus!",  VAR=>\$usegenus, DEFAULT=>0, DESC=>"Use genus-specific BLAST databases (needs --genus)"},
     {OPT=>"proteins=s",  VAR=>\$proteins, DEFAULT=>'', DESC=>"Fasta file of trusted proteins to first annotate from"},
     {OPT=>"metagenome!",  VAR=>\$metagenome, DEFAULT=>0, DESC=>"Improve gene predictions for highly fragmented genomes"},
+    {OPT=>"partialgenes!",  VAR=>\$partialgenes, DEFAULT=>0, DESC=>"Allow genes to run off edges, yielding incomplete genes (no closed ends option in prodigal)"},
     {OPT=>"rawproduct!",  VAR=>\$rawproduct, DEFAULT=>0, DESC=>"Do not clean up /product annotation"},
     'Computation:',
     {OPT=>"fast!",  VAR=>\$fast, DEFAULT=>0, DESC=>"Fast mode - skip CDS /product searching"},
