@@ -747,7 +747,8 @@ if ($tools{signalp}->{HAVE}) {
           my $prob = $x[5];
           my $cleave = $x[3];
           my $start = $parent->strand > 0 ? $parent->start : $parent->end;
-          my $end = $start + $parent->strand * ($cleave - 1);
+          # need to convert to DNA coordinates
+          my $end = $start + $parent->strand * ($cleave*3 - 1);
           my $sigpep = Bio::SeqFeature::Generic->new( 
             -seq_id     => $parent->seq_id,
             -source_tag => $tool,
@@ -773,7 +774,8 @@ if ($tools{signalp}->{HAVE}) {
           my $parent = $cds{ $x[0] };
           my $cleave = $x[2];
           my $start = $parent->strand > 0 ? $parent->start : $parent->end;
-          my $end = $start + $parent->strand * ($cleave - 1);
+          # need to convert to DNA coordinates
+          my $end = $start + $parent->strand * ($cleave*3 - 1);
           my $sigpep = Bio::SeqFeature::Generic->new( 
             -seq_id     => $parent->seq_id,
             -source_tag => $tool,
