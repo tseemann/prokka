@@ -26,6 +26,7 @@ use XML::Simple;
 use List::Util qw(min max sum);
 use Scalar::Util qw(openhandle);
 use Data::Dumper;
+use Bio::Location::Fuzzy;
 use Bio::Root::Version;
 use Bio::SeqIO;
 use Bio::SearchIO;
@@ -642,58 +643,78 @@ if ($tools{'minced'}->{HAVE}) {
 # CDS
 
 msg("Predicting coding sequences");
+my $tool = "Prodigal:".$tools{prodigal}->{VERSION};
 my $totalbp = sum( map { $seq{$_}{DNA}->length } keys %seq);
 my $prodigal_mode = ($totalbp >= 100000 && !$metagenome) ? 'single' : 'meta';
 msg("Contigs total $totalbp bp, so using $prodigal_mode mode");
 my $num_cds=0;
-my $cmd = "prodigal -i \Q$outdir/$prefix.fna\E -c -m -g $gcode -p $prodigal_mode -f sco -q";
+#my $cmd = "prodigal -i \Q$outdir/$prefix.fna\E -c -m -g $gcode -p $prodigal_mode -f gff -q";
+my $cmd = "prodigal -i \Q$outdir/$prefix.fna\E -m -g $gcode -p $prodigal_mode -f gff -q";
 msg("Running: $cmd");
 open my $PRODIGAL, '-|', $cmd;
-my $sid;
-while (<$PRODIGAL>) {
-  if (m/seqhdr="([^\s\"]+)"/) {  
-    $sid = $1;
-#    msg("CDS $sid");
-    next;
-  }
-  elsif (m/^>\d+_(\d+)_(\d+)_([+-])$/) {   
-    my $tool = "Prodigal:".$tools{prodigal}->{VERSION}; # FIXME: why inner loop?
-    my $cds = Bio::SeqFeature::Generic->new( 
-      -primary    => 'CDS',
-      -seq_id     => $sid,
-      -source     => $tool,
-      -start      => $1,
-      -end        => $2,
-      -strand     => ($3 eq '+' ? +1 : -1),
-      -score      => undef,
-      -frame      => 0,
-      -tag        => {
-	'inference' => "ab initio prediction:$tool", 
-      }
-    );
+my $gff_in = Bio::Tools::GFF->new(-fh => $PRODIGAL,
+				  -gff_version => 3);
+while (my $cds = $gff_in->next_feature){
+    my $sid = $cds->seq_id;
+    # Determine whether the CDS is partial, i.e. it is running off 
+    # contig edges. Add the appropriate /codon_start attribute if necessary
+    # Assuming prodigal only returns one single 'partial' tag
+    # Modify start & end attributes, because gff output is wrong
+    my ($partial) = $cds->get_tag_values('partial');
+    my ($codon_start); 
+    my ($start, $end) = ($cds->start, $cds->end);
+    my $ctg_length = $seq{$sid}{DNA}->length;
+    if ($partial ne '00') {
+	if ($partial =~ /^1/){
+	    $codon_start = $cds->start if ($cds->strand == 1);
+	    $start = '<1';
+	}
+	if ($partial =~ /1$/){
+	    $codon_start = ($ctg_length - $cds->end + 1)
+		if ($cds->strand == -1);
+	    $end = ">$ctg_length";
+	}
+	my $fuzzyloc = Bio::Location::Fuzzy->new(
+	    -start  => $start,
+	    -end    => $end,
+	    -location_type => '..',
+	    -strand => $cds->strand);
+	$cds->location($fuzzyloc);
+    }
+    # Removing all tags
+    foreach my $tag ($cds->get_all_tags) {
+	$cds->remove_tag($tag);
+    }
+    # Adding only codon_start, if applicable, and the inference tag
+    if ($codon_start){
+	$cds->add_tag_value('codon_start', $codon_start);
+	$cds->frame($codon_start-1);
+    }
+    $cds->add_tag_value('inference', "ab initio prediction:$tool");
     my $overlap;
     for my $rna (@allrna) {
-      # same contig, overlapping (could check same strand too? not sure)
-      if ($rna->seq_id eq $sid and $cds->overlaps($rna)) { 
-        $overlap = $rna;
-	last;
-      }	
+	# same contig, overlapping (could check same strand too? not sure)
+	if ($rna->seq_id eq $sid and $cds->overlaps($rna)) { 
+	    $overlap = $rna;
+	    last;
+	}
     }
     # mitochondria are highly packed, so don't exclude as CDS/tRNA often overlap.
     if ($overlap and $kingdom ne 'Mitochondria') {
-      my $type = $overlap->primary_tag;
-      msg("Excluding CDS which overlaps existing RNA ($type) at $sid:$1..$2 on $3 strand");
+	my $type = $overlap->primary_tag;
+	msg("Excluding CDS which overlaps existing RNA ($type) at $sid:$1..$2 on $3 strand");
     }
     else {
-      $num_cds++;
-      push @{$seq{$sid}{FEATURE}}, $cds;
-      ## BUG James Doonan - ensure no odd features extending beyond contig
-      if ($cds->end > $seq{$cds->seq_id}{DNA}->length )  { 
-        err("CDS end", $cds->end, "is beyond length", $seq{$sid}{DNA}->length, "in contig $sid") 
-      }
-      
+	$num_cds++;
+	push @{$seq{$sid}{FEATURE}}, $cds;
+	## BUG James Doonan - ensure no odd features extending beyond contig
+	#(my $cds_end = $cds->end) =~ s/^>//;
+	my $cds_end = $cds->end;
+	if ($cds_end > $seq{$cds->seq_id}{DNA}->length )  { 
+	    err("CDS end", $cds_end, "is beyond length", 
+		$seq{$sid}{DNA}->length, "in contig $sid") 
+	}
     }
-  }
 }
 msg("Found $num_cds CDS");
 
@@ -890,7 +911,10 @@ else {
 	next unless $f->primary_tag eq 'CDS';
 	next if $f->has_tag('product');
 	$cds{++$count} = $f;
-	print $faa ">$count\n",$f->seq->translate->seq,"\n";
+	my $frame = 1;
+	($frame) = $f->get_tag_values('codon_start')
+	    if $f->has_tag('codon_start');
+	print $faa ">$count\n",$f->seq->translate(-frame => $frame-1)->seq,"\n";
       }
     }
     close $faa;
@@ -1035,12 +1059,13 @@ for my $sid (sort keys %seq) {
       my $g = Bio::SeqFeature::Generic->new(
         -primary    => 'gene',
         -seq_id     => $f->seq_id,
-        -start      => $f->start,
-        -end        => $f->end,
-        -strand     => $f->strand,
+        # -start      => $f->start,
+        # -end        => $f->end,
+        # -strand     => $f->strand,
         -source_tag => $EXE,
         -tag        => { 'locus_tag'=> $ID },
       );
+      $g->location($f->location);
       if (my $gENE = TAG($f, 'gene')) {
    	$g->add_tag_value('gene', $gENE);
       }
@@ -1079,10 +1104,20 @@ for my $sid (sort keys %seq) {
     if ($f->primary_tag eq 'CDS' and not $f->has_tag('product')) {
       $f->add_tag_value('product', $HYPO);
     }
-    
+    ## DEBUG  ##
+    if ($f->seq_id eq "contig000005"){
+	print "HERE";
+    }
+    ### END DEBUG ##
+
     print $gff_fh $f->gff_string($gff_factory),"\n";
-    
-    my ($L,$R) = ($f->strand >= 0) ? ($f->start,$f->end) : ($f->end,$f->start);
+
+    my ($start, $end) = ($f->start, $f->end);
+    $start = (($f->strand >= 0) ? '<' : '>') . $start 
+	if ($f->location->start_pos_type eq 'BEFORE');
+    $end = (($f->strand >= 0) ? '>' : '<') . $end 
+	if ($f->location->end_pos_type eq 'AFTER');
+    my ($L, $R) = ($f->strand >= 0) ? ($start, $end) : ($end, $start);
     print {$tbl_fh} "$L\t$R\t",$f->primary_tag,"\n";
     for my $tag ($f->get_all_tags) {
       next if $tag =~ m/^(ID|Alias)$/; # remove GFF specific tags
