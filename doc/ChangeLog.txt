@@ -2,6 +2,11 @@
 Prokka ChangeLog
 ----------------
 
+v1.11 - unreleased, dev
+* Add Prodigal -c option when in metagenome mode [Daan Speth]
+* Wierd coordinate errors with long Spades contig names [Stephan Pabinger]
+* Replaced dodgy OSX aragorn binary [Yevgeny Nikolaichik]
+
 v1.10 - 28 July 2014
 * Support for barrnap 0.4 with Archaea and Mito support [Lionel Guy]
 * New legal assembly_gap feature in gbk, sqn, tbl files [Connor Skennerton]

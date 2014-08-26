@@ -2,6 +2,9 @@
 Prokka Wishlist
 ---------------
 
+* New --hmms option to prioritise a custom HMM [Connor Driscoll]
+* New --first-blast option, like --proteins?
+* New --last-blast option eg. "nr" [Check who emailed me this]
 * annotate possible frame-shifts
 * FAQ about annotation transfer
 * use included binary if PATH one is wrong version [Simon Gladman]
