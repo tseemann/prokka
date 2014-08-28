@@ -21,7 +21,7 @@ while (<$ali_fh>) {
   my @x = split m/\t/;
   next if $x[5] =~ m/UPF\d+|homolog|[@<\[]/;
   $x[5] =~ s/^probable\s+//gi;
-  $DESC{ $x[1] } = "$sep$x[4]$sep$x[5]";
+  $DESC{ $x[0] } = "$sep$x[4]$sep$x[5]";
 }
 printf STDERR "Accepted descriptions for %d families\n", scalar keys %DESC;
 
