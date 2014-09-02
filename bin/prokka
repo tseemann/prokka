@@ -65,6 +65,7 @@ my $PARALLELCMD = "parallel --gnu --plain";
 
 my $starttime = localtime;
 my %seq;
+my %seqmap; # keep track of new and old sequence names
 
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
 # table of tools we need/optional and min versions
@@ -221,7 +222,7 @@ my(@Options, $quiet, $kingdom, $fast, $force, $outdir, $prefix, $cpus, $addgenes
              $gcode, $gram, $gffver, $locustag, $increment, $mincontiglen, $evalue, $coverage,
              $genus, $species, $strain, $plasmid, 
              $usegenus, $proteins, $centre, $scaffolds,
-             $rfam, $norrna, $notrna, $rnammer, $rawproduct,
+             $rfam, $norrna, $notrna, $rnammer, $rnafeatures, $rawproduct,
 	     $metagenome, $partialgenes, $compliant, $listdb, $citation);
 setOptions();
 
@@ -399,6 +400,7 @@ if ($compliant and $contig_name_len > $MAXCONTIGIDLEN) {
 }
 
 while (my $seq = $fin->next_seq) {
+  my $oid = $seq->id;
   if ($seq->length < $mincontiglen) {
     msg("Skipping short (<$mincontiglen bp) contig:",$seq->display_id);
     next;
@@ -423,6 +425,7 @@ while (my $seq = $fin->next_seq) {
     err("Uh oh! Sequence file '$in' contains duplicate sequence ID:", $seq->id);
   }
   $seq{ $seq->id }{DNA} = $seq;
+  $seqmap{$oid} = $seq->id;
 }
 $ncontig > 0 or err("FASTA file '$in' contains no suitable sequence entries");
 msg("Wrote $ncontig contigs");
@@ -606,6 +609,58 @@ else {
 }
 
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
+# Add user-provided RNA features from other sources, as gbk file
+if ($rnafeatures){
+    my $feat_count = 0;
+    msg("Adding user-provided features from file $rnafeatures");
+    my $gff_in = Bio::Tools::GFF->new(-file => $rnafeatures,
+				      -gff_version => 3);
+    while (my $feat = $gff_in->next_feature){
+	my $oid = $feat->seq_id;
+	my $sid = $seqmap{$oid};
+	my $pseudo;
+	err("Sequence with id $oid is not in the input file $in") 
+	    unless $seq{$sid};
+	my ($product, $inference);
+	if ($feat->has_tag('product') && $feat->source_tag){
+	    ($product) = $feat->get_tag_values('product');
+	    $inference = $feat->source_tag;
+	    # Correct tRNAscan-SE "Undet" into Xxx and add /pseudo if 
+	    # applicable
+	    $pseudo++ if ($feat->primary_tag eq 'tRNA' 
+			      && $product =~ /Pseudo/i);
+	    $product = 'tRNA-Xxx' if ($feat->primary_tag eq 'tRNA' &&
+					  $product =~ /(Undet|Pseudo)/i);
+	} else {
+	    # die if feat doesn't have product or inference. Alternatively
+	    # just ignore it.
+	    err("Feature on sequence $oid starting at " . $feat->location->start
+		    . " lacks product and/or inference tag");
+	}
+	# Check that the seq ids correspond to the contigs that we have
+	my $newfeat = Bio::SeqFeature::Generic->new( 
+	    -primary    => $feat->primary_tag,
+	    -seq_id     => $sid,
+	    -source     => $inference,
+	    -start      => $feat->start,
+	    -end        => $feat->end,
+	    -strand     => $feat->strand,
+	    -score      => undef,
+	    -frame      => 0,
+	    -tag        => {
+		'product' => $product,
+		'inference' => "COORDINATES:profile:$inference",
+	    });
+	if ($pseudo){
+	    $newfeat->add_tag_value('pseudo', '_no_value') if $pseudo;
+	}
+	push @{$seq{$sid}{FEATURE}}, $newfeat;
+	$feat_count++;
+    }
+    msg("Added $feat_count user-provided features");
+}
+
+# . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
 # Tally all the RNA features __ which we want to exclude overlaps with CDS __
 
 my @allrna;
@@ -648,7 +703,7 @@ my $totalbp = sum( map { $seq{$_}{DNA}->length } keys %seq);
 my $prodigal_mode = ($totalbp >= 100000 && !$metagenome) ? 'single' : 'meta';
 my $prodigal_closedends = $partialgenes ? '' : '-c';
 msg("Contigs total $totalbp bp, so using $prodigal_mode mode, " . 
-	($partialgenes ? 'not' : '') . " allowing genes to run off contig edges.");
+	($partialgenes ? '' : 'not') . " allowing genes to run off contig edges.");
 my $num_cds=0;
 my $cmd = "prodigal -i \Q$outdir/$prefix.fna\E $prodigal_closedends -m -g $gcode -p $prodigal_mode -f gff -q";
 msg("Running: $cmd");
@@ -703,7 +758,9 @@ while (my $cds = $gff_in->next_feature){
     # mitochondria are highly packed, so don't exclude as CDS/tRNA often overlap.
     if ($overlap and $kingdom ne 'Mitochondria') {
 	my $type = $overlap->primary_tag;
-	msg("Excluding CDS which overlaps existing RNA ($type) at $sid:$1..$2 on $3 strand");
+	msg("Excluding CDS which overlaps existing RNA ($type) at $sid: " 
+		. $cds->start . ".." . $cds->end . " on " . $cds->strand 
+		    . " strand");
     }
     else {
 	$num_cds++;
@@ -841,7 +898,8 @@ my @database = (
 
 # secondary sources are a series of HMMs
 unless ($kingdom eq 'Viruses') {
-  for my $name (qw(HAMAP CLUSTERS Pfam)) {
+#  for my $name (qw(HAMAP CLUSTERS Pfam)) {
+  for my $name (hmms()) {
     push @database, {
       DB  => "$DBDIR/hmm/$name.hmm",
       SRC => "protein motif:$name:",
@@ -999,7 +1057,7 @@ for my $sid (sort keys %seq) {
     my $this = TAG($f, 'product');
     if ($this eq $prev and $this ne $HYPO and $this ne $UNANN) {
       msg("Possible /pseudo '$prev' at", $f->seq_id, 'position', $f->start);
-    }      
+    }
     $prev = $this;
     $this = '';
   }
@@ -1059,6 +1117,8 @@ for my $sid (sort keys %seq) {
         -source_tag => $EXE,
         -tag        => { 'locus_tag'=> $ID },
       );
+      # tRNA features can have a pseudo tag, and should keep it
+      $g->add_tag_value('pseudo', '_no_value') if $f->has_tag('pseudo');
       $g->location($f->location);
       if (my $gENE = TAG($f, 'gene')) {
    	$g->add_tag_value('gene', $gENE);
@@ -1111,7 +1171,9 @@ for my $sid (sort keys %seq) {
     for my $tag ($f->get_all_tags) {
       next if $tag =~ m/^(ID|Alias)$/; # remove GFF specific tags
       for my $value ($f->get_tag_values($tag)) {
-        print {$tbl_fh} "\t\t\t$tag\t$value\n";
+	print {$tbl_fh} "\t\t\t$tag";
+	print {$tbl_fh} "\t$value" unless $value eq '_no_value';
+	print {$tbl_fh} "\n";
       }
     }
 
@@ -1119,7 +1181,7 @@ for my $sid (sort keys %seq) {
     $p->display_id( TAG($f, 'locus_tag') );
     $p->desc( TAG($f, 'product') ) if $f->has_tag('product');
     unless ($addgenes and $f->primary_tag eq 'gene') {
-      $ffn_fh->write_seq($p);      
+      $ffn_fh->write_seq($p);
     }
     if ($f->primary_tag eq 'CDS') {
       $faa_fh->write_seq( $p->translate(-codontable_id=>$gcode) ); 
@@ -1462,6 +1524,7 @@ sub setOptions {
     {OPT=>"norrna!",  VAR=>\$norrna, DEFAULT=>0, DESC=>"Don't run rRNA search"},
     {OPT=>"notrna!",  VAR=>\$notrna, DEFAULT=>0, DESC=>"Don't run tRNA search"},
     {OPT=>"rnammer!",  VAR=>\$rnammer, DEFAULT=>0, DESC=>"Prefer RNAmmer over Barrnap for rRNA prediction"},
+    {OPT=>"rnafeatures=s", VAR=>\$rnafeatures, DEFAULT=>'', DESC=>"RNA features to add (GFF3 format file)"}
   );
 
   (!@ARGV) && (usage());
