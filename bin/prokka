@@ -622,6 +622,7 @@ if ($rnafeatures){
 	err("Sequence with id $oid is not in the input file $in") 
 	    unless $seq{$sid};
 	my ($product, $inference);
+     
 	if ($feat->has_tag('product') && $feat->source_tag){
 	    ($product) = $feat->get_tag_values('product');
 	    $inference = $feat->source_tag;
@@ -898,8 +899,8 @@ my @database = (
 
 # secondary sources are a series of HMMs
 unless ($kingdom eq 'Viruses') {
-#  for my $name (qw(HAMAP CLUSTERS Pfam)) {
-  for my $name (hmms()) {
+  for my $name (qw(HAMAP CLUSTERS Pfam)) {
+#  for my $name (hmms()) {
     push @database, {
       DB  => "$DBDIR/hmm/$name.hmm",
       SRC => "protein motif:$name:",
@@ -1096,12 +1097,16 @@ msg("Fixed $num_collide colliding /gene names.");
 # Add locus_tags and protein_id[CDS only] (and Parent genes if asked)
 
 msg("Adding /locus_tag identifiers");
+# get a rough estimation of the number of features, to set the number of 
+# digits corretly (min. 5) 
+my $num_lt_est = sum(map { scalar @{ $seq{$_}{FEATURE} } } keys %seq);
+my $ndigits = max(5, length($num_lt_est * $increment));
 my $num_lt=0;
 for my $sid (sort keys %seq) {
   for my $f ( sort { $a->start <=> $b->start } @{ $seq{$sid}{FEATURE} }) {
     next unless $f->primary_tag =~ m/CDS|RNA/;
     $num_lt++;
-    my $ID = sprintf("${locustag}_%05d", $num_lt * $increment);
+    my $ID = sprintf("${locustag}_%0${ndigits}d", $num_lt * $increment);
     $f->add_tag_value('ID', $ID);
     $f->add_tag_value('locus_tag', $ID);
     # it seems CDS features _must_ have a valid /protein_id to be output by tbl2asn into .gbk
@@ -1236,8 +1241,8 @@ runcmd(
   "tbl2asn -V b -a r10k -l paired-ends -M n -N 1 -y 'Annotated using $EXE $VERSION from $URL' -Z".
   " \Q$outdir/$prefix.err\E -i \Q$outdir/$prefix.fsa\E 2> /dev/null"
 );
-delfile("$outdir/errorsummary.val");
-delfile( map { "$outdir/$prefix.$_" } qw(dr fixedproducts ecn val) );
+#delfile("$outdir/errorsummary.val");
+#delfile( map { "$outdir/$prefix.$_" } qw(dr fixedproducts ecn val) );
 move("$outdir/$prefix.gbf", "$outdir/$prefix.gbk"); # rename XXX.gbf to XXX.gbk
 
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
