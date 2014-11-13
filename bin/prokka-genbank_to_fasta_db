@@ -1,13 +1,29 @@
 #!/usr/bin/perl -w
 use strict;
 use Bio::SeqIO;
+use Bio::Tools::CodonTable;
 use Data::Dumper;
+
+#     gene            complement(1..1200)
+#                     /locus_tag="P148_SR1C00001G0001"
+#     CDS             complement(1..1200)
+#                     /locus_tag="P148_SR1C00001G0001"
+#                     /note="RAAC1_SR1_1_1"
+#                     /codon_start=1
+#                     /transl_table=25
+#                     /product="MAEBL"
+#                     /protein_id="AHB40819.1"
+#                     /db_xref="GI:563351664"
 
 my(@Options, $verbose, $format, $hypo, $idtag, $sep, $blank, $pseudo, $minlen);
 setOptions();
 
 my $in = Bio::SeqIO->new(-fh=>\*ARGV, -format=>$format);
 my $out = Bio::SeqIO->new(-fh=>\*STDOUT, -format=>'Fasta');
+
+# support different /transl_table=XX tags in CDS
+#my $table = Bio::Tools::CodonTable->new();
+#printf STDERR "Default /transl_table is %d - %s\n", $table->id, $table->name;
 
 while (my $seq = $in->next_seq) {
   print STDERR "\rParsing: ",$seq->display_id;
@@ -41,8 +57,12 @@ while (my $seq = $in->next_seq) {
     #END
 
 
-    # DNA -> AA    
-    $cds = $cds->translate;
+    # DNA -> AA  
+    my $tt = TAG($f, 'transl_table') || 1;
+#    $table->id($tt);  
+#    $cds = $cds->translate(-condontable=>$table);
+    print STDERR "Using specified /transl_table=$tt" if $verbose && $tt != 1;
+    $cds = $cds->translate(-codontable_id => $tt);
     
     # remove stop codon
     my $aa = $cds->seq;
