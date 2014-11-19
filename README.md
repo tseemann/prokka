@@ -114,7 +114,7 @@ If you are using Mac OS X, you'll also have to change the `"Linux"` to `"Darwin"
 ###Wizard
 
     # Watch and learn
-    % prokka --outdir mydir --locustag EHEC --proteins NewToxins.faa --evalue 0.001 --gram neg --addgenes contigs.fa
+    % prokka --outdir mydir --locustag EHEC --proteins NewToxins.faa --evalue 0.001 --partialgenes --gram neg --addgenes contigs.fa
      
     # Check to see if anything went really wrong
     % less mydir/EHEC_06072012.err
@@ -198,6 +198,7 @@ If you are using Mac OS X, you'll also have to change the `"Linux"` to `"Darwin"
       --usegenus        Use genus-specific BLAST databases (needs --genus) (default OFF)
       --proteins [X]    Fasta file of trusted proteins to first annotate from (default '')
       --metagenome      Improve gene predictions for highly fragmented genomes (default OFF)
+      --partialgenes    Allow genes to run off edges, yielding incomplete genes (no closed ends option in prodigal) (default OFF)
       --rawproduct      Do not clean up /product annotation (default OFF)
     Computation:
       --fast            Fast mode - skip CDS /product searching (default OFF)
