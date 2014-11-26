@@ -22,7 +22,7 @@ while (my $seq = $in->next_seq) {
 
     my $prod = TAG($f, 'product') || $blank;
 
-    next if $prod eq 'hypothetical protein';
+    next if !$hypo and $prod eq 'hypothetical protein';
 
     my $cds = $f->spliced_seq;  # don't forget eukaryotes!
 
