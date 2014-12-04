@@ -5,8 +5,8 @@ use Data::Dumper;
 
 my(@Options, $verbose, $format, $gcode, $hypo, $idtag, $sep, $blank, $pseudo, $minlen);
 setOptions();
-($gcode < 1 or $gcode > 24) and err("Invalid genetic code, must be 1..24");
-print "Using genetic code table $gcode\n.";
+($gcode < 1 or $gcode > 24) and die "Invalid genetic code, must be 1..24\n";
+print STDERR "Using genetic code table $gcode.\n";
 
 my $in = Bio::SeqIO->new(-fh=>\*ARGV, -format=>$format);
 my $out = Bio::SeqIO->new(-fh=>\*STDOUT, -format=>'Fasta');
@@ -45,11 +45,6 @@ while (my $seq = $in->next_seq) {
 
     # DNA -> AA
     $cds = $cds->translate(-codontable_id=>$gcode, complete => 1);
-
-    # remove stop codon
-    my $aa = $cds->seq;
-    $aa =~ s/\*$//;
-    $cds->seq($aa);
 
     my $ec = TAG($f, 'EC_number') || $blank;
     my $gene = TAG($f, 'gene') || $blank;
