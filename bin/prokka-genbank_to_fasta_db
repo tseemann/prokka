@@ -6,7 +6,7 @@ use Data::Dumper;
 my(@Options, $verbose, $format, $gcode, $hypo, $idtag, $sep, $blank, $pseudo, $minlen);
 setOptions();
 ($gcode < 1 or $gcode > 24) and err("Invalid genetic code, must be 1..24");
-print "Using genetic code table $gcode\n."
+print "Using genetic code table $gcode\n.";
 
 my $in = Bio::SeqIO->new(-fh=>\*ARGV, -format=>$format);
 my $out = Bio::SeqIO->new(-fh=>\*STDOUT, -format=>'Fasta');
