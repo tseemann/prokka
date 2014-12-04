@@ -3,8 +3,10 @@ use strict;
 use Bio::SeqIO;
 use Data::Dumper;
 
-my(@Options, $verbose, $format, $hypo, $idtag, $sep, $blank, $pseudo, $minlen);
+my(@Options, $verbose, $format, $gcode, $hypo, $idtag, $sep, $blank, $pseudo, $minlen);
 setOptions();
+($gcode < 1 or $gcode > 24) and err("Invalid genetic code, must be 1..24");
+print "Using genetic code table $gcode\n."
 
 my $in = Bio::SeqIO->new(-fh=>\*ARGV, -format=>$format);
 my $out = Bio::SeqIO->new(-fh=>\*STDOUT, -format=>'Fasta');
@@ -42,7 +44,7 @@ while (my $seq = $in->next_seq) {
 
 
     # DNA -> AA
-    $cds = $cds->translate;
+    $cds = $cds->translate(-codontable_id=>$gcode, complete => 1);
 
     # remove stop codon
     my $aa = $cds->seq;
@@ -83,6 +85,7 @@ sub setOptions {
     {OPT=>"help",      VAR=>\&usage,               DESC=>"This help"},
     {OPT=>"verbose!",  VAR=>\$verbose, DEFAULT=>0, DESC=>"Verbose progress"},
     {OPT=>"format=s",  VAR=>\$format,  DEFAULT=>'genbank', DESC=>"Input format"},
+    {OPT=>"gcode=i",  VAR=>\$gcode, DEFAULT=>1, DESC=>"Genetic code / Translation table (1..24)"},
     {OPT=>"idtag=s",   VAR=>\$idtag,   DEFAULT=>'protein_id', DESC=>"What tag to use as Fasta ID"},
     {OPT=>"sep=s",     VAR=>\$sep,     DEFAULT=>'~~~', DESC=>"Separator between EC/gene/product" },
     {OPT=>"blank=s",   VAR=>\$blank,   DEFAULT=>'',    DESC=>"Replace empty EC/gene/product with this"},

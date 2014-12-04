@@ -718,7 +718,7 @@ if ($tools{signalp}->{HAVE}) {
         for my $f (@{ $seq{$sid}{FEATURE} }) {
           next unless $f->primary_tag eq 'CDS';
           $cds{++$count} = $f;
-          my $seq = $f->seq->translate;
+          my $seq = $f->seq->translate(-codontable_id=>$gcode, complete => 1);
           $seq->display_id($count);
           $spout->write_seq($seq);
         }
@@ -879,7 +879,7 @@ else {
     next unless $f->primary_tag eq 'CDS';
     next if $f->has_tag('product');
     $cds{++$count} = $f;
-    print $faa ">$count\n",$f->seq->translate->seq,"\n";
+    print $faa ">$count\n",$f->seq->translate(-codontable_id=>$gcode, complete => 1)->seq,"\n";
       }
     }
     close $faa;
@@ -1089,7 +1089,7 @@ for my $sid (sort keys %seq) {
       $ffn_fh->write_seq($p);
     }
     if ($f->primary_tag eq 'CDS') {
-      $faa_fh->write_seq( $p->translate(-codontable_id=>$gcode) );
+      $faa_fh->write_seq( $p->translate(-codontable_id=>$gcode, complete => 1) );
     }
   }
 }
