@@ -1,5 +1,7 @@
 # Prokka: rapid prokaryotic genome annotation  
 
+[![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/Victorian-Bioinformatics-Consortium/prokka?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 Torsten Seemann <torsten.seemann@monash.edu>  
 Victorian Bioinformatics Consortium, AUSTRALIA <http://vicbioinformatics.com>
 
