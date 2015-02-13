@@ -32,6 +32,7 @@ use Bio::SearchIO;
 use Bio::Seq;
 use Bio::SeqFeature::Generic;
 use Bio::Tools::GFF;
+use Bio::Tools::GuessSeqFormat;
 use FindBin;
 
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
@@ -164,6 +165,8 @@ my %tools = (
   'egrep'   => { NEEDED=>1 },
   'sed'     => { NEEDED=>1 },
   'find'    => { NEEDED=>1 },
+  # for the new --proteins option ability to take .gbk or .embl files
+  'prokka-genbank_to_fasta_db'    => { NEEDED=>1 },
 );  
 
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
@@ -855,7 +858,19 @@ else {
 # if user supplies a trusted set of proteins, we try these first!
 if (-r $proteins) {
   msg("Preparing user-supplied primary annotation source: $proteins");
-  runcmd("makeblastdb -dbtype prot -in \Q$proteins\E -out \Q$outdir/proteins\E -logfile /dev/null");
+  my $faa_file = $proteins;
+  my $format = Bio::Tools::GuessSeqFormat->new(-file=>$proteins)->guess
+    or err("could not determine format of --proteins file '$proteins'");
+  msg("Guessed source was in $format format.");
+  if ($format =~ m/^(embl|genbank)$/) {
+    $faa_file = "$outdir/proteins.faa";
+    msg("Converting $format '$proteins' into Prokka FASTA '$faa_file'");
+    runcmd("prokka-genbank_to_fasta_db --format $format \Q$proteins\E > \Q$faa_file\E 2> /dev/null");
+  }
+  elsif ($format ne 'fasta') {
+    err("Option --proteins only supports FASTA, GenBank, and EMBL formats.");
+  }
+  runcmd("makeblastdb -dbtype prot -in \Q$faa_file\E -out \Q$outdir/proteins\E -logfile /dev/null");
   my $src = $proteins;
   $src =~ s{^.*/}{};
   msg("Using /inference source as '$src'");
