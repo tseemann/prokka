@@ -65,6 +65,7 @@ my $PARALLELCMD = "parallel --gnu --plain";
 
 my $starttime = localtime;
 my %seq;
+my @seq;
 
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
 # table of tools we need/optional and min versions
@@ -425,10 +426,10 @@ while (my $seq = $fin->next_seq) {
     err("Uh oh! Sequence file '$in' contains duplicate sequence ID:", $seq->id);
   }
   $seq{ $seq->id }{DNA} = $seq;
+  push @seq, $seq->id;  # this array it used to preserve original contig order
 }
 $ncontig > 0 or err("FASTA file '$in' contains no suitable sequence entries");
 msg("Wrote $ncontig contigs");
-#msg(sort keys %seq); exit;
 
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
 # tRNA + tmRNA
@@ -611,7 +612,7 @@ else {
 # Tally all the RNA features __ which we want to exclude overlaps with CDS __
 
 my @allrna;
-for my $sid (sort keys %seq) {
+for my $sid (@seq) {
   push @allrna, (grep { $_->primary_tag =~ m/[tr]RNA/ } @{ $seq{$sid}{FEATURE} });
 }
 msg("Total of", scalar(@allrna), "tRNA + rRNA features");
@@ -645,7 +646,7 @@ if ($tools{'minced'}->{HAVE}) {
 # CDS
 
 msg("Predicting coding sequences");
-my $totalbp = sum( map { $seq{$_}{DNA}->length } keys %seq);
+my $totalbp = sum( map { $seq{$_}{DNA}->length } @seq);
 my $prodigal_mode = ($totalbp >= 100000 && !$metagenome) ? 'single' : 'meta';
 msg("Contigs total $totalbp bp, so using $prodigal_mode mode");
 my $num_cds=0;
@@ -704,7 +705,7 @@ msg("Found $num_cds CDS");
 # Connect features to their parent sequences
 
 msg("Connecting features back to sequences");
-for my $sid (sort keys %seq) {
+for my $sid (@seq) {
   for my $f (@{ $seq{$sid}{FEATURE} }) {
     $f->attach_seq( $seq{$sid}{DNA} );
   }
@@ -726,7 +727,7 @@ if ($tools{signalp}->{HAVE}) {
       my $spout = Bio::SeqIO->new(-fh=>$spoutfh, -format=>'fasta');
       my %cds;
       my $count=0;
-      for my $sid (sort keys %seq) {
+      for my $sid (@seq) {
         for my $f (@{ $seq{$sid}{FEATURE} }) {
           next unless $f->primary_tag eq 'CDS';
           $cds{++$count} = $f;
@@ -900,7 +901,7 @@ else {
 
     my %cds;
     my $count=0;
-    for my $sid (sort keys %seq) {
+    for my $sid (@seq) {
       for my $f (@{ $seq{$sid}{FEATURE} }) {
 	next unless $f->primary_tag eq 'CDS';
 	next if $f->has_tag('product');
@@ -974,7 +975,7 @@ if ($proteins) {
 
 my $empty_label = $fast ? 'unannotated protein' : $HYPO;
 my $num_hypo=0;
-for my $sid (sort keys %seq) {
+for my $sid (@seq) {
   for my $f ( @{ $seq{$sid}{FEATURE} }) {
     if ($f->primary_tag eq 'CDS' and not $f->has_tag('product')) {
       $f->add_tag_value('product', $empty_label);
@@ -987,7 +988,7 @@ msg("Labelling remaining $num_hypo proteins as '$empty_label'") if $num_hypo > 0
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
 # Look for possible /pseudo genes - adjacent with same annotation
 
-for my $sid (sort keys %seq) {
+for my $sid (@seq) {
   my $prev = '';
   for my $f ( grep { $_->primary_tag eq 'CDS' } @{ $seq{$sid}{FEATURE} } ) {
     my $this = TAG($f, 'product');
@@ -1005,7 +1006,7 @@ for my $sid (sort keys %seq) {
 
 my %collide;
 
-for my $sid (sort keys %seq) {
+for my $sid (@seq) {
   for my $f ( sort { $a->start <=> $b->start } @{ $seq{$sid}{FEATURE} }) {
     next unless $f->primary_tag eq 'CDS';
     my $gene = TAG($f, 'gene') or next;
@@ -1033,7 +1034,7 @@ msg("Fixed $num_collide colliding /gene names.");
 
 msg("Adding /locus_tag identifiers");
 my $num_lt=0;
-for my $sid (sort keys %seq) {
+for my $sid (@seq) {
   for my $f ( sort { $a->start <=> $b->start } @{ $seq{$sid}{FEATURE} }) {
     next unless $f->primary_tag =~ m/CDS|RNA/;
     $num_lt++;
@@ -1077,14 +1078,14 @@ my $fsa_fh = Bio::SeqIO->new(-file=>">$outdir/$prefix.fsa", -format=>'fasta');
 
 my $gff_factory = Bio::Tools::GFF->new(-gff_version=>$gffver);
 print $gff_fh "##gff-version $gffver\n";
-for my $id (sort keys %seq) {
+for my $id (@seq) {
   print $gff_fh "##sequence-region $id 1 ", $seq{$id}{DNA}->length, "\n";
 }
 
 my $fsa_desc = "[gcode=$gcode] [organism=$genus $species] [strain=$strain]";
 $fsa_desc .= " [plasmid=$plasmid]" if $plasmid;
 
-for my $sid (sort keys %seq) {
+for my $sid (@seq) {
   my $ctg = $seq{$sid}{DNA};
   $ctg->desc($fsa_desc);
   $fsa_fh->write_seq($ctg);
@@ -1118,10 +1119,10 @@ for my $sid (sort keys %seq) {
   }
 }
 
-if (scalar keys %seq) {
+if (@seq) {
   print $gff_fh "##FASTA\n";
   my $seqio = Bio::SeqIO->new(-fh=>$gff_fh, -format=>'fasta');
-  for my $sid (sort keys %seq) {
+  for my $sid (@seq) {
     $seqio->write_seq($seq{$sid}{DNA});
   }
 }
@@ -1134,11 +1135,11 @@ open my $txtFh, '>', "$outdir/$prefix.txt";
 select $txtFh;
 
 printf "organism: $genus $species $strain $plasmid\n";
-printf "contigs: %d\n", scalar(keys %seq); 
-printf "bases: %d\n", sum( map { $seq{$_}{DNA}->length } keys %seq );
+printf "contigs: %d\n", scalar(@seq); 
+printf "bases: %d\n", sum( map { $seq{$_}{DNA}->length } @seq );
 
 my %count;
-for my $sid (sort keys %seq) {
+for my $sid (@seq) {
   for my $f (@{ $seq{$sid}{FEATURE} }) {
     $count{ $f->primary_tag }++;
   }
