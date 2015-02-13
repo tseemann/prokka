@@ -1025,6 +1025,7 @@ for my $gene (keys %collide) {
     $n++;
     $f->add_tag_value('gene', "${gene}_${n}");
   }
+  msg("Fixed $n duplicate /gene -", map { $_->get_tag_values('gene') } @cds);
   $num_collide++;
 }
 msg("Fixed $num_collide colliding /gene names.");
