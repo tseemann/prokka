@@ -15,11 +15,16 @@ use Data::Dumper;
 #                     /protein_id="AHB40819.1"
 #                     /db_xref="GI:563351664"
 
+my @IDTAG = ('protein_id', 'locus_tag', 'db_xref');
+
 my(@Options, $verbose, $format, $hypo, $idtag, $sep, $blank, $pseudo, $minlen);
 setOptions();
 
 my $in = Bio::SeqIO->new(-fh=>\*ARGV, -format=>$format);
 my $out = Bio::SeqIO->new(-fh=>\*STDOUT, -format=>'Fasta');
+
+my @TRYIDTAG = $idtag ? ($idtag) : @IDTAG;
+print STDERR "Will use first of (@TRYIDTAG) as FASTA ID\n";
 
 # support different /transl_table=XX tags in CDS
 #my $table = Bio::Tools::CodonTable->new();
@@ -42,7 +47,13 @@ while (my $seq = $in->next_seq) {
 
     my $cds = $f->spliced_seq;  # don't forget eukaryotes!
 
-    my $id = TAG($f, $idtag) or die "feature #$counter does not have /$idtag tag!";
+    my $id;
+    for my $idtag (@TRYIDTAG) {
+#      print STDERR "Trying /$idtag =", TAG($f, $idtag), "\n";
+      $id = TAG($f, $idtag);
+      last if $id;
+    }
+    $id or die "\nFeature #$counter does not have any of these tags: @TRYIDTAG";
     $counter++;
     print STDERR "Processing: [$counter] ", $seq->display_id, " | $id | $prod\n" if $verbose;
     
@@ -55,7 +66,6 @@ while (my $seq = $in->next_seq) {
       }
     }
     #END
-
 
     # DNA -> AA  
     my $tt = TAG($f, 'transl_table') || 1;
@@ -99,10 +109,10 @@ sub setOptions {
   use Getopt::Long;
 
   @Options = (
-    {OPT=>"help",      VAR=>\&usage,               DESC=>"This help"},
-    {OPT=>"verbose!",  VAR=>\$verbose, DEFAULT=>0, DESC=>"Verbose progress"},
+    {OPT=>"help",      VAR=>\&usage,                       DESC=>"This help"},
+    {OPT=>"verbose!",  VAR=>\$verbose, DEFAULT=>0,         DESC=>"Verbose progress"},
     {OPT=>"format=s",  VAR=>\$format,  DEFAULT=>'genbank', DESC=>"Input format"},
-    {OPT=>"idtag=s",   VAR=>\$idtag,   DEFAULT=>'protein_id', DESC=>"What tag to use as Fasta ID"},
+    {OPT=>"idtag=s",   VAR=>\$idtag,   DEFAULT=>'',    DESC=>"What tag to use as Fasta ID (default = try first of: @IDTAG)"},
     {OPT=>"sep=s",     VAR=>\$sep,     DEFAULT=>'~~~', DESC=>"Separator between EC/gene/product" },
     {OPT=>"blank=s",   VAR=>\$blank,   DEFAULT=>'',    DESC=>"Replace empty EC/gene/product with this"},
     {OPT=>"pseudo!",   VAR=>\$pseudo,  DEFAULT=>0,     DESC=>"Include /pseudo genes"},
