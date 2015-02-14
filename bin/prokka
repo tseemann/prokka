@@ -1184,7 +1184,10 @@ runcmd(
 );
 delfile("$outdir/errorsummary.val");
 delfile( map { "$outdir/$prefix.$_" } qw(dr fixedproducts ecn val) );
-move("$outdir/$prefix.gbf", "$outdir/$prefix.gbk"); # rename XXX.gbf to XXX.gbk
+
+msg("Repairing broken .GBK output that tbl2asn produces...");
+runcmd("sed 's/COORDINATES: profile/COORDINATES:profile/' < \Q$outdir/$prefix.gbf\E > \Q$outdir/$prefix.gbk\E");
+delfile("$outdir/$prefix.gbf");
 
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
 # Some final log output
