@@ -171,6 +171,7 @@ If you are using Mac OS X, you'll also have to change the `"Linux"` to `"Darwin"
       --docs            Show full manual/documentation
       --citation        Print citation for referencing Prokka
       --quiet           No screen output (default OFF)
+      --debug           Debug mode: keep all temporary files (default OFF)
     Setup:
       --listdb          List all configured databases
       --setupdb         Index all installed databases
@@ -197,6 +198,7 @@ If you are using Mac OS X, you'll also have to change the `"Linux"` to `"Darwin"
       --gram [X]        Gram: -/neg +/pos (default '')
       --usegenus        Use genus-specific BLAST databases (needs --genus) (default OFF)
       --proteins [X]    Fasta file of trusted proteins to first annotate from (default '')
+      --hmms [X]        Trusted HMM to first annotate from (default '')
       --metagenome      Improve gene predictions for highly fragmented genomes (default OFF)
       --rawproduct      Do not clean up /product annotation (default OFF)
     Computation:
