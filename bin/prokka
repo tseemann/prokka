@@ -220,7 +220,7 @@ if (-d $BINDIR) {
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
 # command line options
 
-my(@Options, $quiet, $kingdom, $fast, $force, $outdir, $prefix, $cpus, $addgenes,
+my(@Options, $quiet, $debug, $kingdom, $fast, $force, $outdir, $prefix, $cpus, $addgenes,
              $gcode, $gram, $gffver, $locustag, $increment, $mincontiglen, $evalue, $coverage,
              $genus, $species, $strain, $plasmid, 
              $usegenus, $proteins, $centre, $scaffolds,
@@ -237,6 +237,7 @@ msg("Victorian Bioinformatics Consortium - $URL");
 msg("Local time is $starttime");
 msg("You are", $ENV{USER} || 'not telling me who you are!');
 msg("Operating system is $OPSYS");
+msg("You have enabled DEBUG mode. Temporary files will NOT be deleted.") if $debug;
 
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
 # check BioPerl version 
@@ -912,8 +913,12 @@ else {
 
   for my $db (@database) {
 
+    # create a unqiue output name so we can save them in --debug mode
+    my $outname = $db->{DB};
+    $outname =~ s{^.*/}{};
+
     # we write out all the CDS which haven't been annotated yet and then search them
-    my $faa_name = "$outdir/proteins.faa";
+    my $faa_name = "$outdir/$outname.faa";
     open my $faa, '>', $faa_name;
 
     my %cds;
@@ -946,7 +951,7 @@ else {
     my $bsize = int($faa_bytes / $cpus / 2); # div 2 to allow for slow vs fast subtasks?
     my $paropts = $cpus > 0 ? " -j $cpus" : "";
 
-    my $bls_name = "$outdir/proteins.bls";
+    my $bls_name = "$outdir/$outname.".$db->{FMT};
     runcmd(
       "cat \Q$faa_name\E | ${PARALLELCMD}$paropts --block $bsize --recstart '>' --pipe". 
       " $cmd > \Q$bls_name\E 2> /dev/null" 
@@ -980,7 +985,7 @@ else {
       $cds{$pid}->add_tag_value('inference', $db->{SRC}.$hit->name);
     }
     msg("Cleaned $num_cleaned /product names") if $num_cleaned > 0;
-    delfile( $faa_name, $bls_name);
+    delfile($faa_name, $bls_name);
   }
 }
 
@@ -1302,8 +1307,13 @@ sub runcmd {
 
 sub delfile {
   for my $file (@_) {
-    msg("Deleting unwanted file:", $file);
-    unlink $file;
+    if ($debug) {
+      msg("In --debug mode, saving temporary file:", $file);
+    }
+    else {
+      msg("Deleting unwanted file:", $file);
+      unlink $file;
+    }
   }
 }
 
@@ -1438,6 +1448,7 @@ sub setOptions {
     {OPT=>"docs",    VAR=>\&showdoc,           DESC=>"Show full manual/documentation"},
     {OPT=>"citation",VAR=>\&show_citation,     DESC=>"Print citation for referencing Prokka"},
     {OPT=>"quiet!",  VAR=>\$quiet, DEFAULT=>0, DESC=>"No screen output"},
+    {OPT=>"debug!",  VAR=>\$debug, DEFAULT=>0, DESC=>"Debug mode: keep all temporary files"},
     'Setup:',
     {OPT=>"listdb",   VAR=>\&list_db,    DESC=>"List all configured databases"},
     {OPT=>"setupdb",  VAR=>\&setup_db,         DESC=>"Index all installed databases"},
