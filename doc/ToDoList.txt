@@ -2,7 +2,6 @@
 Prokka Wishlist
 ---------------
 
-* New --hmms option to prioritise a custom HMM [Connor Driscoll]
 * New --first-blast option, like --proteins?
 * New --last-blast option eg. "nr" [Check who emailed me this]
 * annotate possible frame-shifts
@@ -11,17 +10,13 @@ Prokka Wishlist
 * reconsider !~m/a-z/ rule in cleanup_product() [Roderick Felsheim]
 * all Kingdom=ALL or ANY for metagenomes [Andreas Bremges]
 * make --cleanup option  for /product names [Andreas Bremges]
-* check databases exist before spawning blast/hmmer
 * locus_tag rules: http://www.ncbi.nlm.nih.gov/genomes/locustag/Proposal.pdf
-* Add .PTT file output [Andrew Buultjens]
 * Bug: "existing RNA (repeat_region)" CRISPR is not RNA ?
-* Allow --proteins to be a .GBK or .GFF3 file ie. extract the CDS annotations
 * Factor out some functions into modules!
 * Check for large genomic tracts which are unannotated. Sometimes Prodigal misses big genes.
 * Add an example input/output so users can check their copy is producing similar results.
 * Output potential homopolymer assembly errors near CDS flanks
 * Add the CLUSTERS "PHA" library to Viruses mode.
 * Option to include ribosomal binding sites (RBS) as features.
-* Check input contigs for runs of Ns, and either complain, or split the file, or additionally create a .AGP scaffold file. (Mitchell Stanton-Cook has done this, need to incorporate)
 * Add hyperlinks to tool references in Manual
 
