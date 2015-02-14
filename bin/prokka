@@ -402,8 +402,11 @@ my $ncontig = 0;
 my $contigprefix = $locustag || $prefix || $outdir || $strain || '';
 $contigprefix .= '_' if $contigprefix;
 my $contig_name_len = length($centre) + 1 + length($contigprefix) + 6;
-if ($compliant and $contig_name_len > $MAXCONTIGIDLEN) {
-  err("Genbank contig IDs are $contig_name_len chars, must be <= $MAXCONTIGIDLEN. Prefix is: $contigprefix");
+if ($compliant) {
+  my $contig_name_len = length($centre) + 1 + length($contigprefix) + 6;
+  if ($contig_name_len > $MAXCONTIGIDLEN) {
+    err("Genbank contig IDs are $contig_name_len chars, must be <= $MAXCONTIGIDLEN. Prefix is: $contigprefix");
+  }
 }
 
 while (my $seq = $fin->next_seq) {
@@ -418,7 +421,8 @@ while (my $seq = $fin->next_seq) {
     $seq->id( sprintf "gnl|$centre|${contigprefix}contig%06d", $ncontig );
   }
   if (length($seq->id) > $MAXCONTIGIDLEN) {
-    msg("WARNING: Contig IDs must be less than $MAXCONTIGIDLEN characters for Genbank compliance - ".$seq->id)
+    msg("Contig ID must <= $MAXCONTIGIDLEN chars long: ".$seq->id);
+    err("Please rename your contigs or use --centre XXX to generate clean contig names.");
   }
   my $s = $seq->seq;
   $s = uc($s);
