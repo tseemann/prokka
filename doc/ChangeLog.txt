@@ -2,10 +2,24 @@
 Prokka ChangeLog
 ----------------
 
-v1.11 - unreleased, dev
+v1.11 - 15 Feb 2015
+* Option --proteins now supports .GBK/.EMBL files directly!
+* Support for user supplied HMM via --hmms [Connor Driscoll]
 * Add Prodigal -c option when in metagenome mode [Daan Speth]
 * Wierd coordinate errors with long Spades contig names [Stephan Pabinger]
 * Replaced dodgy OSX aragorn binary [Yevgeny Nikolaichik]
+* Handle translation table 25 [Mads Albertsen]
+* Fix semantically incorrect GFF3 output [Marc Hoeppner]
+* Fix contigs with pipe characters from Quiver [Vaughn Cooper]
+* Keep original contig ordering [Jane Hawkey]
+* Fix protein translation with alternate --gcode [Andreas Leimbach]
+* Various bug fixes in prokka-* support scripts [Andreas Leimbach]
+* Workaround tbl2asn bug with COORDINATES:profile [Wiep Smits]
+* Provide MD5 checksum for website download [Willem VA Viljoen]
+* Hopefully slightly improved cleanup_product() function
+* Ensure released are tagged on github for Linux Brew [Shaun Jackman]
+* Check databases exist before searching against them
+* Updated bundled binaries
 
 v1.10 - 28 July 2014
 * Support for barrnap 0.4 with Archaea and Mito support [Lionel Guy]
