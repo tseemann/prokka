@@ -5,7 +5,7 @@ use SWISS::KW;
 #use SWISS::OC;
 use Data::Dumper;
 
-my(@Options, $verbose, $frag, $evlev, $minlen, $sep, $blank, $term, $hypo);
+my(@Options, $verbose, $frag, $evlev, $minlen, $maxlen, $sep, $blank, $term, $hypo);
 setOptions();
 
 my $HYPO = 'hypothetical protein'; 
@@ -26,8 +26,10 @@ while (<ARGV>)
   next if not $frag and $entry->isFragment;
   next if not $frag and $entry->DEs->hasFragment;
 
-  # Too short?
-  next if $minlen > 0 and length($entry->SQs->seq) < $minlen;
+  # Too short or to long?
+  my $L = length($entry->SQs->seq);
+  next if $minlen > 0 and $L < $minlen;
+  next if $maxlen > 0 and $L > $maxlen;
  
   # Reject on evidence level
   # grep ^PE uniprot_sprot.dat | sort | uniq -c
@@ -104,6 +106,7 @@ sub setOptions {
     {OPT=>"evidence=i",   VAR=>\$evlev, DEFAULT=>2, DESC=>"1=prot 2=mrna 3=homol 4=pred 5=unsure"},
     {OPT=>"fragments!",   VAR=>\$frag, DEFAULT=>0, DESC=>"Include 'DE Flags: Fragment;' entries"},
     {OPT=>"minlen=i",   VAR=>\$minlen, DEFAULT=>20, DESC=>"Minimum peptide length"},
+    {OPT=>"maxlen=i",   VAR=>\$maxlen, DEFAULT=>1E5, DESC=>"Minimum peptide length"},
     {OPT=>"term=s",   VAR=>\$term, DEFAULT=>'', DESC=>"Lineage must contain this term eg. 'Bacteria'"},
     {OPT=>"hypo!",   VAR=>\$hypo, DEFAULT=>0, DESC=>"Don't filter out hypothetical proteins"},
   );
