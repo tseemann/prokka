@@ -19,6 +19,5 @@ doc/prokka-*
 bug/
 db/cm/*.i1*
 db/kingdom/*/sprot.p*
-db/hmm
+db/hmm/*.h3?
 db/genus
-
