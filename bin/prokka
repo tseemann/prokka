@@ -1091,6 +1091,7 @@ for my $sid (@seq) {
     if ($addgenes) {
       # make a 'sister' gene feature for the CDS feature
       # (ideally it would encompass the UTRs as well, but we don't know them)
+      my $gene_id = "${ID}_gene";
       my $g = Bio::SeqFeature::Generic->new(
         -primary    => 'gene',
         -seq_id     => $f->seq_id,
@@ -1098,8 +1099,14 @@ for my $sid (@seq) {
         -end        => $f->end,
         -strand     => $f->strand,
         -source_tag => $EXE,
-        -tag        => { 'locus_tag'=> $ID },
+        -tag        => { 
+           'locus_tag' => $ID, 
+           'ID'        => $gene_id, # Add suffix to ID for GFF output
+         },
       );
+      # Make a Parent tag from the CDS to the gene
+      $f->add_tag_value('Parent', $gene_id);
+      # copy the /gene from the CDS
       if (my $gENE = TAG($f, 'gene')) {
    	$g->add_tag_value('gene', $gENE);
       }
