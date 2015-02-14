@@ -322,7 +322,7 @@ if ($compliant) {
 }
 
 #$centre or err("You must set --centre or the NCBI tbl2asn tool won't work properly, sorry.");
-($gcode < 1 or $gcode > 24) and err("Invalid genetic code, must be 1..24");
+($gcode < 1 or $gcode > 25) and err("Invalid genetic code, must be 1..25");
 $evalue >= 0 or err("Invalid --evalue, must be >= 0");
 #($coverage >= 0 and $coverage <= 100) or err("Invalid --coverage, must be 0..100");
 $increment >= 1 or err("Invalid --increment, must be >= 1");
