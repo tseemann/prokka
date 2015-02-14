@@ -1010,6 +1010,7 @@ for my $sid (@seq) {
   for my $f ( sort { $a->start <=> $b->start } @{ $seq{$sid}{FEATURE} }) {
     next unless $f->primary_tag eq 'CDS';
     my $gene = TAG($f, 'gene') or next;
+    $gene =~ s/_(\d+)$//; # remove existing de-duplicated suffix
     push @{ $collide{$gene} }, $f;
   }
 }
