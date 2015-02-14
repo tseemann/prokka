@@ -48,7 +48,7 @@ my $URL = 'http://www.vicbioinformatics.com';
 my $DBDIR = "$FindBin::RealBin/../db";
 my $HYPO = 'hypothetical protein';
 my $UNANN = 'unannotated protein';
-my $MAXCONTIGIDLEN = 38;  # Genbank rule
+my $MAXCONTIGIDLEN = 20;  # Genbank rule
 
 # these should accept .faa on STDIN and write report to STDOUT
 my $BLASTPCMD = "blastp -query - -db %d -evalue %e -num_threads 1 -num_descriptions 1 -num_alignments 1 -seg no";
