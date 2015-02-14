@@ -247,6 +247,11 @@ msg("You have BioPerl $bpver");
 err("Please install BioPerl $minbpver or higher") if $bpver < $minbpver;
 
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
+# Check some incompatible options
+
+$fast && $proteins and err("In --fast mode, the --proteins will not be used!");
+
+# . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
 # Determine CPU cores available
 
 my $num_cores = num_cpu();
