@@ -829,14 +829,20 @@ my @database = (
 
 # secondary sources are a series of HMMs
 unless ($kingdom eq 'Viruses') {
-  for my $name (qw(HAMAP CLUSTERS Pfam)) {
-    push @database, {
-      DB  => "$DBDIR/hmm/$name.hmm",
-      SRC => "protein motif:$name:",
-      FMT => 'hmmer3',
-      CMD => $HMMER3CMD,
-      VERSION => 3,   # without this, latest Bioperl goes into infinite loop
-    };
+  for my $name ( hmms() ) {
+    my $dbfile = "$DBDIR/hmm/$name.hmm";
+    if (-r $dbfile) {
+      push @database, {
+        DB  => $dbfile,
+        SRC => "protein motif:$name:",
+        FMT => 'hmmer3',
+        CMD => $HMMER3CMD,
+        VERSION => 3,   # without this, latest Bioperl goes into infinite loop
+      }
+    }
+    else {
+      msg("Will not use $name HMM database, $dbfile not installed.");
+    }
   }
 }
 
