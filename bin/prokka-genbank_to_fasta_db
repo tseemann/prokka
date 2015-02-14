@@ -17,7 +17,7 @@ use Data::Dumper;
 
 my @IDTAG = ('protein_id', 'locus_tag', 'db_xref');
 
-my(@Options, $verbose, $format, $hypo, $idtag, $sep, $blank, $pseudo, $minlen);
+my(@Options, $verbose, $format, $hypo, $idtag, $sep, $blank, $pseudo, $minlen, $gcode);
 setOptions();
 
 my $in = Bio::SeqIO->new(-fh=>\*ARGV, -format=>$format);
@@ -31,7 +31,7 @@ print STDERR "Will use first of (@TRYIDTAG) as FASTA ID\n";
 #printf STDERR "Default /transl_table is %d - %s\n", $table->id, $table->name;
 
 while (my $seq = $in->next_seq) {
-  print STDERR "\rParsing: ",$seq->display_id;
+  print STDERR "\rParsing: ",$seq->display_id, "\n";
   my $counter = 0;
   for my $f ($seq->get_SeqFeatures)   {
     
@@ -49,47 +49,40 @@ while (my $seq = $in->next_seq) {
 
     my $id;
     for my $idtag (@TRYIDTAG) {
-#      print STDERR "Trying /$idtag =", TAG($f, $idtag), "\n";
       $id = TAG($f, $idtag);
       last if $id;
     }
     $id or die "\nFeature #$counter does not have any of these tags: @TRYIDTAG";
     $counter++;
-    print STDERR "Processing: [$counter] ", $seq->display_id, " | $id | $prod\n" if $verbose;
+    print STDERR "[$counter] ", $seq->display_id, " | $id | $prod\n" if $verbose;
     
     # HANDLE CODON START FOR FUZZY FEATURES!
     if ($f->has_tag('codon_start')) {
       my($cs) = $f->get_tag_values('codon_start');
       if ($cs != 1) {
-        print STDERR "/codon_start=$cs - trimming mRNA!";
+        print STDERR "\t/codon_start=$cs - trimming mRNA!\n";
         $cds = $cds->trunc($cs, $cds->length);
       }
     }
     #END
 
     # DNA -> AA  
-    my $tt = TAG($f, 'transl_table') || 1;
-#    $table->id($tt);  
-#    $cds = $cds->translate(-condontable=>$table);
-    print STDERR "Using specified /transl_table=$tt" if $verbose && $tt != 1;
-    $cds = $cds->translate(-codontable_id => $tt);
+    my $tt = $gcode || TAG($f, 'transl_table') || 11;
+    print STDERR "\tUsing specified /transl_table=$tt\n" if $verbose && $tt != 1;
     
-    # remove stop codon
-    my $aa = $cds->seq;
-    $aa =~ s/\*$//; 
-    $cds->seq($aa);
+    # http://www.bioperl.org/wiki/HOWTO:Beginners#Translating
+    $cds = $cds->translate(-codontable_id => $tt, -complete => 1);
     
     my $ec = TAG($f, 'EC_number') || $blank;
     my $gene = TAG($f, 'gene') || $blank;
     
-    $cds->desc("$ec$sep$gene$sep$prod");
+    $cds->desc( join $sep, $ec, $gene, $prod );
     $cds->display_id($id);
     
     $out->write_seq($cds);
   }
-  print STDERR "\n";
 }
-print STDERR "\nDone\n";
+print STDERR "Done.\n";
 
 #----------------------------------------------------------------------
 
@@ -117,6 +110,7 @@ sub setOptions {
     {OPT=>"blank=s",   VAR=>\$blank,   DEFAULT=>'',    DESC=>"Replace empty EC/gene/product with this"},
     {OPT=>"pseudo!",   VAR=>\$pseudo,  DEFAULT=>0,     DESC=>"Include /pseudo genes"},
     {OPT=>"hypo!",     VAR=>\$hypo,    DEFAULT=>0,     DESC=>"Include 'hypothetical protein' genes"},
+    {OPT=>"gcode=i",   VAR=>\$gcode,   DEFAULT=>0,     DESC=>"Force this genetic code for translation (otherwise /transl_table)"},
     {OPT=>"minlen=i",  VAR=>\$minlen,  DEFAULT=>0,     DESC=>"Minimum peptide length"},
   );
 
