@@ -223,7 +223,7 @@ if (-d $BINDIR) {
 my(@Options, $quiet, $debug, $kingdom, $fast, $force, $outdir, $prefix, $cpus, $addgenes,
              $gcode, $gram, $gffver, $locustag, $increment, $mincontiglen, $evalue, $coverage,
              $genus, $species, $strain, $plasmid, 
-             $usegenus, $proteins, $centre, $scaffolds,
+             $usegenus, $proteins, $hmms, $centre, $scaffolds,
              $rfam, $norrna, $notrna, $rnammer, $rawproduct,
 	     $metagenome, $compliant, $listdb, $citation);
 setOptions();
@@ -251,6 +251,7 @@ err("Please install BioPerl $minbpver or higher") if $bpver < $minbpver;
 # Check some incompatible options
 
 $fast && $proteins and err("In --fast mode, the --proteins will not be used!");
+$fast && $hmms and err("In --fast mode, the --hmms will not be used!");
 
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
 # Determine CPU cores available
@@ -874,9 +875,26 @@ else {
   msg("Not using genus-specific database. Try --usegenus to enable it.");
 }
 
+# if user supplies a trusted set of HMMs, we try these first!
+if (-r $hmms) {
+  msg("Preparing user-supplied primary HMMER annotation source: $hmms");
+  -r "$hmms.h3i" or err("Your HMM is not indexed, please run: hmmpress $hmms");
+  my $src = $hmms;
+  $src =~ s{^.*/}{};
+  $src =~ s/.hmm$//;
+  msg("Using /inference source as '$src'");
+  unshift @database, {
+    DB  => $hmms,
+    SRC => "protein motif:$src:",
+    FMT => 'hmmer3',
+    CMD => $HMMER3CMD,
+    VERSION => 3,   # without this, latest Bioperl goes into infinite loop
+  };  
+}
+
 # if user supplies a trusted set of proteins, we try these first!
 if (-r $proteins) {
-  msg("Preparing user-supplied primary annotation source: $proteins");
+  msg("Preparing user-supplied primary BLAST annotation source: $proteins");
   my $faa_file = $proteins;
   my $format = Bio::Tools::GuessSeqFormat->new(-file=>$proteins)->guess
     or err("could not determine format of --proteins file '$proteins'");
@@ -1476,6 +1494,7 @@ sub setOptions {
     {OPT=>"gram=s",  VAR=>\$gram, DEFAULT=>'', DESC=>"Gram: -/neg +/pos"},
     {OPT=>"usegenus!",  VAR=>\$usegenus, DEFAULT=>0, DESC=>"Use genus-specific BLAST databases (needs --genus)"},
     {OPT=>"proteins=s",  VAR=>\$proteins, DEFAULT=>'', DESC=>"Fasta file of trusted proteins to first annotate from"},
+    {OPT=>"hmms=s",  VAR=>\$hmms, DEFAULT=>'', DESC=>"Trusted HMM to first annotate from"},
     {OPT=>"metagenome!",  VAR=>\$metagenome, DEFAULT=>0, DESC=>"Improve gene predictions for highly fragmented genomes"},
     {OPT=>"rawproduct!",  VAR=>\$rawproduct, DEFAULT=>0, DESC=>"Do not clean up /product annotation"},
     'Computation:',
