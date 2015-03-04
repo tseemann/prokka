@@ -1,7 +1,6 @@
 # Prokka: rapid prokaryotic genome annotation  
 
-Torsten Seemann <torsten.seemann@monash.edu>  
-Victorian Bioinformatics Consortium, AUSTRALIA <http://vicbioinformatics.com>
+Torsten Seemann (<torsten.seemann@gmail.com>) (@torstenseemann)
 
 ##Contents
 
