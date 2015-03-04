@@ -211,11 +211,12 @@ sub check_all_tools {
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
 # add our included binaries to the END of the PATH
 
-if (-d $BINDIR) {
-#  msg("Extending PATH: $BINDIR");
-  $ENV{PATH} .= ":$BINDIR:$BINDIR/../common";
+for my $dir ($BINDIR, "$BINDIR/../common", $FindBin::RealBin) {
+  if (-d $dir) {
+    msg("Appending to PATH: $dir");
+    $ENV{PATH} .= ":$dir";
+  }
 }
-
 
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
 # command line options
