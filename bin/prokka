@@ -1501,7 +1501,7 @@ sub setOptions {
     {OPT=>"gcode=i",  VAR=>\$gcode, DEFAULT=>0, DESC=>"Genetic code / Translation table (set if --kingdom is set)"},
     {OPT=>"gram=s",  VAR=>\$gram, DEFAULT=>'', DESC=>"Gram: -/neg +/pos"},
     {OPT=>"usegenus!",  VAR=>\$usegenus, DEFAULT=>0, DESC=>"Use genus-specific BLAST databases (needs --genus)"},
-    {OPT=>"proteins=s",  VAR=>\$proteins, DEFAULT=>'', DESC=>"Fasta file of trusted proteins to first annotate from"},
+    {OPT=>"proteins=s",  VAR=>\$proteins, DEFAULT=>'', DESC=>"FASTA or GBK file to use as 1st priority"},
     {OPT=>"hmms=s",  VAR=>\$hmms, DEFAULT=>'', DESC=>"Trusted HMM to first annotate from"},
     {OPT=>"metagenome!",  VAR=>\$metagenome, DEFAULT=>0, DESC=>"Improve gene predictions for highly fragmented genomes"},
     {OPT=>"rawproduct!",  VAR=>\$rawproduct, DEFAULT=>0, DESC=>"Do not clean up /product annotation"},
