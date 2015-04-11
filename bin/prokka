@@ -44,7 +44,7 @@ my $BINDIR = "$FindBin::RealBin/../binaries/$OPSYS";
 my $EXE = $FindBin::RealScript;
 my $VERSION = "1.12-beta";
 my $AUTHOR = 'Torsten Seemann <torsten.seemann@gmail.com>';
-my $URL = 'https://github.com/Victorian-Bioinformatics-Consortium/prokka';
+my $URL = 'https://github.com/tseemann/prokka';
 my $DBDIR = "$FindBin::RealBin/../db";
 my $HYPO = 'hypothetical protein';
 my $UNANN = 'unannotated protein';
@@ -234,7 +234,7 @@ setOptions();
 
 msg("This is $EXE $VERSION");
 msg("Written by $AUTHOR");
-msg("Victorian Bioinformatics Consortium - $URL");
+msg("Homepage is $URL");
 msg("Local time is $starttime");
 msg("You are", $ENV{USER} || 'not telling me who you are!');
 msg("Operating system is $OPSYS");
