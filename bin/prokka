@@ -157,7 +157,7 @@ my %tools = (
   'tbl2asn' => {
     GETVER  => "tbl2asn - | grep '^tbl2asn'",
     REGEXP  => qr/tbl2asn\s+($BIDEC)/,
-    MINVER  => "23.0",
+    MINVER  => "24.2",
     NEEDED  => 1,
   },
   # now just the standard unix tools we need
@@ -1209,13 +1209,15 @@ close $txtFh;
 # BUT: -A xxx has a bug where it uses xxx as the LOCUS (contig) ID for 1st contig
 # SO: *sigh*
 
+my $tbl2asn_opt = @seq > 10_000 ? '-M b' : '-M n';  # Issue 93 - big assemblies
+
 msg("Generating Genbank and Sequin files");
 #runcmd("tbl2asn -a s -q F -A $prefix -N 1 -y 'Annotated using $EXE $VERSION from $URL' -Z $outdir/$prefix.err -M n -V b -i $outdir/$prefix.fsa -f $outdir/$prefix.tbl 2> /dev/null");
 #runcmd("tbl2asn -V b -a s -A $prefix -N 1 -y 'Annotated using $EXE $VERSION from $URL' -Z $outdir/$prefix.err -i $outdir/$prefix.fsa");
 #runcmd("tbl2asn -V b -a s -N 1 -y 'Annotated using $EXE $VERSION from $URL' -Z $outdir/$prefix.err -i $outdir/$prefix.fsa 2> /dev/null");
 runcmd(
-  "tbl2asn -V b -a r10k -l paired-ends -M n -N 1 -y 'Annotated using $EXE $VERSION from $URL' -Z".
-  " \Q$outdir/$prefix.err\E -i \Q$outdir/$prefix.fsa\E 2> /dev/null"
+  "tbl2asn -V b -a r10k -l paired-ends $tbl2asn_opt -N 1 -y 'Annotated using $EXE $VERSION from $URL'".
+  " -Z \Q$outdir/$prefix.err\E -i \Q$outdir/$prefix.fsa\E 2> /dev/null"
 );
 delfile("$outdir/errorsummary.val");
 delfile( map { "$outdir/$prefix.$_" } qw(dr fixedproducts ecn val) );
