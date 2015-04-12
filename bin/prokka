@@ -34,6 +34,7 @@ use Bio::SeqFeature::Generic;
 use Bio::Tools::GFF;
 use Bio::Tools::GuessSeqFormat;
 use FindBin;
+use lib "$FindBin::RealBin/../perl5"; # for bundled Perl modules
 
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
 # global variables
