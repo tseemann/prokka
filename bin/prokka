@@ -39,7 +39,7 @@ use lib "$FindBin::RealBin/../perl5"; # for bundled Perl modules
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
 # global variables
 
-my @CMDLINE = @ARGV;
+my @CMDLINE = ($0, @ARGV);
 my $OPSYS = $^O;
 my $BINDIR = "$FindBin::RealBin/../binaries/$OPSYS";
 my $EXE = $FindBin::RealScript;
@@ -1555,4 +1555,3 @@ sub usage {
 }
 
 __DATA__
-
