@@ -46,6 +46,8 @@ my $EXE = $FindBin::RealScript;
 my $VERSION = "1.12-beta";
 my $AUTHOR = 'Torsten Seemann <torsten.seemann@gmail.com>';
 my $URL = 'https://github.com/tseemann/prokka';
+my $PROKKA_PMID = '24642063';
+my $PROKKA_DOI = '10.1093/bioinformatics/btu153';
 my $DBDIR = "$FindBin::RealBin/../db";
 my $HYPO = 'hypothetical protein';
 my $UNANN = 'unannotated protein';
@@ -1370,9 +1372,9 @@ If you use Prokka in your work, please cite:
   Seemann T, "Prokka: Rapid Prokaryotic Genome Annotation", 
   Bioinformatics, 2014 Jul 15;30(14):2068-9.
 
-  PMID:24642063
-  doi:10.1093/bioinformatics/btu153
-  http://www.ncbi.nlm.nih.gov/pubmed/24642063
+  PMID:$PROKKA_PMID
+  doi:$PROKKA_DOI
+  http://www.ncbi.nlm.nih.gov/pubmed/$PROKKA_PMID
     
 Thank you.
 
