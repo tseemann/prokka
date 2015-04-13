@@ -1388,15 +1388,15 @@ sub kingdoms {
 }
 
 sub genera {
-  return map { m{([^/]+).pin$}; $1 } glob("$DBDIR/genus/*.pin");
+  return map { m{([^/]+)(\.\d+)?\.pin$}; $1 } glob("$DBDIR/genus/*.pin");
 }
 
 sub hmms {
-  return map { m{([^/]+).hmm.h3m$}; $1 } glob("$DBDIR/hmm/*.h3m");
+  return map { m{([^/]+)\.hmm\.h3m$}; $1 } glob("$DBDIR/hmm/*.h3m");
 }
 
 sub cms {
-  return map { m{([^/]+).i1m$}; $1 } glob("$DBDIR/cm/*.i1m");
+  return map { m{([^/]+)\.i1m$}; $1 } glob("$DBDIR/cm/*.i1m");
 }
 
 #----------------------------------------------------------------------
