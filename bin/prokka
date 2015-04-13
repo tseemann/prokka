@@ -52,6 +52,7 @@ my $DBDIR = "$FindBin::RealBin/../db";
 my $HYPO = 'hypothetical protein';
 my $UNANN = 'unannotated protein';
 my $MAXCONTIGIDLEN = 20;  # Genbank rule
+my @LOG; # buffer up log lines before we have log file ready
 
 # these should accept .faa on STDIN and write report to STDOUT
 my $BLASTPCMD = "blastp -query - -db %d -evalue %e -num_threads 1 -num_descriptions 1 -num_alignments 1 -seg no";
@@ -1312,8 +1313,20 @@ sub find_exe {
 sub msg {
   my $t = localtime;
   my $line = "[".$t->hms."] @_\n";
-  print LOG $line if openhandle(\*LOG);
   print STDERR $line unless $quiet;
+  if (openhandle(\*LOG)) {
+    # write out any buffered log lines
+    if (@LOG) {        
+      print LOG @LOG;
+      @LOG=();
+    }
+    # write out the current log line
+    print LOG $line;
+  }
+  else {
+    # buffer this log line for later
+    push @LOG, $line;  
+  }
 }
 
 #----------------------------------------------------------------------
