@@ -63,9 +63,6 @@ my $aragorn_opt = '';
 # debian package broke compatibility so have to force it now *grumble*
 my $PARALLELCMD = "parallel --gnu --plain";
 
-# not used anymore
-#my $INFERNALCMD = "cmscan --noali --notextw --acc -E %e --cpu 1 -o %o %d %i 2>/dev/null";
-
 my $starttime = localtime;
 my %seq;
 my @seq;
@@ -587,7 +584,7 @@ if ($rfam) {
     my $num_ncrna = 0;
     my $tool = "Infernal:".$tools{'cmscan'}->{VERSION};
     my $icpu = $cpus || 1;
-    my $cmd = "cmscan --cpu $icpu -E $evalue --tblout /dev/stdout -o /dev/null --noali $cmdb \Q$outdir/$prefix.fna\E";
+    my $cmd = "cmscan --rfam --cpu $icpu -E $evalue --tblout /dev/stdout -o /dev/null --noali $cmdb \Q$outdir/$prefix.fna\E";
     msg("Running: $cmd");
     open INFERNAL, '-|', $cmd;
     while (<INFERNAL>) {
