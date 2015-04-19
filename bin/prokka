@@ -464,9 +464,11 @@ else {
       next;
     }
     my @x = split m/\s+/;
-    next unless @x == 5 and $x[0] =~ m/^\d+$/; 
-    # and $x[4] =~ m/^\([ATCG]{3}\)$/i;
-    #msg($_);
+    next unless @x == 5 and $x[0] =~ m/^\d+$/;
+    if ($x[1] =~ m/\?/) {
+      msg("tRNA $x[2] is a pseudo/wacky gene - skipping.");
+      next;
+    }   
     msg("@x");
     $x[2] =~ m/(c)?\[(\d+),(\d+)\]/;
     my($revcom, $start, $end) = ($1,$2,$3);
