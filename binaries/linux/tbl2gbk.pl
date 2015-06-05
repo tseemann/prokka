@@ -39,9 +39,9 @@ my $DAY = join('-',($day, $abbr[$month],$year+1900));
 
 #accepting full paths
 my $comment = "Annotated using prokka from http://www.vicbioinformatics.com.";
-my $faa = "PROKKA_08102014.faa";
-my $fsa = "PROKKA_08102014.fsa";
-my $tbl = "PROKKA_08102014.tbl";
+my $faa = "";
+my $fsa = "";
+my $tbl = "";
 
 GetOptions(
 	"faa=s" => \$faa,
@@ -49,6 +49,7 @@ GetOptions(
 	"tbl=s" => \$tbl,
 	"comment=s" => \$comment,
 	) || usage();
+
 
 
 my $global = {};
@@ -137,7 +138,8 @@ sub parse_tbl {
 		_write_chunk("VERSION",12,'',80);
 		_write_chunk("KEYWORDS",12,'',80);
 		_write_chunk("SOURCE",12, $global->{organism},80);
-		_write_chunk("ORGANISM",12,"$global->{organism} Unclassified",80);
+		_write_chunk("ORGANISM",12,"$global->{organism}",80);
+		_write_chunk("",12,"Unclassified.",80);
 		_write_chunk("COMMENT",12,$comment,80);
 		_write_chunk("FEATURES",21,"Location/Qualifiers",80);
 		_write_chunk("     source",21,"1..$contigs->{$contig}->{length}",80);
