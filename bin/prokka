@@ -161,7 +161,7 @@ my %tools = (
     MINVER  => "24.2",
     NEEDED  => 1,
   },
-  'tbl2gff.pl' =>{
+  'tbl2gbk.pl' =>{
     GETVER => '',
     REGEXP => '',
     MINVER => '',
@@ -1224,7 +1224,7 @@ msg("Generating Genbank and Sequin files");
 #runcmd("tbl2asn -a s -q F -A $prefix -N 1 -y 'Annotated using $EXE $VERSION from $URL' -Z $outdir/$prefix.err -M n -V b -i $outdir/$prefix.fsa -f $outdir/$prefix.tbl 2> /dev/null");
 #runcmd("tbl2asn -V b -a s -A $prefix -N 1 -y 'Annotated using $EXE $VERSION from $URL' -Z $outdir/$prefix.err -i $outdir/$prefix.fsa");
 #runcmd("tbl2asn -V b -a s -N 1 -y 'Annotated using $EXE $VERSION from $URL' -Z $outdir/$prefix.err -i $outdir/$prefix.fsa 2> /dev/null");
-($metagenome) ? runcmd("tbl2gff.pl --faa \Q$outdir/$prefix.faa\E --fsa \Q$outdir/$prefix.fsa\E --tbl \Q$outdir/$prefix.tbl\E -comment 'Annotated using $EXE $VERSION from $URL' > \Q$outdir/$prefix.gbk\E"): runcmd(
+($metagenome) ? runcmd("tbl2gbk.pl --faa \Q$outdir/$prefix.faa\E --fsa \Q$outdir/$prefix.fsa\E --tbl \Q$outdir/$prefix.tbl\E -comment 'Annotated using $EXE $VERSION from $URL' > \Q$outdir/$prefix.gbk\E"): runcmd(
   "tbl2asn -V b -a r10k -l paired-ends $tbl2asn_opt -N 1 -y 'Annotated using $EXE $VERSION from $URL'".
   " -Z \Q$outdir/$prefix.err\E -i \Q$outdir/$prefix.fsa\E 2> /dev/null"
 );
