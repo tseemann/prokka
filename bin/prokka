@@ -1159,6 +1159,10 @@ for my $sid (@seq) {
     if ($f->primary_tag eq 'CDS' and not $f->has_tag('product')) {
       $f->add_tag_value('product', $HYPO);
     }
+    # Add a GFF "Name" tag if we have /gene (better than "ID" /locus_tag)
+    if (my $name = TAG($f, 'gene')) {
+      $f->add_tag_value('Name', $name);
+    }
     
     print $gff_fh $f->gff_string($gff_factory),"\n";
     
