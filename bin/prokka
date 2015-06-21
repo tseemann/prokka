@@ -204,6 +204,7 @@ sub check_tool {
 }
 
 sub check_all_tools {
+  $ENV{"GREP_OPTIONS"} = '';  # --colour => version grep fails (Issue #117)
   for my $toolname (sort keys %tools) {
     check_tool($toolname);
   }
