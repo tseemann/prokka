@@ -452,7 +452,9 @@ if ($notrna) {
 }
 else {
   msg("Predicting tRNAs and tmRNAs");
-  my $cmd = "aragorn -gc$gcode $aragorn_opt -w \Q$outdir/$prefix.fna\E"; # -t/-m 
+  # -l : Assume that each sequence has a linear topology. Search does not wrap
+  # -w : batch mode
+  my $cmd = "aragorn -l -gc$gcode $aragorn_opt -w \Q$outdir/$prefix.fna\E"; # -t/-m 
   msg("Running: $cmd");
   my $num_trna=0;
   open TRNA, '-|', $cmd;
@@ -470,8 +472,10 @@ else {
       next;
     }   
     msg("@x");
-    $x[2] =~ m/(c)?\[(\d+),(\d+)\]/;
+    # in linear mode (-l) we can get -ve coordinates
+    $x[2] =~ m/(c)?\[-?(\d+),(\d+)\]/;
     my($revcom, $start, $end) = ($1,$2,$3);
+
     # bug fix for aragorn when revcom trna ends at start of contig!
   #  if (defined $revcom and $start > $end) { 
   #    msg("Activating kludge for Aragorn bug for tRNA end at contig start");
@@ -481,6 +485,11 @@ else {
       msg("tRNA $x[2] has start($start) > end ($end) - skipping.");
       next;
     }
+
+    # correct strange coordinates in -l mode
+    $start = max( $start, 1 );
+    $end = min( $end, $seq{$sid}{DNA}->length );
+
     if (abs($end-$start) > 500) {
       msg("tRNA/tmRNA $x[2] is too big (>500bp) - skipping.");
       next;
