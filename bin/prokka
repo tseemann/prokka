@@ -20,6 +20,7 @@
 use strict;
 use warnings;
 use File::Copy;
+use File::Basename;
 use Time::Piece;
 use Time::Seconds;
 use XML::Simple;
@@ -921,12 +922,20 @@ if (-r $proteins) {
   elsif ($format ne 'fasta') {
     err("Option --proteins only supports FASTA, GenBank, and EMBL formats.");
   }
-  runcmd("makeblastdb -dbtype prot -in \Q$faa_file\E -out \Q$outdir/proteins\E -logfile /dev/null");
+  my $blastdb;
+  my ($dbname, $dbpath, $dbsuffix) = fileparse($faa_file, qr/\.[^.]*/);
+  unless  (-f "$dbpath/$dbname.pin" || -f "$dbpath/$dbname.pal") {
+      $blastdb = "$outdir/proteins";
+      runcmd("makeblastdb -dbtype prot -in \Q$faa_file\E -out \Q$blastdb\E -logfile /dev/null");
+  }
+  else {
+      $blastdb = "$dbpath/$dbname";
+  }
   my $src = $proteins;
   $src =~ s{^.*/}{};
   msg("Using /inference source as '$src'");
   unshift @database, {
-    DB  => "$outdir/proteins",
+    DB  => $blastdb,
     SRC => "similar to AA sequence:$src:",
     FMT => 'blast',
     CMD => $BLASTPCMD,
