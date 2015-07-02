@@ -910,26 +910,26 @@ if (-r $hmms) {
 # if user supplies a trusted set of proteins, we try these first!
 if (-r $proteins) {
   msg("Preparing user-supplied primary BLAST annotation source: $proteins");
-  my $faa_file = $proteins;
-  my $format = Bio::Tools::GuessSeqFormat->new(-file=>$proteins)->guess
-    or err("could not determine format of --proteins file '$proteins'");
-  msg("Guessed source was in $format format.");
-  if ($format =~ m/^(embl|genbank)$/) {
-    $faa_file = "$outdir/proteins.faa";
-    msg("Converting $format '$proteins' into Prokka FASTA '$faa_file'");
-    runcmd("prokka-genbank_to_fasta_db --format $format \Q$proteins\E > \Q$faa_file\E 2> /dev/null");
-  }
-  elsif ($format ne 'fasta') {
-    err("Option --proteins only supports FASTA, GenBank, and EMBL formats.");
-  }
   my $blastdb;
-  my ($dbname, $dbpath, $dbsuffix) = fileparse($faa_file, qr/\.[^.]*/);
-  unless  (-f "$dbpath/$dbname.pin" || -f "$dbpath/$dbname.pal") {
-      $blastdb = "$outdir/proteins";
-      runcmd("makeblastdb -dbtype prot -in \Q$faa_file\E -out \Q$blastdb\E -logfile /dev/null");
+  unless  (-f "$proteins.pin" || -f "$proteins.pal") {
+    my $faa_file = $proteins;
+    my $format = Bio::Tools::GuessSeqFormat->new(-file=>$proteins)->guess
+      or err("could not determine format of --proteins file '$proteins'");
+    msg("Guessed source was in $format format.");
+    if ($format =~ m/^(embl|genbank)$/) {
+      $faa_file = "$outdir/proteins.faa";
+      msg("Converting $format '$proteins' into Prokka FASTA '$faa_file'");
+      runcmd("prokka-genbank_to_fasta_db --format $format \Q$proteins\E > \Q$faa_file\E 2> /dev/null");
+    }
+    elsif ($format ne 'fasta') {
+      err("Option --proteins only supports FASTA, BLAST database, GenBank, and EMBL formats.");
+    }
+    $blastdb = "$outdir/proteins";
+    runcmd("makeblastdb -dbtype prot -in \Q$faa_file\E -out \Q$blastdb\E -logfile /dev/null");
   }
   else {
-      $blastdb = "$dbpath/$dbname";
+    msg("Using existing BLAST database: $proteins");
+    $blastdb = $proteins;
   }
   my $src = $proteins;
   $src =~ s{^.*/}{};
@@ -1031,7 +1031,7 @@ else {
 }
 
 if ($proteins) {
-  delfile( map { "$outdir/proteins.$_" } qw(psq phr pin) );
+  delfile( map { "$outdir/proteins.$_" } qw(psq phr pin) )
 }
 
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
@@ -1373,12 +1373,14 @@ sub runcmd {
 
 sub delfile {
   for my $file (@_) {
-    if ($debug) {
-      msg("In --debug mode, saving temporary file:", $file);
-    }
-    else {
-      msg("Deleting unwanted file:", $file);
-      unlink $file;
+    if (-f $file) {
+      if ($debug) {
+        msg("In --debug mode, saving temporary file:", $file);
+      }
+      else {
+        msg("Deleting unwanted file:", $file);
+        unlink $file;
+      }
     }
   }
 }
