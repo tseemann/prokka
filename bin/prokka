@@ -20,7 +20,6 @@
 use strict;
 use warnings;
 use File::Copy;
-use File::Basename;
 use Time::Piece;
 use Time::Seconds;
 use XML::Simple;
