@@ -414,6 +414,7 @@ if ($compliant) {
   }
 }
 
+my $total_bp = 0;
 while (my $seq = $fin->next_seq) {
   if ($seq->length < $mincontiglen) {
     msg("Skipping short (<$mincontiglen bp) contig:",$seq->display_id);
@@ -441,9 +442,10 @@ while (my $seq = $fin->next_seq) {
   }
   $seq{ $seq->id }{DNA} = $seq;
   push @seq, $seq->id;  # this array it used to preserve original contig order
+  $total_bp += $seq->length;
 }
 $ncontig > 0 or err("FASTA file '$in' contains no suitable sequence entries");
-msg("Wrote $ncontig contigs");
+msg("Wrote $ncontig contigs totalling $total_bp bp.");
 
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
 # tRNA + tmRNA
@@ -1276,6 +1278,9 @@ sub cleanup_product {
   $p =~ s/\s+\w+\d{4,}c?//; # remove possible locus tags
   $p =~ s/ and (inactivated|related) \w+//;
   $p =~ s/,\s*family$//;
+
+#  $p =~ s/\b([A-Z][a-z]{3,5})/\l$1/g;  # lower the case for protein desc initials
+#  $p =~ s/(rossman|willebrand)/\u$1/; # exception to the rule
 
   $p =~ s/^(potential|possible|probable|predicted|uncharacteri.ed)/putative/i;
   if ($p =~ m/(domain|family|binding|fold|like|motif|repeat)\s*$/i and $p !~ m/,/)  {
