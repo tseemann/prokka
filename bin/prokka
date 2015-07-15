@@ -422,9 +422,16 @@ while (my $seq = $fin->next_seq) {
   }
   $ncontig++;
   # http://www.ncbi.nlm.nih.gov/genomes/static/Annotation_pipeline_README.txt
-  # leave contigs names as-is unless they are in --compliant mode or want --centre set
-  if ($centre) {  
-    $seq->id( sprintf "gnl|$centre|${contigprefix}contig%06d", $ncontig );
+  # leave contig names as-is unless they are in --compliant mode or want --centre set
+  if ($centre) {
+    # try to append the original (often shorter than contigXXXXXX) name to $contigprefix even when using --centre/--compliant
+    if (exists $seq{$seq->id}) {
+      msg("This contig ID is not unique, and will be replaced with an auto-generated one: ".$seq->id);
+      $seq->id( sprintf "gnl|$centre|${contigprefix}contig%06d", $ncontig );
+    }
+    else {
+      $seq->id( sprintf "gnl|$centre|${contigprefix}%s", $seq->id );
+    }
   }
   if (length($seq->id) > $MAXCONTIGIDLEN) {
     msg("Contig ID must <= $MAXCONTIGIDLEN chars long: ".$seq->id);
