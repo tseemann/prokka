@@ -217,7 +217,7 @@ my(@Options, $quiet, $debug, $kingdom, $fast, $force, $outdir, $prefix, $cpus, $
              $gcode, $gram, $gffver, $locustag, $increment, $mincontiglen, $evalue, $coverage,
              $genus, $species, $strain, $plasmid, 
              $usegenus, $proteins, $hmms, $centre, $scaffolds,
-             $rfam, $norrna, $notrna, $rnammer, $rawproduct,
+             $rfam, $norrna, $notrna, $rnammer, $rawproduct, $noanno,
 	     $metagenome, $compliant, $listdb, $citation);
 setOptions();
 
@@ -243,8 +243,9 @@ err("Please install BioPerl $minbpver or higher") if $bpver < $minbpver;
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
 # Check some incompatible options
 
-$fast && $proteins and err("In --fast mode, the --proteins will not be used!");
-$fast && $hmms and err("In --fast mode, the --hmms will not be used!");
+$noanno && $proteins and err("In --noanno mode, the --proteins will not be used!");
+$noanno && $hmms and err("In --noanno mode, the --hmms will not be used!");
+$fast && $hmms && err("In --fast mode, the --hmms will not be used");
 
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
 # Determine CPU cores available
@@ -935,8 +936,8 @@ if (-r $proteins) {
   };  
 }
 
-if ($fast) {
-  msg("Option --fast enabled, so skipping CDS similarity searches");
+if ($noanno) {
+  msg("Option --noanno enabled, so skipping CDS similarity searches");
 }
 else {
   msg("Annotating CDS, please be patient.");
@@ -946,6 +947,12 @@ else {
   # for each sequence/profile database in order,
 
   for my $db (@database) {
+
+    # skip HMMs if --fast mode
+    if ($fast && $db->{FMT} !~ m/blast/i) {
+      msg("In --fast mode so skipping non-BLAST search against ".$db->{DB});
+      next;
+    }
 
     # create a unqiue output name so we can save them in --debug mode
     my $outname = $db->{DB};
@@ -1030,7 +1037,7 @@ if ($proteins) {
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
 # Label unannotated proteins as 'hypothetical protein'
 
-my $empty_label = $fast ? 'unannotated protein' : $HYPO;
+my $empty_label = $noanno ? 'unannotated protein' : $HYPO;
 my $num_hypo=0;
 for my $sid (@seq) {
   for my $f ( @{ $seq{$sid}{FEATURE} }) {
@@ -1542,8 +1549,9 @@ sub setOptions {
     {OPT=>"metagenome!",  VAR=>\$metagenome, DEFAULT=>0, DESC=>"Improve gene predictions for highly fragmented genomes"},
     {OPT=>"rawproduct!",  VAR=>\$rawproduct, DEFAULT=>0, DESC=>"Do not clean up /product annotation"},
     'Computation:',
-    {OPT=>"fast!",  VAR=>\$fast, DEFAULT=>0, DESC=>"Fast mode - skip CDS /product searching"},
     {OPT=>"cpus=i",  VAR=>\$cpus, DEFAULT=>8, DESC=>"Number of CPUs to use [0=all]"},
+    {OPT=>"fast!",  VAR=>\$fast, DEFAULT=>0, DESC=>"Fast mode - only use basic BLASTP databases"},
+    {OPT=>"noanno!",  VAR=>\$noanno, DEFAULT=>0, DESC=>qq'For CDS just set /product="$UNANN"'},
     {OPT=>"mincontiglen=i",  VAR=>\$mincontiglen, DEFAULT=>1, DESC=>"Minimum contig size [NCBI needs 200]"},
     {OPT=>"evalue=f",  VAR=>\$evalue, DEFAULT=>1E-6, DESC=>"Similarity e-value cut-off"},
 #    {OPT=>"coverage=f",  VAR=>\$coverage, DEFAULT=>0, DESC=>"Similarity \%id cut-off (otherwise /pseudo)"},
