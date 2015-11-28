@@ -4,11 +4,11 @@
 # readlink is different between BSD and Linux, 
 # therefore this loop recreates `readlink -f`
 
-ORIG_DIR=$(pwd $(dirname $0))
+ORIG_DIR=$(pwd $(dirname "$0"))
 
-cd $(dirname $0)
+cd $(dirname "$0")
 
-TARGET_FILE=$(basename $0)
+TARGET_FILE=$(basename "$0")
 # Iterate down a (possible) chain of symlinks
 i=0
 while [ -L "$TARGET_FILE" ]
@@ -18,9 +18,9 @@ do
         echo "Link cycle detected in path, more than 1000 links traversed, exiting" >&2
         exit 1
     fi
-    TARGET_FILE=$(readlink $TARGET_FILE)
-    cd $(dirname $TARGET_FILE)
-    TARGET_FILE=$(basename $TARGET_FILE)
+    TARGET_FILE=$(readlink "$TARGET_FILE")
+    cd $(dirname "$TARGET_FILE")
+    TARGET_FILE=$(basename "$TARGET_FILE")
     i=$((i + 1))
 done
 
@@ -28,6 +28,6 @@ done
 # for the directory we're in and appending the target file.
 PHYS_DIR=`pwd -P`
 
-cd $ORIG_DIR
+cd "$ORIG_DIR"
 
-java -jar "$PHYS_DIR/minced.jar" "$@"
+java -jar "$PHYS_DIR"/minced.jar "$@"
