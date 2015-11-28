@@ -213,7 +213,7 @@ sub check_all_tools {
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
 # command line options
 
-my(@Options, $quiet, $debug, $kingdom, $fast, $force, $outdir, $prefix, $cpus, $addgenes,
+my(@Options, $quiet, $debug, $kingdom, $fast, $force, $outdir, $prefix, $cpus, $addgenes, $addmrna,
              $gcode, $gram, $gffver, $locustag, $increment, $mincontiglen, $evalue, $coverage,
              $genus, $species, $strain, $plasmid, 
              $usegenus, $proteins, $hmms, $centre, $scaffolds,
@@ -1113,7 +1113,7 @@ for my $sid (@seq) {
     }
     if ($addgenes) {
       # make a 'sister' gene feature for the CDS feature
-      # (ideally it would encompass the UTRs as well, but we don't know them)
+      # (ideally it would encompass the UTRs/promoters as well, but we don't know them)
       my $gene_id = "${ID}_gene";
       my $g = Bio::SeqFeature::Generic->new(
         -primary    => 'gene',
@@ -1134,6 +1134,30 @@ for my $sid (@seq) {
    	$g->add_tag_value('gene', $gENE);
       }
       push @{ $seq{$sid}{FEATURE} }, $g;
+    }
+    if ($addmrna) {
+      # make a 'sister' mRNA feature for the CDS feature
+      # (ideally it would encompass the UTRs as well, but we don't know them)
+      my $mrna_id = "${ID}_mRNA";
+      my $m = Bio::SeqFeature::Generic->new(
+        -primary    => 'mRNA',
+        -seq_id     => $f->seq_id,
+        -start      => $f->start,
+        -end        => $f->end,
+        -strand     => $f->strand,
+        -source_tag => $EXE,
+        -tag        => { 
+           'locus_tag' => $ID, 
+           'ID'        => $mrna_id, # Add suffix to ID for GFF output
+         },
+      );
+      # Make a Parent tag from the CDS to the gene
+      $f->add_tag_value('Parent', $mrna_id);
+      # copy the /gene from the CDS
+      if (my $gENE = TAG($f, 'gene')) {
+   	$m->add_tag_value('gene', $gENE);
+      }
+      push @{ $seq{$sid}{FEATURE} }, $m;
     }
   }
 }
@@ -1190,6 +1214,9 @@ for my $sid (@seq) {
     $p->display_id( TAG($f, 'locus_tag') );
     $p->desc( TAG($f, 'product') ) if $f->has_tag('product');
     unless ($addgenes and $f->primary_tag eq 'gene') {
+      $ffn_fh->write_seq($p);      
+    }
+    unless ($addmrna and $f->primary_tag eq 'mRNA') {
       $ffn_fh->write_seq($p);      
     }
     if ($f->primary_tag eq 'CDS') {
@@ -1530,6 +1557,7 @@ sub setOptions {
     {OPT=>"force!",  VAR=>\$force, DEFAULT=>0, DESC=>"Force overwriting existing output folder"},
     {OPT=>"prefix=s",  VAR=>\$prefix, DEFAULT=>'', DESC=>"Filename output prefix [auto]"},
     {OPT=>"addgenes!",  VAR=>\$addgenes, DEFAULT=>0, DESC=>"Add 'gene' features for each 'CDS' feature"},
+    {OPT=>"addmrna!",  VAR=>\$addmrna, DEFAULT=>0, DESC=>"Add 'mRNA' features for each 'CDS' feature"},
     {OPT=>"locustag=s",  VAR=>\$locustag, DEFAULT=>uc($EXE), DESC=>"Locus tag prefix"},
     {OPT=>"increment=i",  VAR=>\$increment, DEFAULT=>1, DESC=>"Locus tag counter increment"},
     {OPT=>"gffver=i",  VAR=>\$gffver, DEFAULT=>3, DESC=>"GFF version"},
