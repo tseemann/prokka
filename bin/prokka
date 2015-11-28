@@ -1172,6 +1172,8 @@ for my $sid (@seq) {
     if (my $name = TAG($f, 'gene')) {
       $f->add_tag_value('Name', $name);
     }
+    # Make sure we have valid frames/phases (GFF column 8)
+    $f->frame( $f->primary_tag eq 'CDS' ? 0 : '.' );
     
     print $gff_fh $f->gff_string($gff_factory),"\n";
     
