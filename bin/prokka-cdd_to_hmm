@@ -66,6 +66,13 @@ for my $cid (sort keys %desc) {
   print STDERR "$cid | $faln >> $lib.aln\n";
   my $in = Bio::AlignIO->new(-file=>$faln, -format=>'fasta');
   while (my $aln = $in->next_aln) {
+#    $aln->set_displayname_flat(); # remove bioperl suffix: "/begin-end"
+#    my %seen = ('lcl|consensus'=>1);
+#    for my $seq ($aln->each_seq) {
+#      if ($seen{ $seq->id }++) {  # remove duplicates (why do they exist!?)
+#        $aln->remove_seq($seq);
+#      }
+#    }
     my $desc = join '~~~', ('', $desc{$cid}{gene}, $desc{$cid}{prod});
     print STDERR "$cid: $desc\n";
     $aln->id($cid);
@@ -74,6 +81,8 @@ for my $cid (sort keys %desc) {
   #    $aln->dblink("CDD:$cid");
     $out->write_aln($aln);
   }
+#  system("cat $faln $lib.aln");
+#  exit(-1);
 }
 
 system("hmmbuild $lib.hmm.ascii $lib.aln");

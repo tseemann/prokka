@@ -893,7 +893,7 @@ else {
 }
 
 # if user supplies a trusted set of HMMs, we try these first!
-if (-r $hmms) {
+if ($hmms) {
   msg("Preparing user-supplied primary HMMER annotation source: $hmms");
   -r "$hmms.h3i" or err("Your HMM is not indexed, please run: hmmpress $hmms");
   my $src = $hmms;
