@@ -1178,7 +1178,7 @@ for my $sid (@seq) {
     my ($L,$R) = ($f->strand >= 0) ? ($f->start,$f->end) : ($f->end,$f->start);
     print {$tbl_fh} "$L\t$R\t",$f->primary_tag,"\n";
     for my $tag ($f->get_all_tags) {
-      next if $tag =~ m/^[A-Z]/; # remove GFF specific tags (start with uppercase letter)
+      next if $tag =~ m/^[A-Z]/ and $tag !~ m/EC_number/i; # remove GFF specific tags (start with uppercase letter)
       for my $value ($f->get_tag_values($tag)) {
         print {$tbl_fh} "\t\t\t$tag\t$value\n";
       }
