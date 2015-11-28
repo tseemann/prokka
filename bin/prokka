@@ -158,7 +158,7 @@ my %tools = (
   'tbl2asn' => {
     GETVER  => "tbl2asn - | grep '^tbl2asn'",
     REGEXP  => qr/tbl2asn\s+($BIDEC)/,
-    MINVER  => "24.2",
+    MINVER  => "24.3",
     NEEDED  => 1,
   },
   # now just the standard unix tools we need
