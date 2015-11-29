@@ -1,5 +1,6 @@
 #!/bin/bash
 
+# this now redirects to EBI UK
 URL="ftp://ftp.ebi.edu.au/pub/databases/uniprot/current_release/knowledgebase/taxonomic_divisions/"
 
 # where to put formatted database: /path/to/prokka/db/
@@ -29,9 +30,12 @@ for K in Viruses Archaea Bacteria ; do
     gunzip | \
     "$ROOTDIR/prokka-uniprot_to_fasta_db" | \
     makeblastdb -in - -dbtype prot -title "Prokka $K" -hash_index -out "$DIR/sprot"
+
+  # If you want a copy of the sprot file too (we do for git distribution)
+  blastdbcmd -db "$DIR/sprot" -entry all > "$DIR/sprot"
     
-    # If you want to use old BLAST:
-    # formatdb -i stdin -p T -V T -t "Prokka $K" -n "$DIR/sprot"
+  # If you want to use old BLAST:
+  # formatdb -i stdin -p T -V T -t "Prokka $K" -n "$DIR/sprot"
 
 done
 
