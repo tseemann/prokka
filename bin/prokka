@@ -1527,7 +1527,9 @@ sub list_depends {
   for my $t (sort keys %tools) {
     my $ver = $tools{$t}{MINVER} || '0';
     my $opt = $tools{$t}{NEEDED} ? 'compulsory' : 'optional';
-    my $inc = -x "$BINDIR/$t" ? 'bundled' : 'not bundled';
+    my $inc = -x "$BINDIR/$t" || -x "$BINDIR/../common/$t" || -x "$BINDIR/../../bin/$t" 
+            ? 'bundled' 
+            : 'not bundled';
     print "$t >= $ver ($opt, $inc)\n";
   }
   exit(0);
