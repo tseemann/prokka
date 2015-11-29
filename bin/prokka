@@ -213,7 +213,8 @@ sub check_all_tools {
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
 # command line options
 
-my(@Options, $quiet, $debug, $kingdom, $fast, $force, $outdir, $prefix, $cpus, $addgenes, $addmrna,
+my(@Options, $quiet, $debug, $kingdom, $fast, $force, $outdir, $prefix, $cpus, 
+             $addgenes, $addmrna, $cds_rna_olap,
              $gcode, $gram, $gffver, $locustag, $increment, $mincontiglen, $evalue, $coverage,
              $genus, $species, $strain, $plasmid, 
              $usegenus, $proteins, $hmms, $centre, $scaffolds,
@@ -294,6 +295,7 @@ elsif ($kingdom =~ m/mito|mt/i) {
   $gram = '';
   $rnammer_mode = 'euk';
   $barrnap_mode = 'mito';
+  $cds_rna_olap = 1;
 }
 else {
   err("Can't parse --mode '$kingdom'. Choose from: Bacteria Archaea Virus Mitochondria");
@@ -714,7 +716,7 @@ while (<$PRODIGAL>) {
       }	
     }
     # mitochondria are highly packed, so don't exclude as CDS/tRNA often overlap.
-    if ($overlap and $kingdom ne 'Mitochondria') {
+    if ($overlap and ! $cds_rna_olap) {
       my $type = $overlap->primary_tag;
       msg("Excluding CDS which overlaps existing RNA ($type) at $sid:$1..$2 on $3 strand");
     }
@@ -1584,6 +1586,7 @@ sub setOptions {
     {OPT=>"hmms=s",  VAR=>\$hmms, DEFAULT=>'', DESC=>"Trusted HMM to first annotate from"},
     {OPT=>"metagenome!",  VAR=>\$metagenome, DEFAULT=>0, DESC=>"Improve gene predictions for highly fragmented genomes"},
     {OPT=>"rawproduct!",  VAR=>\$rawproduct, DEFAULT=>0, DESC=>"Do not clean up /product annotation"},
+    {OPT=>"cdsrnaolap!",  VAR=>\$cds_rna_olap, DEFAULT=>0, DESC=>"Allow [tr]RNA to overlap CDS"},
     'Computation:',
     {OPT=>"cpus=i",  VAR=>\$cpus, DEFAULT=>8, DESC=>"Number of CPUs to use [0=all]"},
     {OPT=>"fast!",  VAR=>\$fast, DEFAULT=>0, DESC=>"Fast mode - only use basic BLASTP databases"},
