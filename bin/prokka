@@ -1213,14 +1213,18 @@ for my $sid (@seq) {
     my $p = $seq{$sid}{DNA}->trunc($f->location);
     $p->display_id( TAG($f, 'locus_tag') );
     $p->desc( TAG($f, 'product') ) if $f->has_tag('product');
-    unless ($addgenes and $f->primary_tag eq 'gene') {
-      $ffn_fh->write_seq($p);      
-    }
-    unless ($addmrna and $f->primary_tag eq 'mRNA') {
-      $ffn_fh->write_seq($p);      
-    }
+
+#    unless ($addgenes and $f->primary_tag eq 'gene') {
+#      $ffn_fh->write_seq($p);      
+#    }
+#    unless ($addmrna and $f->primary_tag eq 'mRNA') {
+#      $ffn_fh->write_seq($p);      
+#    }
     if ($f->primary_tag eq 'CDS') {
       $faa_fh->write_seq( $p->translate(-codontable_id=>$gcode, -complete=>1) ); 
+    }
+    if ($f->primary_tag =~ m/^(CDS|rRNA|tmRNA|tRNA|misc_RNA)$/) {
+      $ffn_fh->write_seq($p);
     }
   }
 }
