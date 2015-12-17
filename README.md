@@ -143,7 +143,7 @@ export PATH=$PATH:$HOME/prokka-1.11/bin
 ```bash
 # Vanilla (but with free toppings)
 % prokka contigs.fa
-     
+
 # Look for a folder called PROKKA_yyyymmdd (today's date) and look at stats
 % cat PROKKA_yyyymmdd/*.txt
 ```
@@ -152,7 +152,7 @@ export PATH=$PATH:$HOME/prokka-1.11/bin
 ```bash
 # Choose the names of the output files
 % prokka --outdir mydir --prefix mygenome contigs.fa
- 
+
 # Visualize it in Artemis
 % art mydir/mygenome.gff
 ```
@@ -161,7 +161,7 @@ export PATH=$PATH:$HOME/prokka-1.11/bin
 ```bash
 # It's not just for bacteria, people
 % prokka --kingdom Archaea --outdir mydir --genus Pyrococcus --locustag PYCC
- 
+
 # Search for my favourite gene
 % exonerate --bestn 1 zetatoxin.fasta mydir/PYCC_06072012.faa | less
 ```
@@ -170,24 +170,46 @@ export PATH=$PATH:$HOME/prokka-1.11/bin
 ```bash
 # Watch and learn
 % prokka --outdir mydir --locustag EHEC --proteins NewToxins.faa --evalue 0.001 --gram neg --addgenes contigs.fa
- 
+
 # Check to see if anything went really wrong
 % less mydir/EHEC_06072012.err
- 
+
 # Add final details using Sequin
 % sequin mydir/EHEC_0607201.sqn
 ```
 
-###Genbank submitter
+###NCBI Genbank submitter
 ```bash
-# Register your BioProject and your locus_tag prefix first!
+# Register your BioProject (e.g. PRJNA123456) and your locus_tag prefix (e.g. EHEC) first!
 % prokka --compliant --centre UoN --outdir PRJNA123456 --locustag EHEC --prefix EHEC-Chr1 contigs.fa
-     
+
 # Check to see if anything went really wrong
 % less PRJNA123456/EHEC-Chr1.err
-     
+
 # Add final details using Sequin
 % sequin PRJNA123456/EHEC-Chr1.sqn
+```
+
+###European Nucleotide Archive (ENA) submitter
+
+```bash
+# Register your BioProject (e.g. PRJEB12345) and your locus_tag (e.g. EHEC) prefix first!
+% prokka --compliant --centre UoN --outdir PRJEB12345 --locustag EHEC --prefix EHEC-Chr1 contigs.fa
+
+# Check to see if anything went really wrong
+% less PRJNA123456/EHEC-Chr1.err
+
+# Install and run Sanger Pathogen group's Prokka GFF3 to EMBL converter
+# available from https://github.com/sanger-pathogens/gff3toembl
+# Find the closest NCBI taxonomy id (e.g. 562 for Escherichia coli)
+% gff3_to_embl -i "Submitter, A." \
+    -m "Escherichia coli EHEC annotated using Prokka." \
+    -g linear -c PROK -n 11 -f PRJEB12345/EHEC-Chr1.embl \
+    "Escherichia coli" 562 PRJEB12345 "Escherichia coli strain EHEC" PRJEB12345/EHEC-Chr1.gff
+
+# Download and run the EMBL validator prior to submitting the EMBL flat file
+% curl -L -O ftp://ftp.ebi.ac.uk/pub/databases/ena/lib/embl-client.jar
+% java -jar embl-client.jar -r PRJEB12345/EHEC-Chr1.embl
 ```
 
 ###Crazy Person
