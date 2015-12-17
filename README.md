@@ -371,7 +371,7 @@ produces via the "tbl2asn" tool. The following Unix command will fix them:
 ##Changes
 
 * ChangeLog.txt: https://raw.githubusercontent.com/Victorian-Bioinformatics-Consortium/prokka/master/doc/ChangeLog.txt
-* Github commits: https://github.com/Victorian-Bioinformatics-Consortium/prokka/commits/master
+* Github commits: https://github.com/tseemann/prokka/commits/master
 
 ##Citation
 
