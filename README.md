@@ -40,7 +40,7 @@ sudo cpan Time::Piece XML::Simple Bio::Perl Digest::MD5
 ```
 
 There are currently 3 ways to install the main Prokka software: 
-[Github](#github), [Tarball](#tarball) or Homebrew(#homebrew).
+[Github](#github), [Tarball](#tarball) or [Homebrew](#homebrew).
 
 ###Github
 
@@ -52,10 +52,6 @@ Clone the latest version of the repository:
 ```bash
 % git clone https://github.com/tseemann/prokka.git
 % ls prokka
-```
-Index the sequence databases
-```bash
-% prokka/bin/prokka --setupdb
 ```
 
 ###Homebrew
