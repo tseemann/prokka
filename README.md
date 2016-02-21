@@ -54,7 +54,7 @@ Clone the latest version of the repository:
 ```
 Index the sequence databases
 ```bash
-    % prokka/bin/prokka --setupdb
+% prokka/bin/prokka --setupdb
 ```
 
 ###Tarball
@@ -385,7 +385,8 @@ Prokka is a contraction of "prokaryotic annotation". It's also relatively unique
 No. Prokka is specifically designed for Bacteria, Archaea and Viruses. It can't handle multi-exon gene models; I would recommend using MAKER 2 for that purpose.
 
 * __Why does Prokka keeps on crashing when it gets to tge "tbl2asn" stage?__  
-It seems that the tbl2asn program from NCBI "expires" after 12 months, and refuses to run. Unfortunately you need to install a newer version which you can download from [here](ftp://ftp.ncbi.nih.gov/toolbox/ncbi_tools/converters/by_program/tbl2asn/).
+It seems that the tbl2asn program from NCBI "expires" after 12 months, and refuses to run. 
+Unfortunately you need to install a newer version which you can download from [here](http://www.ncbi.nlm.nih.gov/genbank/tbl2asn2/).
 
 * __The hmmscan step seems to hang and do nothing?__      
 The problem here is GNU Parallel. It seems the Debian package for hmmer has modified it to require the `--gnu` option to behave in the 'default' way. There is no clear reason for this. The only way to restore normal behaviour is to edit the prokka script and change `parallel` to `parallel --gnu`.
