@@ -12,7 +12,6 @@ Torsten Seemann (<torsten.seemann@gmail.com>) (@torstenseemann)
 - [Dependencies](#dependencies)
 - [Databases](#databases)
 - [FAQ](#faq)
-- [Still To Do](#still-to-do)
 - [Changes](#changes)
 - [Citation](#citation)
 
@@ -25,42 +24,74 @@ viral genomes quickly and produce standards-compliant output files.
 
 ##Installation
 
-###Download
+Before the main install can begin you need to install some system packages:
 
-Download the latest `prokka-1.xx.tar.gz` archive from http://www.bioinformatics.net.au/software.prokka.shtml
+**Centos/Fedora/RHEL (RPM)**
+```bash
+sudo yum install perl-Time-Piece perl-XML-Simple
+```
+**Ubuntu/Debian/Mint (APT)**
+```bash
+sudo apt-get install libdatetime-perl libxml-simple-perl bioperl
+```
+**Mac OS X**
+```bash
+sudo cpan Time::Piece XML::Simple Bio::Perl
+```
 
-###Extract
+There are currently 3 ways to install the main Prokka software: [Github](#github), [Tarball](#tarball) or Homebrew(#homebrew).
+
+###Github
 
 Choose somewhere to put it, for example in your home directory (no root access required):
+```bash
+% cd $HOME
+```
+Clone the latest version of the repository:
+```bash
+% git clone https://github.com/tseemann/prokka.git
+% ls prokka
+```
+Index the sequence databases
+```bash
+    % prokka/bin/prokka --setupdb
+```
 
-    % cd $HOME
-    % tar zxvf prokka-1.xx.tar.gz
-    % ls prokka-1.xx
+###Tarball
 
-###Add to PATH
+Download the latest `prokka-1.xx.tar.gz` archive from http://www.bioinformatics.net.au/software.prokka.shtml
+```bash
+% wget http://www.vicbioinformatics.com/prokka-1.11.tar.gz
+```
+Choose somewhere to put it, for example in your home directory (no root access required):
+```bash
+% cd $HOME
+% tar zxvf prokka-1.11.tar.gz
+% ls prokka-1.11
+```
 
-Add the following line to your `$HOME/.bashrc` file, 
-or to `/etc/profile.d/prokka.sh` to make it available to all users:
+###Homebrew
 
-    export PATH=$PATH:$HOME/prokka-1.xx/bin
+Homebrew is a package manager which allows users to easily install complex software in their home directory. 
+Instructions for installing it are available for [Linux](http://linuxbrew.sh) and [Mac OS X](http://brew.sh/).
 
-###Index the sequence databases
-
-    % prokka --setupdb
+Ensure you have `brew` installed:
+```bash
+% brew
+```
+Make sure you have the `homebrew-science` tap/channel enabled:
+```bash
+% brew tap homebrew/science
+% brew update
+```
+Install Prokka and all its dependencies:
+```bash
+% brew install prokka
+```
 
 ###Install dependencies
 
-Prokka comes with many binaries for Linux and Mac OS X. It will always use your existing installed versions if they exist, but will use the included ones if that fails. For some older systems (eg. Centos 4.x) some of them won't work due to them being dynamically linked against new GLIBC libraries you don't have. 
-
-**Centos/Fedora/RHEL (RPM)**
-
-    sudo yum install perl-Time-Piece perl-XML-Simple
-
-**Ubuntu/Debian/Mint (APT)**
-
-    sudo apt-get install libdatetime-perl libxml-simple-perl
-
-You can consult the list of dependencies later in this document.
+Prokka comes with many binaries for Linux and Mac OS X. It will always use your existing installed versions if they exist, but will use the included ones if that fails. For some older systems (eg. Centos 4.x) some of them won't work due to them being dynamically linked against new GLIBC libraries you don't have. You can consult the list of dependencies later in this document.
 
 ###Choose a rRNA predictor
 
@@ -77,13 +108,28 @@ This was written by the author of Prokka and is recommended if you prefer speed 
 RNAmmer was written when HMMER 2.x was the latest release. Since them, HMMER 3.x has been released, and uses the same executable binary names. Prokka needs HMMER3 and RNAmmer (and hence HMMER2) so you need to edit your RNAmmer script to explicitly point your HMMER2 binary instead of using the HMMER3 binary which is more likely to be in your PATH first.
 
 Type which rnammer to find the script, and then edit it with your favourite editor. Find the following lines at the top:
-
-    if ( $uname eq "Linux" ) {
-    #       $HMMSEARCH_BINARY = "/usr/cbs/bio/bin/linux64/hmmsearch";    # OLD
-            $HMMSEARCH_BINARY = "/path/to/my/hmmer-2.3.2/bin/hmmsearch"; # NEW (yours)
-    }
+```perl
+if ( $uname eq "Linux" ) {
+#       $HMMSEARCH_BINARY = "/usr/cbs/bio/bin/linux64/hmmsearch";    # OLD
+        $HMMSEARCH_BINARY = "/path/to/my/hmmer-2.3.2/bin/hmmsearch"; # NEW (yours)
+}
+```
 
 If you are using Mac OS X, you'll also have to change the `"Linux"` to `"Darwin"` too. As you can see, I have commented out the original part, and replaced it with the location of my HMMER2 hmmsearch tool, so it doesn't run the HMMER3 one. You need to ensure HMMER3 is in your PATH before the old HMMER2 too.
+
+### Add to PATH
+
+Add the following line to your `$HOME/.bashrc` file, 
+or to `/etc/profile.d/prokka.sh` to make it available to all users:
+```bash
+export PATH=$PATH:$HOME/prokka-1.11/bin
+```
+
+### Index the sequence databases
+
+```bash
+% prokka --setupdb
+```
 
 ###Test
 
@@ -91,59 +137,63 @@ If you are using Mac OS X, you'll also have to change the `"Linux"` to `"Darwin"
 * Type `prokka --version` and you should see an output like `prokka 1.x`
 * Type `prokka --listdb` and it will show you what databases it has installed to use.
 
-
 ##Invoking Prokka
 
 ###Beginner
-
-    # Vanilla (but with free toppings)
-    % prokka contigs.fa
+```bash
+# Vanilla (but with free toppings)
+% prokka contigs.fa
      
-    # Look for a folder called PROKKA_yyyymmdd (today's date) and look at stats
-    % cat PROKKA_yyyymmdd/*.txt
+# Look for a folder called PROKKA_yyyymmdd (today's date) and look at stats
+% cat PROKKA_yyyymmdd/*.txt
+```
 
 ###Moderate
-
-    # Choose the names of the output files
-    % prokka --outdir mydir --prefix mygenome contigs.fa
-     
-    # Visualize it in Artemis
-    % art mydir/mygenome.gff
+```bash
+# Choose the names of the output files
+% prokka --outdir mydir --prefix mygenome contigs.fa
+ 
+# Visualize it in Artemis
+% art mydir/mygenome.gff
+```
 
 ###Expert
-
-    # It's not just for bacteria, people
-    % prokka --kingdom Archaea --outdir mydir --genus Pyrococcus --locustag PYCC
-     
-    # Search for my favourite gene
-    % exonerate --bestn 1 zetatoxin.fasta mydir/PYCC_06072012.faa | less
+```bash
+# It's not just for bacteria, people
+% prokka --kingdom Archaea --outdir mydir --genus Pyrococcus --locustag PYCC
+ 
+# Search for my favourite gene
+% exonerate --bestn 1 zetatoxin.fasta mydir/PYCC_06072012.faa | less
+```
 
 ###Wizard
-
-    # Watch and learn
-    % prokka --outdir mydir --locustag EHEC --proteins NewToxins.faa --evalue 0.001 --gram neg --addgenes contigs.fa
-     
-    # Check to see if anything went really wrong
-    % less mydir/EHEC_06072012.err
-     
-    # Add final details using Sequin
-    % sequin mydir/EHEC_0607201.sqn
+```bash
+# Watch and learn
+% prokka --outdir mydir --locustag EHEC --proteins NewToxins.faa --evalue 0.001 --gram neg --addgenes contigs.fa
+ 
+# Check to see if anything went really wrong
+% less mydir/EHEC_06072012.err
+ 
+# Add final details using Sequin
+% sequin mydir/EHEC_0607201.sqn
+```
 
 ###Genbank submitter
-
-    # Register your BioProject and your locus_tag prefix first!
-    % prokka --compliant --centre UoN --outdir PRJNA123456 --locustag EHEC --prefix EHEC-Chr1 contigs.fa
+```bash
+# Register your BioProject and your locus_tag prefix first!
+% prokka --compliant --centre UoN --outdir PRJNA123456 --locustag EHEC --prefix EHEC-Chr1 contigs.fa
      
-    # Check to see if anything went really wrong
-    % less PRJNA123456/EHEC-Chr1.err
+# Check to see if anything went really wrong
+% less PRJNA123456/EHEC-Chr1.err
      
-    # Add final details using Sequin
-    % sequin PRJNA123456/EHEC-Chr1.sqn
+# Add final details using Sequin
+% sequin PRJNA123456/EHEC-Chr1.sqn
+```
 
 ###Crazy Person
-
-    # No stinking Perl script is going to control me
-    % prokka \
+```bash
+# No stinking Perl script is going to control me
+% prokka \
         --outdir $HOME/genomes/Ec_POO247 --force \
         --prefix Ec_POO247 --addgenes --locustag ECPOOp \
         --increment 10 --gffver 2 --centre CDC  --compliant \
@@ -152,7 +202,7 @@ If you are using Mac OS X, you'll also have to change the `"Linux"` to `"Darwin"
         --proteins /opt/prokka/db/trusted/Ecocyc-17.6 \
         --evalue 1e-9 --rfam \
         plasmid-closed.fna
-
+```
 
 ##Output Files
 
@@ -363,15 +413,14 @@ produces via the "tbl2asn" tool. The following Unix command will fix them:
 `egrep -v '^(ACCESSION|VERSION)' prokka.gbk > mauve.gbk`
 
 
-##Still To Do
+##Bugs
 
-* ToDoList.txt: https://github.com/Victorian-Bioinformatics-Consortium/prokka/blob/master/doc/ToDoList.txt
-
+* : https://github.com/tseeeman/prokka/issues
 
 ##Changes
 
-* ChangeLog.txt: https://raw.githubusercontent.com/Victorian-Bioinformatics-Consortium/prokka/master/doc/ChangeLog.txt
-* Github commits: https://github.com/Victorian-Bioinformatics-Consortium/prokka/commits/master
+* ChangeLog.txt: https://raw.githubusercontent.com/tseemann/prokka/master/doc/ChangeLog.txt
+* Github commits: https://github.com/tseemann/prokka/commits/master
 
 ##Citation
 
