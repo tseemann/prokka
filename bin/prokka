@@ -401,7 +401,7 @@ msg("Using genetic code table $gcode.");
 # read in sequences; remove small contigs; replace ambig with N
 
 my $in = shift @ARGV or err("Please supply a contig FASTA file on the command line.");
-(-r $in and !-d _ and -s _) or err("'$in' is not a readable non-empty FASTA file");
+(-r $in and !-d _ and (-s _ or -p _)) or err("'$in' is not a readable non-empty FASTA file");
 msg("Loading and checking input file: $in");
 my $fin = Bio::SeqIO->new(-file=>$in, -format=>'fasta');
 my $fout = Bio::SeqIO->new(-file=>">$outdir/$prefix.fna", -format=>'fasta');
