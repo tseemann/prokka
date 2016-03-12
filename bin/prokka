@@ -51,7 +51,11 @@ my $PROKKA_DOI = '10.1093/bioinformatics/btu153';
 my $DBDIR = "$FindBin::RealBin/../db";
 my $HYPO = 'hypothetical protein';
 my $UNANN = 'unannotated protein';
-my $MAXCONTIGIDLEN = 37;  # Genbank rule
+# http://www.ncbi.nlm.nih.gov/Sitemap/samplerecord.html#LocusB : no explicit limits on SeqID length
+# http://www.ncbi.nlm.nih.gov/books/NBK53702/ : recommends to have sequence IDs shorter than 25 characters
+# http://www.ncbi.nlm.nih.gov/Sequin/sequin.hlp.html#FASTAFormatforNucleotideSequences : "Please limit the SeqID to 25 characters or less."
+# http://www.ncbi.nlm.nih.gov/genomes/static/Annotation_pipeline_README.txt : the entire "gnl|center|<ID1>" string must not be longer than 41 characters
+my $MAXCONTIGIDLEN = 37;
 my @LOG; # buffer up log lines before we have log file ready
 
 # these should accept .faa on STDIN and write report to STDOUT
