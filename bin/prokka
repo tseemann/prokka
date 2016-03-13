@@ -48,7 +48,7 @@ my $AUTHOR = 'Torsten Seemann <torsten.seemann@gmail.com>';
 my $URL = 'https://github.com/tseemann/prokka';
 my $PROKKA_PMID = '24642063';
 my $PROKKA_DOI = '10.1093/bioinformatics/btu153';
-my $DBDIR = "$FindBin::RealBin/../db";
+my $DBDIR = "/srv/databases/prokka/db";
 my $HYPO = 'hypothetical protein';
 my $UNANN = 'unannotated protein';
 my $MAXCONTIGIDLEN = 37;  # Genbank rule
@@ -524,7 +524,6 @@ else {
       -frame      => 0,
       -tag        => {
         'product' => $product,
-        'inference' => "COORDINATES:profile:$tool",
         @gene,
       }
     );
@@ -576,7 +575,6 @@ if ($kingdom ne 'Viruses' and !$norrna) {
         -frame      => 0,
         -tag        => {
           'product' => $desc,
-          'inference' => "COORDINATES:profile:$tool",  # FIXME version ?
         }
       );
       msg(join "\t", $num_rrna, $desc, $sid, $entry->{start}[0], $entry->{stop}[0], $entry->{direction}[0]);
@@ -624,7 +622,6 @@ if ($rfam) {
         -frame      => 0,
         -tag        => {
           'product' => $x[0],
-          'inference' => "COORDINATES:profile:$tool",
         }
       );
       $num_ncrna++;    
@@ -704,7 +701,6 @@ while (<$PRODIGAL>) {
       -score      => undef,
       -frame      => 0,
       -tag        => {
-	'inference' => "ab initio prediction:$tool", 
       }
     );
     my $overlap;
@@ -797,7 +793,6 @@ if ($tools{signalp}->{HAVE}) {
     #	  'ID' => $ID,
     #	  'Parent' => $x[0],  # don't have proper IDs yet....
               'product' => "putative signal peptide", 
-              'inference' => "ab initio prediction:$tool", 
               'note' => "predicted cleavage at residue $x[3] with probability $prob",
             }
           );
@@ -824,7 +819,6 @@ if ($tools{signalp}->{HAVE}) {
     #	  'ID' => $ID,
     #	  'Parent' => $x[0],  # don't have proper IDs yet....
               'product' => "putative signal peptide", 
-              'inference' => "ab initio prediction:$tool", 
               'note' => "predicted cleavage at residue $x[2]",
             }
           );
@@ -848,7 +842,7 @@ if ($tools{signalp}->{HAVE}) {
 my @database = (
   {
     DB  => "$DBDIR/kingdom/$kingdom/sprot",
-    SRC => 'similar to AA sequence:UniProtKB:',
+    SRC => 'UniProtKB',
     FMT => 'blast',
     CMD => $BLASTPCMD,
   },
@@ -861,7 +855,7 @@ unless ($kingdom eq 'Viruses') {
     if (-r $dbfile) {
       push @database, {
         DB  => $dbfile,
-        SRC => "protein motif:$name:",
+        SRC => $name,
         FMT => 'hmmer3',
         CMD => $HMMER3CMD,
         VERSION => 3,   # without this, latest Bioperl goes into infinite loop
@@ -881,7 +875,7 @@ if ($usegenus) {
     msg("Using custom $genus database for annotation");
     unshift @database, {
       DB  => $blastdb,
-      SRC => 'similar to AA sequence:RefSeq:',
+      SRC => 'RefSeq',
       FMT => 'blast',
       CMD => $BLASTPCMD,
     };    
@@ -901,10 +895,10 @@ if ($hmms) {
   my $src = $hmms;
   $src =~ s{^.*/}{};
   $src =~ s/.hmm$//;
-  msg("Using /inference source as '$src'");
+  msg("Using inference source as '$src'");
   unshift @database, {
     DB  => $hmms,
-    SRC => "protein motif:$src:",
+    SRC => $src,
     FMT => 'hmmer3',
     CMD => $HMMER3CMD,
     VERSION => 3,   # without this, latest Bioperl goes into infinite loop
@@ -914,25 +908,33 @@ if ($hmms) {
 # if user supplies a trusted set of proteins, we try these first!
 if (-r $proteins) {
   msg("Preparing user-supplied primary BLAST annotation source: $proteins");
-  my $faa_file = $proteins;
-  my $format = Bio::Tools::GuessSeqFormat->new(-file=>$proteins)->guess
-    or err("could not determine format of --proteins file '$proteins'");
-  msg("Guessed source was in $format format.");
-  if ($format =~ m/^(embl|genbank)$/) {
-    $faa_file = "$outdir/proteins.faa";
-    msg("Converting $format '$proteins' into Prokka FASTA '$faa_file'");
-    runcmd("prokka-genbank_to_fasta_db --format $format \Q$proteins\E > \Q$faa_file\E 2> /dev/null");
+  my $blastdb;
+  unless  (-f "$proteins.pin" || -f "$proteins.pal") {
+    my $faa_file = $proteins;
+    my $format = Bio::Tools::GuessSeqFormat->new(-file=>$proteins)->guess
+      or err("could not determine format of --proteins file '$proteins'");
+    msg("Guessed source was in $format format.");
+    if ($format =~ m/^(embl|genbank)$/) {
+      $faa_file = "$outdir/proteins.faa";
+      msg("Converting $format '$proteins' into Prokka FASTA '$faa_file'");
+      runcmd("prokka-genbank_to_fasta_db --format $format \Q$proteins\E > \Q$faa_file\E 2> /dev/null");
+    }
+    elsif ($format ne 'fasta') {
+      err("Option --proteins only supports FASTA, BLAST database, GenBank, and EMBL formats.");
+    }
+    $blastdb = "$outdir/proteins";
+    runcmd("makeblastdb -dbtype prot -in \Q$faa_file\E -out \Q$blastdb\E -logfile /dev/null");
   }
-  elsif ($format ne 'fasta') {
-    err("Option --proteins only supports FASTA, GenBank, and EMBL formats.");
+  else {
+    msg("Using existing BLAST database: $proteins");
+    $blastdb = $proteins;
   }
-  runcmd("makeblastdb -dbtype prot -in \Q$faa_file\E -out \Q$outdir/proteins\E -logfile /dev/null");
   my $src = $proteins;
   $src =~ s{^.*/}{};
-  msg("Using /inference source as '$src'");
+  msg("Using inference source as '$src'");
   unshift @database, {
-    DB  => "$outdir/proteins",
-    SRC => "similar to AA sequence:$src:",
+    DB  => $blastdb,
+    SRC => $src,
     FMT => 'blast',
     CMD => $BLASTPCMD,
   };  
@@ -1025,15 +1027,16 @@ else {
       $cds{$pid}->add_tag_value('product', $cleanprod);
       $cds{$pid}->add_tag_value('EC_number', $EC) if $EC;
       $cds{$pid}->add_tag_value('gene', $gene) if $gene;
-      $cds{$pid}->add_tag_value('inference', $db->{SRC}.$hit->name);
+      $cds{$pid}->add_tag_value('gene_id', $hit->name);
+      $cds{$pid}->add_tag_value('database', $db->{SRC});
     }
-    msg("Cleaned $num_cleaned /product names") if $num_cleaned > 0;
+    msg("Cleaned $num_cleaned product names") if $num_cleaned > 0;
     delfile($faa_name, $bls_name);
   }
 }
 
 if ($proteins) {
-  delfile( map { "$outdir/proteins.$_" } qw(psq phr pin) );
+  delfile( map { "$outdir/proteins.$_" } qw(psq phr pin) )
 }
 
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
@@ -1411,12 +1414,14 @@ sub runcmd {
 
 sub delfile {
   for my $file (@_) {
-    if ($debug) {
-      msg("In --debug mode, saving temporary file:", $file);
-    }
-    else {
-      msg("Deleting unwanted file:", $file);
-      unlink $file;
+    if (-f $file) {
+      if ($debug) {
+        msg("In --debug mode, saving temporary file:", $file);
+      }
+      else {
+        msg("Deleting unwanted file:", $file);
+        unlink $file;
+      }
     }
   }
 }
