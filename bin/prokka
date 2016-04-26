@@ -1015,8 +1015,8 @@ else {
       }
       $cds{$pid}->add_tag_value('product', $cleanprod);
       $cds{$pid}->add_tag_value('EC_number', $EC) if $EC;
-      $cds{$pid}->add_tag_value('attribute', $gene) if $gene;
-      $cds{$pid}->add_tag_value('gene_id', $hit->name);
+      $cds{$pid}->add_tag_value('gene_feature', $gene) if $gene;
+      $cds{$pid}->add_tag_value('gene', $hit->name);
       $cds{$pid}->add_tag_value('inference', $db->{SRC});
     }
     msg("Cleaned $num_cleaned product names") if $num_cleaned > 0;
