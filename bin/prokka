@@ -1059,37 +1059,6 @@ for my $sid (@seq) {
 }
 
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
-# Fix colliding /gene names in CDS (before we add 'gene' features)
-# (this could be written as such a nice map/map/grep one day...)
-
-my %collide;
-
-for my $sid (@seq) {
-  for my $f ( sort { $a->start <=> $b->start } @{ $seq{$sid}{FEATURE} }) {
-    next unless $f->primary_tag eq 'CDS';
-    my $gene = TAG($f, 'gene') or next;
-    $gene =~ s/_(\d+)$//; # remove existing de-duplicated suffix
-    push @{ $collide{$gene} }, $f;
-  }
-}
-msg("Found", scalar(keys(%collide)), "unique /gene codes.");
-
-my $num_collide=0;
-for my $gene (keys %collide) {
-  my @cds = @{$collide{$gene}};
-  next unless @cds > 1;
-  my $n=0;
-  for my $f (@cds) {
-    $f->remove_tag('gene');
-    $n++;
-    $f->add_tag_value('gene', "${gene}_${n}");
-  }
-  msg("Fixed $n duplicate /gene -", map { $_->get_tag_values('gene') } @cds);
-  $num_collide++;
-}
-msg("Fixed $num_collide colliding /gene names.");
-
-# . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
 # Add locus_tags and protein_id[CDS only] (and Parent genes if asked)
 
 msg("Adding /locus_tag identifiers");
