@@ -48,7 +48,7 @@ my $AUTHOR = 'Torsten Seemann <torsten.seemann@gmail.com>';
 my $URL = 'https://github.com/tseemann/prokka';
 my $PROKKA_PMID = '24642063';
 my $PROKKA_DOI = '10.1093/bioinformatics/btu153';
-my $DBDIR = "/srv/databases/prokka/db";
+my $DBDIR = "/home/cthornton/db";
 my $HYPO = 'hypothetical protein';
 my $UNANN = 'unannotated protein';
 my $MAXCONTIGIDLEN = 37;  # Genbank rule
@@ -1015,8 +1015,8 @@ else {
       }
       $cds{$pid}->add_tag_value('product', $cleanprod);
       $cds{$pid}->add_tag_value('EC_number', $EC) if $EC;
-      $cds{$pid}->add_tag_value('genefam', $gene) if $gene;
-      $cds{$pid}->add_tag_value('gene', $hit->name);
+      $cds{$pid}->add_tag_value('attribute', $gene) if $gene;
+      $cds{$pid}->add_tag_value('gene_id', $hit->name);
       $cds{$pid}->add_tag_value('database', $db->{SRC});
     }
     msg("Cleaned $num_cleaned product names") if $num_cleaned > 0;
@@ -1204,7 +1204,7 @@ msg("Generating Genbank and Sequin files");
 #runcmd("tbl2asn -a s -q F -A $prefix -N 1 -y 'Annotated using $EXE $VERSION from $URL' -Z $outdir/$prefix.err -M n -V b -i $outdir/$prefix.fsa -f $outdir/$prefix.tbl 2> /dev/null");
 #runcmd("tbl2asn -V b -a s -A $prefix -N 1 -y 'Annotated using $EXE $VERSION from $URL' -Z $outdir/$prefix.err -i $outdir/$prefix.fsa");
 #runcmd("tbl2asn -V b -a s -N 1 -y 'Annotated using $EXE $VERSION from $URL' -Z $outdir/$prefix.err -i $outdir/$prefix.fsa 2> /dev/null");
-runcmd(
+system(
   "tbl2asn -V b -a r10k -l paired-ends $tbl2asn_opt -N 1 -y 'Annotated using $EXE $VERSION from $URL'".
   " -Z \Q$outdir/$prefix.err\E -i \Q$outdir/$prefix.fsa\E 2> /dev/null"
 );
