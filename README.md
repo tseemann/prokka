@@ -210,6 +210,10 @@ export PATH=$PATH:$HOME/prokka-1.11/bin
 # Download and run the EMBL validator prior to submitting the EMBL flat file
 % curl -L -O ftp://ftp.ebi.ac.uk/pub/databases/ena/lib/embl-client.jar
 % java -jar embl-client.jar -r PRJEB12345/EHEC-Chr1.embl
+
+# Compress the file ready to upload to ENA, and calculate MD5 checksum
+% gzip PRJEB12345/EHEC-Chr1.embl
+% md5sum PRJEB12345/EHEC-Chr1.embl.gz
 ```
 
 ###Crazy Person
