@@ -415,17 +415,25 @@ if ($compliant) {
 
 my $total_bp = 0;
 while (my $seq = $fin->next_seq) {
+  my $id = $seq->id;
   if ($seq->length < $mincontiglen) {
-    msg("Skipping short (<$mincontiglen bp) contig:",$seq->display_id);
+    msg("Skipping short (<$mincontiglen bp) contig: $id");
     next;
   }
   $ncontig++;
+  if ($id =~ m/\|/) {
+    msg("Changing illegal '|' to '_' in sequence name: $id");
+    $id =~ s/\|/_/g;
+  }
+  if (exists $seq{$id}) {
+    err("Uh oh! Sequence file '$in' contains duplicate sequence ID:", $seq->id);
+  }
   # http://www.ncbi.nlm.nih.gov/genomes/static/Annotation_pipeline_README.txt
   # leave contigs names as-is unless they are in --compliant mode or want --centre set
   if ($centre) {  
-    $seq->id( sprintf "gnl|$centre|${contigprefix}contig%06d", $ncontig );
+    $id = sprintf "gnl|$centre|${contigprefix}contig%06d", $ncontig;
   }
-  if (length($seq->id) > $MAXCONTIGIDLEN) {
+  if (length($id) > $MAXCONTIGIDLEN) {
     msg("Contig ID must <= $MAXCONTIGIDLEN chars long: ".$seq->id);
     err("Please rename your contigs or use '--centre X --compliant' to generate clean contig names.");
   }
@@ -433,14 +441,12 @@ while (my $seq = $fin->next_seq) {
   $s = uc($s);
   $s =~ s/[*-]//g;      # replace pads/gaps with nothing
   $s =~ s/[^ACTG]/N/g;  # replace wacky IUPAC with N
+  $seq->id($id);
   $seq->seq($s);
   $seq->desc(undef);
   $fout->write_seq($seq);
-  if (exists $seq{$seq->id}) {
-    err("Uh oh! Sequence file '$in' contains duplicate sequence ID:", $seq->id);
-  }
-  $seq{ $seq->id }{DNA} = $seq;
-  push @seq, $seq->id;  # this array it used to preserve original contig order
+  $seq{$id}{DNA} = $seq;
+  push @seq, $id;  # this array it used to preserve original contig order
   $total_bp += $seq->length;
 }
 $ncontig > 0 or err("FASTA file '$in' contains no suitable sequence entries");
