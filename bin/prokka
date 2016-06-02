@@ -1494,11 +1494,11 @@ sub setup_db {
   check_tool('makeblastdb');
    for my $sprot (<$DBDIR/kingdom/*/sprot>) {
     msg("Making kingdom BLASTP database: $sprot");
-    runcmd("makeblastdb -dbtype prot -in \Q$sprot\E -logfile /dev/null");
+    runcmd("makeblastdb -hash_index -dbtype prot -in \Q$sprot\E -logfile /dev/null");
   }
   for my $genus (<$DBDIR/genus/*>) {
     msg("Making genus BLASTP database: $genus");
-    runcmd("makeblastdb -dbtype prot -in \Q$genus\E -logfile /dev/null");
+    runcmd("makeblastdb -hash_index -dbtype prot -in \Q$genus\E -logfile /dev/null");
   }
 
   check_tool('hmmpress');
@@ -1522,7 +1522,7 @@ sub clean_db {
   msg("Cleaning databases in $DBDIR");
   delfile( <$DBDIR/kingdom/*/sprot.p??> );
   delfile( <$DBDIR/genus/*.p??> );
-  delfile( <$DBDIR/hmm/*h3?> );
+  delfile( <$DBDIR/hmm/*.h3?> );
   delfile( <$DBDIR/cm/*.i1?> );
   msg("Cleaning complete.");
 }
