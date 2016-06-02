@@ -431,20 +431,22 @@ while (my $seq = $fin->next_seq) {
   # http://www.ncbi.nlm.nih.gov/genomes/static/Annotation_pipeline_README.txt
   # leave contigs names as-is unless they are in --compliant mode or want --centre set
   if ($centre) {  
-    $id = sprintf "gnl|$centre|${contigprefix}contig%06d", $ncontig;
+    $id = sprintf "gnl|$centre|${contigprefix}%d", $ncontig;
   }
   if (length($id) > $MAXCONTIGIDLEN) {
-    msg("Contig ID must <= $MAXCONTIGIDLEN chars long: ".$seq->id);
-    err("Please rename your contigs or use '--centre X --compliant' to generate clean contig names.");
+    msg("Contig ID must <= $MAXCONTIGIDLEN chars long: $id");
+    err("Please rename your contigs OR try '--centre X --compliant' to generate clean contig names.");
   }
   my $s = $seq->seq;
   $s = uc($s);
   $s =~ s/[*-]//g;      # replace pads/gaps with nothing
   $s =~ s/[^ACTG]/N/g;  # replace wacky IUPAC with N
+
   $seq->id($id);
   $seq->seq($s);
   $seq->desc(undef);
   $fout->write_seq($seq);
+
   $seq{$id}{DNA} = $seq;
   push @seq, $id;  # this array it used to preserve original contig order
   $total_bp += $seq->length;
