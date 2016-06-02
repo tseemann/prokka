@@ -360,12 +360,7 @@ msg("Command: @CMDLINE");
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
 # add our included binaries to the END of the PATH
 
-for my $dir ($BINDIR, "$BINDIR/../common", $FindBin::RealBin) {
-  if (-d $dir) {
-    msg("Appending to PATH: $dir");
-    $ENV{PATH} .= ":$dir";
-  }
-}
+add_bundle_to_path();
 
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
 # now check the tools and make the adjustments
@@ -1458,6 +1453,17 @@ EOCITE
 
 #----------------------------------------------------------------------
 
+sub add_bundle_to_path {
+  for my $dir ($BINDIR, "$BINDIR/../common", $FindBin::RealBin) {
+    if (-d $dir) {
+      msg("Appending to PATH: $dir");
+      $ENV{PATH} .= ":$dir";
+    }
+  }
+}
+
+#----------------------------------------------------------------------
+
 sub kingdoms {
   return map { m{kingdom/(\w+?)/}; $1 } glob("$DBDIR/kingdom/*/*.pin");
 }
@@ -1488,6 +1494,8 @@ sub list_db {
 #----------------------------------------------------------------------
 
 sub setup_db {
+
+  add_bundle_to_path();
 
   clean_db();
 
