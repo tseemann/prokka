@@ -1291,6 +1291,7 @@ foreach (qx(find \Q$outdir\E -type f -name "$prefix.*")) {
   chomp;
   msg($_);
 }
+msg("Annotation finished successfully.");
 my $endtime = localtime;
 my $walltime = $endtime - $starttime;
 #msg("Walltime used:", $walltime->pretty);  # Heikki says this method only came with 1.20
