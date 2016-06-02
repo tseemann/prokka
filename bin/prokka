@@ -312,6 +312,10 @@ if ( !  -r "$DBDIR/kingdom/$kingdom/sprot.pin" or ! "$DBDIR/hmm/HAMAP.hmm.h3i") 
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
 # check options
 
+my $in = shift @ARGV or err("Please supply a contig FASTA file on the command line.");
+(-r $in and !-d _ and -s _) or err("'$in' is not a readable non-empty FASTA file");
+$locustag ||= generate_locus_tag($in);
+
 if ($compliant) {
   msg("Enabling options to ensure Genbank/ENA/DDJB submission compliance.");
   $addgenes = 1;
@@ -324,9 +328,8 @@ if ($compliant) {
 $evalue >= 0 or err("Invalid --evalue, must be >= 0");
 #($coverage >= 0 and $coverage <= 100) or err("Invalid --coverage, must be 0..100");
 $increment >= 1 or err("Invalid --increment, must be >= 1");
-$locustag ||= uc($EXE);
 # http://www.ncbi.nlm.nih.gov/genomes/static/Annotation_pipeline_README.txt
-$prefix ||= $locustag.'_'.(localtime->mdy('')); # NCBI wants US format, ech.
+$prefix ||= 'PROKKA_'.(localtime->mdy('')); # NCBI wants US format, ech.
 $outdir ||= $prefix;
 if (-d $outdir) {
   if ($force) { 
@@ -395,8 +398,6 @@ msg("Using genetic code table $gcode.");
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
 # read in sequences; remove small contigs; replace ambig with N
 
-my $in = shift @ARGV or err("Please supply a contig FASTA file on the command line.");
-(-r $in and !-d _ and -s _) or err("'$in' is not a readable non-empty FASTA file");
 msg("Loading and checking input file: $in");
 my $fin = Bio::SeqIO->new(-file=>$in, -format=>'fasta');
 my $fout = Bio::SeqIO->new(-file=>">$outdir/$prefix.fna", -format=>'fasta');
@@ -1550,6 +1551,25 @@ sub list_depends {
 }
 
 #----------------------------------------------------------------------
+
+sub generate_locus_tag {
+  my($fname) = @_;
+  msg("Generating locus_tag from '$fname' contents.");
+  my($cs) = qx"md5sum \Q$fname\E";
+  $cs or err("Error running: md5sum $fname");
+  chomp $cs;
+  msg("MD5 $cs");
+  my $lt = '';
+  for my $i (0 .. 7) {
+    my $c = uc(substr($cs,$i,1));
+    $c = chr( ord('F') + 1 + $c ) if $c =~ m/^\d$/;
+    $lt .= $c;
+  }
+  msg("Setting --locustag ${lt}");
+  return $lt;
+}
+
+#----------------------------------------------------------------------
 # Option setting routines
 
 sub setOptions {
@@ -1574,7 +1594,7 @@ sub setOptions {
     {OPT=>"prefix=s",  VAR=>\$prefix, DEFAULT=>'', DESC=>"Filename output prefix [auto]"},
     {OPT=>"addgenes!",  VAR=>\$addgenes, DEFAULT=>0, DESC=>"Add 'gene' features for each 'CDS' feature"},
     {OPT=>"addmrna!",  VAR=>\$addmrna, DEFAULT=>0, DESC=>"Add 'mRNA' features for each 'CDS' feature"},
-    {OPT=>"locustag=s",  VAR=>\$locustag, DEFAULT=>uc($EXE), DESC=>"Locus tag prefix"},
+    {OPT=>"locustag=s",  VAR=>\$locustag, DEFAULT=>'', DESC=>"Locus tag prefix [auto]"},
     {OPT=>"increment=i",  VAR=>\$increment, DEFAULT=>1, DESC=>"Locus tag counter increment"},
     {OPT=>"gffver=i",  VAR=>\$gffver, DEFAULT=>3, DESC=>"GFF version"},
     {OPT=>"compliant!",  VAR=>\$compliant, DEFAULT=>0, DESC=>"Force Genbank/ENA/DDJB compliance: --addgenes --mincontiglen 200 --centre XXX"},
