@@ -416,7 +416,7 @@ produces via the "tbl2asn" tool. The following Unix command will fix them:
 
 ##Bugs
 
-* : https://github.com/tseeeman/prokka/issues
+* : https://github.com/tseemann/prokka/issues
 
 ##Changes
 
