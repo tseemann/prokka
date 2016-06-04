@@ -23,6 +23,7 @@ use File::Copy;
 use Time::Piece;
 use Time::Seconds;
 use XML::Simple;
+use Digest::MD5;
 use List::Util qw(min max sum);
 use Scalar::Util qw(openhandle);
 use Data::Dumper;
@@ -57,13 +58,13 @@ my @LOG; # buffer up log lines before we have log file ready
 # these should accept .faa on STDIN and write report to STDOUT
 my $BLASTPCMD = "blastp -query - -db %d -evalue %e -num_threads 1 -num_descriptions 1 -num_alignments 1 -seg no";
 my $HMMER3CMD = "hmmscan --noali --notextw --acc -E %e --cpu 1 %d /dev/stdin";
+
 my $rnammer_mode = 'bac';
 my $barrnap_mode = 'bac';
 my $aragorn_opt = '';
 
 # debian package broke compatibility so have to force it now *grumble*
 my $PARALLELCMD = "parallel --gnu --plain";
-
 my $starttime = localtime;
 my %seq;
 my @seq;
@@ -1564,17 +1565,22 @@ sub list_depends {
 sub generate_locus_tag {
   my($fname) = @_;
   msg("Generating locus_tag from '$fname' contents.");
-  my($cs) = qx"md5sum \Q$fname\E";
-  $cs or err("Error running: md5sum $fname");
-  chomp $cs;
-  msg("MD5 $cs");
+#  my($cs) = $OPSYS eq 'linux' ? qx"md5sum \Q$fname\E"
+#                              : qx"md5 -q \Q$fname\E";
+#  $cs or err("Error running: md5sum $fname");
+#  chomp $cs;
+  open my $fh, '<', $fname;
+  my $md5 = Digest::MD5->new;
+  $md5->addfile($fh);
+  my $cs = $md5->hexdigest;
+  close $fh;
   my $lt = '';
   for my $i (0 .. 7) {
     my $c = uc(substr($cs,$i,1));
     $c = chr( ord('F') + 1 + $c ) if $c =~ m/^\d$/;
     $lt .= $c;
   }
-  msg("Setting --locustag ${lt}");
+  msg("Setting --locustag ${lt} from MD5 $cs");
   return $lt;
 }
 
