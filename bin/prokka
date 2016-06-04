@@ -53,6 +53,7 @@ my $DBDIR = "$FindBin::RealBin/../db";
 my $HYPO = 'hypothetical protein';
 my $UNANN = 'unannotated protein';
 my $MAXCONTIGIDLEN = 37;  # Genbank rule
+my $SIGNALP_MAXSEQ = 10_000;  # maximum allowed input for signalp
 my @LOG; # buffer up log lines before we have log file ready
 
 # these should accept .faa on STDIN and write report to STDOUT
@@ -773,71 +774,76 @@ if ($tools{signalp}->{HAVE}) {
           $spout->write_seq($seq);
         }
       }
-      my $opts = $sigpver==3 ? '-m hmm' : '';
-      my $cmd = "signalp -t $gram -f short $opts \Q$spoutfn\E 2> /dev/null";
-      
-      msg("Running: $cmd");
-      my $tool = "SignalP:".$tools{signalp}->{VERSION};
-      my $num_sigpep = 0;
-      open SIGNALP, '-|', $cmd;
-      while (<SIGNALP>) {
-        my @x = split m/\s+/;
-        if ($sigpver == 3) {
-          next unless @x == 7 and $x[6] eq 'Y'; # has sig_pep
-          my $parent = $cds{ $x[0] };
-          my $prob = $x[5];
-          my $cleave = $x[3];
-          my $start = $parent->strand > 0 ? $parent->start : $parent->end;
-          # need to convert to DNA coordinates
-          my $end = $start + $parent->strand * ($cleave*3 - 1);
-          my $sigpep = Bio::SeqFeature::Generic->new( 
-            -seq_id     => $parent->seq_id,
-            -source_tag => $tool,
-            -primary    => 'sig_peptide',
-            -start      => min($start, $end),
-            -end        => max($start, $end),
-            -strand     => $parent->strand,
-            -frame      => 0,    # PHASE: compulsory for peptides, can't be '.'
-            -tag        => {
-    #	  'ID' => $ID,
-    #	  'Parent' => $x[0],  # don't have proper IDs yet....
-              'product' => "putative signal peptide", 
-              'inference' => "ab initio prediction:$tool", 
-              'note' => "predicted cleavage at residue $x[3] with probability $prob",
-            }
-          );
-          push @{$seq{$parent->seq_id}{FEATURE}}, $sigpep;
-          $num_sigpep++;
-        }
-        else {
-  #        msg("sigp$sigpver: @x");
-          next unless @x==12 and $x[9] eq 'Y'; # has sig_pep
-          my $parent = $cds{ $x[0] };
-          my $cleave = $x[2];
-          my $start = $parent->strand > 0 ? $parent->start : $parent->end;
-          # need to convert to DNA coordinates
-          my $end = $start + $parent->strand * ($cleave*3 - 1);
-          my $sigpep = Bio::SeqFeature::Generic->new( 
-            -seq_id     => $parent->seq_id,
-            -source_tag => $tool,
-            -primary    => 'sig_peptide',
-            -start      => min($start, $end),
-            -end        => max($start, $end),
-            -strand     => $parent->strand,
-            -frame      => 0,    # PHASE: compulsory for peptides, can't be '.'
-            -tag        => {
-    #	  'ID' => $ID,
-    #	  'Parent' => $x[0],  # don't have proper IDs yet....
-              'product' => "putative signal peptide", 
-              'inference' => "ab initio prediction:$tool", 
-              'note' => "predicted cleavage at residue $x[2]",
-            }
-          );
-          push @{$seq{$parent->seq_id}{FEATURE}}, $sigpep;
-          $num_sigpep++;
-        }	
+
+      if ($count > $SIGNALP_MAXSEQ) {
+        msg("Skipping signalp because it can not handle >$SIGNALP_MAXSEQ sequences.");
       }
-      msg("Found $num_sigpep signal peptides");
+      else {
+        my $opts = $sigpver==3 ? '-m hmm' : '';
+        my $cmd = "signalp -t $gram -f short $opts \Q$spoutfn\E 2> /dev/null";
+        msg("Running: $cmd");
+        my $tool = "SignalP:".$tools{signalp}->{VERSION};
+        my $num_sigpep = 0;
+        open SIGNALP, '-|', $cmd;
+        while (<SIGNALP>) {
+          my @x = split m/\s+/;
+          if ($sigpver == 3) {
+            next unless @x == 7 and $x[6] eq 'Y'; # has sig_pep
+            my $parent = $cds{ $x[0] };
+            my $prob = $x[5];
+            my $cleave = $x[3];
+            my $start = $parent->strand > 0 ? $parent->start : $parent->end;
+            # need to convert to DNA coordinates
+            my $end = $start + $parent->strand * ($cleave*3 - 1);
+            my $sigpep = Bio::SeqFeature::Generic->new( 
+              -seq_id     => $parent->seq_id,
+              -source_tag => $tool,
+              -primary    => 'sig_peptide',
+              -start      => min($start, $end),
+              -end        => max($start, $end),
+              -strand     => $parent->strand,
+              -frame      => 0,    # PHASE: compulsory for peptides, can't be '.'
+              -tag        => {
+      #	  'ID' => $ID,
+      #	  'Parent' => $x[0],  # don't have proper IDs yet....
+                'product' => "putative signal peptide", 
+                'inference' => "ab initio prediction:$tool", 
+                'note' => "predicted cleavage at residue $x[3] with probability $prob",
+              }
+            );
+            push @{$seq{$parent->seq_id}{FEATURE}}, $sigpep;
+            $num_sigpep++;
+          }
+          else {
+    #        msg("sigp$sigpver: @x");
+            next unless @x==12 and $x[9] eq 'Y'; # has sig_pep
+            my $parent = $cds{ $x[0] };
+            my $cleave = $x[2];
+            my $start = $parent->strand > 0 ? $parent->start : $parent->end;
+            # need to convert to DNA coordinates
+            my $end = $start + $parent->strand * ($cleave*3 - 1);
+            my $sigpep = Bio::SeqFeature::Generic->new( 
+              -seq_id     => $parent->seq_id,
+              -source_tag => $tool,
+              -primary    => 'sig_peptide',
+              -start      => min($start, $end),
+              -end        => max($start, $end),
+              -strand     => $parent->strand,
+              -frame      => 0,    # PHASE: compulsory for peptides, can't be '.'
+              -tag        => {
+      #	  'ID' => $ID,
+      #	  'Parent' => $x[0],  # don't have proper IDs yet....
+                'product' => "putative signal peptide", 
+                'inference' => "ab initio prediction:$tool", 
+                'note' => "predicted cleavage at residue $x[2]",
+              }
+            );
+            push @{$seq{$parent->seq_id}{FEATURE}}, $sigpep;
+            $num_sigpep++;
+          }	
+        }
+        msg("Found $num_sigpep signal peptides");
+      }
       delfile($spoutfn);
     }
     else {
