@@ -915,7 +915,7 @@ if ($hmms) {
   msg("Using /inference source as '$src'");
   unshift @database, {
     DB  => $hmms,
-    SRC => "protein motif:$src:",
+    SRC => $compliant ? "" : "protein motif:$src:",
     FMT => 'hmmer3',
     CMD => $HMMER3CMD,
     VERSION => 3,   # without this, latest Bioperl goes into infinite loop
@@ -943,7 +943,7 @@ if (-r $proteins) {
   msg("Using /inference source as '$src'");
   unshift @database, {
     DB  => "$outdir/proteins",
-    SRC => "similar to AA sequence:$src:",
+    SRC => $compliant ? "" : "similar to AA sequence:$src:",
     FMT => 'blast',
     CMD => $BLASTPCMD,
   };  
@@ -1036,7 +1036,8 @@ else {
       $cds{$pid}->add_tag_value('product', $cleanprod);
       $cds{$pid}->add_tag_value('EC_number', $EC) if $EC;
       $cds{$pid}->add_tag_value('gene', $gene) if $gene;
-      $cds{$pid}->add_tag_value('inference', $db->{SRC}.$hit->name);
+      # only add /inference if this DB has a proper SRC to atrribute to
+      $cds{$pid}->add_tag_value('inference', $db->{SRC}.$hit->name) if $db->{SRC};
     }
     msg("Cleaned $num_cleaned /product names") if $num_cleaned > 0;
     delfile($faa_name, $bls_name);
