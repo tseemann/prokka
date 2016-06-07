@@ -439,7 +439,7 @@ produces via the "tbl2asn" tool. The following Unix command will fix them:
 
 ##Bugs
 
-* Submit problems or requests here: https://github.com/tseeeman/prokka/issues
+* Submit problems or requests here: https://github.com/tseeman/prokka/issues
 
 ##Changes
 
