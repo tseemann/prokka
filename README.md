@@ -40,7 +40,7 @@ sudo cpan Time::Piece XML::Simple Bio::Perl Digest::MD5
 ```
 
 There are currently 3 ways to install the main Prokka software: 
-[Github](#github), [Tarball](#tarball) or Homebrew(#homebrew).
+[Github](#github), [Tarball](#tarball) or [Homebrew](#homebrew).
 
 ###Github
 
