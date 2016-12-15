@@ -155,7 +155,7 @@ export PATH=$PATH:$HOME/prokka-1.11/bin
 
 ###Test
 
-* Type `prokka` and it should output it's help screen.
+* Type `prokka` and it should output its help screen.
 * Type `prokka --version` and you should see an output like `prokka 1.x`
 * Type `prokka --listdb` and it will show you what databases it has installed to use.
 
@@ -417,7 +417,7 @@ Unfortunately you need to install a newer version which you can download from [h
 The problem here is GNU Parallel. It seems the Debian package for hmmer has modified it to require the `--gnu` option to behave in the 'default' way. There is no clear reason for this. The only way to restore normal behaviour is to edit the prokka script and change `parallel` to `parallel --gnu`.
 
 * __Why does prokka fail when it gets to hmmscan?__  
-Unfortunately HMMER keeps changing it's database format, and they aren't upward compatible. If you upgraded HMMER (from 3.0 to 3.1 say) then you need to "re-press" the files. This can be done as follows:
+Unfortunately HMMER keeps changing its database format, and they aren't upward compatible. If you upgraded HMMER (from 3.0 to 3.1 say) then you need to "re-press" the files. This can be done as follows:
     cd /path/to/prokka/db/hmm
     mkdir new
     for D in *.hmm ; do hmmconvert $D > new/$D ; done
