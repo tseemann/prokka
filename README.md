@@ -40,7 +40,7 @@ sudo cpan Time::Piece XML::Simple Bio::Perl Digest::MD5
 ```
 
 There are currently 3 ways to install the main Prokka software: 
-[Github](#github), [Tarball](#tarball) or Homebrew(#homebrew).
+[Github](#github), [Tarball](#tarball) or [Homebrew](#homebrew).
 
 ###Github
 
@@ -472,6 +472,10 @@ _Camacho C et al. BLAST+: architecture and applications. BMC Bioinformatics. 200
 * __Prodigal__  
 Finds protein-coding features (CDS)  
 _Hyatt D et al. Prodigal: prokaryotic gene recognition and translation initiation site identification. BMC Bioinformatics. 2010 Mar 8;11:119._
+
+* __TBL2ASN__
+Prepare sequence records for Genbank submission
+[Tbl2asn home page](https://www.ncbi.nlm.nih.gov/genbank/tbl2asn2/)
 
 ### Recommended
 
