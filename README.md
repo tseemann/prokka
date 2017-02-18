@@ -58,19 +58,6 @@ Index the sequence databases
 % prokka/bin/prokka --setupdb
 ```
 
-###Tarball
-
-Download the latest `prokka-1.xx.tar.gz` archive from http://www.bioinformatics.net.au/software.prokka.shtml
-```bash
-% wget http://www.vicbioinformatics.com/prokka-1.11.tar.gz
-```
-Choose somewhere to put it, for example in your home directory (no root access required):
-```bash
-% cd $HOME
-% tar zxvf prokka-1.11.tar.gz
-% ls prokka-1.11
-```
-
 ###Homebrew
 
 Homebrew is a package manager which allows users to easily install complex software in their home directory. 
@@ -87,7 +74,22 @@ Make sure you have the `homebrew-science` tap/channel enabled:
 ```
 Install Prokka and all its dependencies:
 ```bash
-% brew install prokka
+% brew install prokka --HEAD
+```
+
+###Tarball
+
+**WARNING:** this method gives you very old version of prokka. The brew or github methods are preferred!
+
+Download the latest `prokka-1.xx.tar.gz` archive from http://www.bioinformatics.net.au/software.prokka.shtml
+```bash
+% wget http://www.vicbioinformatics.com/prokka-1.11.tar.gz
+```
+Choose somewhere to put it, for example in your home directory (no root access required):
+```bash
+% cd $HOME
+% tar zxvf prokka-1.11.tar.gz
+% ls prokka-1.11
 ```
 
 ###Install dependencies
