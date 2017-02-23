@@ -40,7 +40,7 @@ sudo cpan Time::Piece XML::Simple Bio::Perl Digest::MD5
 ```
 
 There are currently 3 ways to install the main Prokka software: 
-[Github](#github), [Tarball](#tarball) or [Homebrew](#homebrew).
+[Github](#github), [Tarball](#tarball) or Homebrew(#homebrew).
 
 ###Github
 
@@ -191,7 +191,7 @@ export PATH=$PATH:$HOME/prokka-1.11/bin
 ###Wizard
 ```bash
 # Watch and learn
-% prokka --outdir mydir --locustag EHEC --proteins NewToxins.faa --evalue 0.001 --gram neg --addgenes contigs.fa
+% prokka --outdir mydir --locustag EHEC --proteins NewToxins.faa --evalue 0.001 --partialgenes --gram neg --addgenes contigs.fa
 
 # Check to see if anything went really wrong
 % less mydir/EHEC_06072012.err
@@ -305,6 +305,7 @@ export PATH=$PATH:$HOME/prokka-1.11/bin
       --proteins [X]    Fasta file of trusted proteins to first annotate from (default '')
       --hmms [X]        Trusted HMM to first annotate from (default '')
       --metagenome      Improve gene predictions for highly fragmented genomes (default OFF)
+      --partialgenes    Allow genes to run off edges, yielding incomplete genes (no closed ends option in prodigal) (default OFF)
       --rawproduct      Do not clean up /product annotation (default OFF)
     Computation:
       --fast            Fast mode - skip CDS /product searching (default OFF)
@@ -474,10 +475,6 @@ _Camacho C et al. BLAST+: architecture and applications. BMC Bioinformatics. 200
 * __Prodigal__  
 Finds protein-coding features (CDS)  
 _Hyatt D et al. Prodigal: prokaryotic gene recognition and translation initiation site identification. BMC Bioinformatics. 2010 Mar 8;11:119._
-
-* __TBL2ASN__
-Prepare sequence records for Genbank submission
-[Tbl2asn home page](https://www.ncbi.nlm.nih.gov/genbank/tbl2asn2/)
 
 ### Recommended
 
