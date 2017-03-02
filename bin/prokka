@@ -221,7 +221,7 @@ my(@Options, $quiet, $debug, $kingdom, $fast, $force, $outdir, $prefix, $cpus,
              $genus, $species, $strain, $plasmid, 
              $usegenus, $proteins, $hmms, $centre, $scaffolds,
              $rfam, $norrna, $notrna, $rnammer, $rawproduct, $noanno,
-	     $metagenome, $compliant, $listdb, $citation);
+	     $metagenome, $compliant, $listdb, $citation, $check);
 setOptions();
 
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
@@ -1605,6 +1605,7 @@ sub setOptions {
     {OPT=>"citation",VAR=>\&show_citation,     DESC=>"Print citation for referencing Prokka"},
     {OPT=>"quiet!",  VAR=>\$quiet, DEFAULT=>0, DESC=>"No screen output"},
     {OPT=>"debug!",  VAR=>\$debug, DEFAULT=>0, DESC=>"Debug mode: keep all temporary files"},
+    {OPT=>"check!",  VAR=>\$check, DEFAULT=>0, DESC=>"Check dependencies: Check all dependencies, report and exit."},
     'Setup:',
     {OPT=>"listdb",   VAR=>\&list_db,    DESC=>"List all configured databases"},
     {OPT=>"setupdb",  VAR=>\&setup_db,         DESC=>"Index all installed databases"},
@@ -1660,6 +1661,12 @@ sub setOptions {
       ${$_->{VAR}} = $_->{DEFAULT};
     }
   }
+  
+  if($check){
+    &check_all_tools();
+    exit(0);
+  }
+  
 }
 
 sub usage {
