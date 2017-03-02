@@ -163,6 +163,12 @@ my %tools = (
     MINVER  => "24.3",
     NEEDED  => 1,
   },
+  'tigr-glimmer' => {
+    GETVER  => "dpkg-query -W -f='\${Version}' tigr-glimmer",
+    REGEXP  => qr/^($BIDEC)-/,
+    MINVER  => "3.0",
+    NEEDED  => 1,
+  },
   # now just the standard unix tools we need
   'less'    => { NEEDED=>1 },
   'grep'    => { NEEDED=>1 },  # yes, we need this before we can test versions :-/
@@ -212,6 +218,12 @@ sub check_all_tools {
   }
 }
 
+sub is_circular{
+  my($start, $end, $direction) = @_;
+  return ((($start > $end) and ($direction == '+')) or
+          (($start < $end) and ($direction == '-')))
+}
+
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
 # command line options
 
@@ -220,7 +232,7 @@ my(@Options, $quiet, $debug, $kingdom, $fast, $force, $outdir, $prefix, $cpus,
              $gcode, $gram, $gffver, $locustag, $increment, $mincontiglen, $evalue, $coverage,
              $genus, $species, $strain, $plasmid, 
              $usegenus, $proteins, $hmms, $centre, $scaffolds,
-             $rfam, $norrna, $notrna, $rnammer, $rawproduct, $noanno,
+             $rfam, $norrna, $notrna, $rnammer, $rawproduct, $glimmer, $cdsfile, $noanno,
 	     $metagenome, $compliant, $listdb, $citation);
 setOptions();
 
@@ -685,57 +697,138 @@ if ($tools{'minced'}->{HAVE}) {
 
 msg("Predicting coding sequences");
 my $totalbp = sum( map { $seq{$_}{DNA}->length } @seq);
-my $prodigal_mode = ($totalbp >= 100000 && !$metagenome) ? 'single' : 'meta';
-msg("Contigs total $totalbp bp, so using $prodigal_mode mode");
 my $num_cds=0;
-my $cmd = "prodigal -i \Q$outdir/$prefix.fna\E -c -m -g $gcode -p $prodigal_mode -f sco -q";
-msg("Running: $cmd");
-open my $PRODIGAL, '-|', $cmd;
 my $sid;
-while (<$PRODIGAL>) {
-  if (m/seqhdr="([^\s\"]+)"/) {  
-    $sid = $1;
-#    msg("CDS $sid");
-    next;
-  }
-  elsif (m/^>\d+_(\d+)_(\d+)_([+-])$/) {   
-    my $tool = "Prodigal:".$tools{prodigal}->{VERSION}; # FIXME: why inner loop?
-    my $cds = Bio::SeqFeature::Generic->new( 
-      -primary    => 'CDS',
-      -seq_id     => $sid,
-      -source     => $tool,
-      -start      => $1,
-      -end        => $2,
-      -strand     => ($3 eq '+' ? +1 : -1),
-      -score      => undef,
-      -frame      => 0,
-      -tag        => {
-	'inference' => "ab initio prediction:$tool", 
+my $contig_length;
+if ($glimmer && defined $cdsfile && -r $cdsfile) {
+  my $tool = 'Glimmer:'.$tools{'tigr-glimmer'}->{VERSION};
+  msg("Contigs total $totalbp bp, using glimmer");
+  open my $GLIMMER, '<', $cdsfile;
+  while (<$GLIMMER>) {
+    if (m/^>([^\s]+)/) {
+      $sid = $1;
+      if ($sid =~ m/\|/) {
+        msg("Changing illegal '|' to '_' in sequence name: $sid");
+        $sid =~ s/\|/_/g;
       }
-    );
-    my $overlap;
-    for my $rna (@allrna) {
-      # same contig, overlapping (could check same strand too? not sure)
-      if ($rna->seq_id eq $sid and $cds->overlaps($rna)) { 
-        $overlap = $rna;
-	last;
-      }	
+      $contig_length = $seq{$sid}{DNA}->length;
     }
-    # mitochondria are highly packed, so don't exclude as CDS/tRNA often overlap.
-    if ($overlap and ! $cds_rna_olap) {
-      my $type = $overlap->primary_tag;
-      msg("Excluding CDS which overlaps existing RNA ($type) at $sid:$1..$2 on $3 strand");
-    }
-    else {
-      $num_cds++;
-      push @{$seq{$sid}{FEATURE}}, $cds;
-      ## BUG James Doonan - ensure no odd features extending beyond contig
-      if ($cds->end > $seq{$cds->seq_id}{DNA}->length )  { 
-        err("CDS end", $cds->end, "is beyond length", $seq{$sid}{DNA}->length, "in contig $sid") 
+    elsif (m/^orf\d+\s+(\d+)\s+(\d+)\s+([+-])\d\s+(\d+[.]\d+)/) {
+      my $cds;
+      # Glimmer may include circular features. We model them with
+      # subfeatures.
+      if (is_circular($1, $2, $3)) {
+        $cds = Bio::SeqFeature::Generic->new(
+        -primary    => 'CDS',
+        -seq_id     => $sid,
+        -source     => $tool,
+        -strand     => ($3 eq '+' ? +1 : -1),
+        -score      => $4,
+        -frame      => 0,
+        -tag        => {
+	      'inference' => "ab initio prediction:$tool",
+                       }
+        );
+        $cds->add_sub_SeqFeature(Bio::SeqFeature::Generic->new(-start => ($3 eq '+' ? $1 : $2),
+          -end => $contig_length), 'EXPAND');
+        $cds->add_sub_SeqFeature(Bio::SeqFeature::Generic->new(-start => 1,
+	  -end => ($3 eq '+' ? $2 : $1)), 'EXPAND');
+      } else {
+        $cds = Bio::SeqFeature::Generic->new(
+        -primary    => 'CDS',
+        -seq_id     => $sid,
+        -source     => $tool,
+        -start      => ($3 eq '+' ? $1 : $2),
+        -end        => ($3 eq '+' ? $2 : $1),
+        -strand     => ($3 eq '+' ? +1 : -1),
+        -score      => $4,
+        -frame      => 0,
+        -tag        => {
+	      'inference' => "ab initio prediction:$tool",
+                       }
+        );
       }
-      
+      my $overlap;
+      for my $rna (@allrna) {
+        # same contig, overlapping (could check same strand too? not sure)
+        if ($rna->seq_id eq $sid and $cds->overlaps($rna)) {
+          $overlap = $rna;
+          last;
+        }
+      }
+      # mitochondria are highly packed, so don't exclude as CDS/tRNA often overlap.
+      if ($overlap and $kingdom ne 'Mitochondria' and $kingdom ne 'Virus') {
+        my $type = $overlap->primary_tag;
+        msg("Excluding CDS which overlaps existing RNA ($type) at $sid:$1..$2 on $3 strand");
+      }
+      else {
+        $num_cds++;
+        push @{$seq{$sid}{FEATURE}}, $cds;
+        ## BUG James Doonan - ensure no odd features extending beyond contig
+        if ($cds->end > $contig_length )  {
+          err("CDS end", $cds->end, "is beyond length", $contig_length, "in contig $sid")
+        }
+      }
     }
   }
+  close $GLIMMER;
+} else {
+  my $PRODIGAL;
+  if (!defined $cdsfile || ! -r $cdsfile) {
+    my $prodigal_mode = ($totalbp >= 100000 && !$metagenome) ? 'single' : 'meta';
+    msg("Contigs total $totalbp bp, so using $prodigal_mode mode");
+    my $cmd = "prodigal -i \Q$outdir/$prefix.fna\E -c -m -g $gcode -p $prodigal_mode -f sco -q";
+    msg("Running: $cmd");
+    open $PRODIGAL, '-|', $cmd;
+  } else {
+    open $PRODIGAL, '<', $cdsfile;
+  }
+  while (<$PRODIGAL>) {
+    if (m/seqhdr="([^\s\"]+)"/) {
+      $sid = $1;
+  #    msg("CDS $sid");
+      next;
+    }
+    elsif (m/^>\d+_(\d+)_(\d+)_([+-])$/) {
+      my $tool = "Prodigal:".$tools{prodigal}->{VERSION}; # FIXME: why inner loop?
+      my $cds = Bio::SeqFeature::Generic->new(
+        -primary    => 'CDS',
+        -seq_id     => $sid,
+        -source     => $tool,
+        -start      => $1,
+        -end        => $2,
+        -strand     => ($3 eq '+' ? +1 : -1),
+        -score      => undef,
+        -frame      => 0,
+        -tag        => {
+      'inference' => "ab initio prediction:$tool",
+        }
+      );
+      my $overlap;
+      for my $rna (@allrna) {
+        # same contig, overlapping (could check same strand too? not sure)
+        if ($rna->seq_id eq $sid and $cds->overlaps($rna)) {
+          $overlap = $rna;
+      last;
+        }
+      }
+      # mitochondria are highly packed, so don't exclude as CDS/tRNA often overlap.
+      if ($overlap and ! $cds_rna_olap and $kingdom ne 'Mitochondria' and $kingdom ne 'Virus') {
+        my $type = $overlap->primary_tag;
+        msg("Excluding CDS which overlaps existing RNA ($type) at $sid:$1..$2 on $3 strand");
+      }
+      else {
+        $num_cds++;
+        push @{$seq{$sid}{FEATURE}}, $cds;
+        ## BUG James Doonan - ensure no odd features extending beyond contig
+        if ($cds->end > $seq{$cds->seq_id}{DNA}->length )  {
+          err("CDS end", $cds->end, "is beyond length", $seq{$sid}{DNA}->length, "in contig $sid")
+        }
+
+      }
+    }
+  }
+  close $PRODIGAL;
 }
 msg("Found $num_cds CDS");
 
@@ -1633,6 +1726,8 @@ sub setOptions {
     {OPT=>"gram=s",  VAR=>\$gram, DEFAULT=>'', DESC=>"Gram: -/neg +/pos"},
     {OPT=>"usegenus!",  VAR=>\$usegenus, DEFAULT=>0, DESC=>"Use genus-specific BLAST databases (needs --genus)"},
     {OPT=>"proteins=s",  VAR=>\$proteins, DEFAULT=>'', DESC=>"FASTA or GBK file to use as 1st priority"},
+    {OPT=>"glimmer!",  VAR=>\$glimmer, DEFAULT=>0, DESC=>"Use Glimmer rather than Prodigal"},
+    {OPT=>"cdsfile=s",  VAR=>\$cdsfile, DEFAULT=>'', DESC=>"Provide the CDS output file directly. Use with glimmer option."},
     {OPT=>"hmms=s",  VAR=>\$hmms, DEFAULT=>'', DESC=>"Trusted HMM to first annotate from"},
     {OPT=>"metagenome!",  VAR=>\$metagenome, DEFAULT=>0, DESC=>"Improve gene predictions for highly fragmented genomes"},
     {OPT=>"rawproduct!",  VAR=>\$rawproduct, DEFAULT=>0, DESC=>"Do not clean up /product annotation"},
