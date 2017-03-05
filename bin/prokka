@@ -56,6 +56,13 @@ my $MAXCONTIGIDLEN = 37;  # Genbank rule
 my $SIGNALP_MAXSEQ = 10_000;  # maximum allowed input for signalp
 my @LOG; # buffer up log lines before we have log file ready
 
+# list of exceptions to /product annotations
+my @GOOD_PROD = (
+ 'rep',
+ 'Conserved virulence factor B',
+);
+my %GOOD_PROD = (map { ($_=>1) } @GOOD_PROD);
+
 # these should accept .faa on STDIN and write report to STDOUT
 my $BLASTPCMD = "blastp -query - -db %d -evalue %e -num_threads 1 -num_descriptions 1 -num_alignments 1 -seg no";
 my $HMMER3CMD = "hmmscan --noali --notextw --acc -E %e --cpu 1 %d /dev/stdin";
@@ -1324,10 +1331,15 @@ msg($walltime % 2 ? "Share and enjoy!" : "Thank you, come again.");
 
 sub cleanup_product {
   my $p = shift;
-  return $p if $p eq 'rep';
-  return $HYPO if $p =~ m/DUF\d|UPF\d|conserved|domain of unknown|[CN].term|homolog|paralog/i;
-#  return $HYPO if $p =~ m/^[A-Z]+$/;
+
+  # check the whitelist first
+  return $p if exists $GOOD_PROD{$p};
+
+  return $HYPO if $p =~ m/DUF\d|UPF\d|conserved|domain of unknown|\b[CN].term|paralog/i;
   return $HYPO if $p !~ m/[a-z]/;
+
+  # eg. Leu/Ile/Val-binding protein homolog 3
+  $p =~ s/\bhomolog( \d)?\b//g;
 
   $p =~ s/^arCOG\d+\s+//;
   $p =~ s/\((EC|COG).*?\)//;
