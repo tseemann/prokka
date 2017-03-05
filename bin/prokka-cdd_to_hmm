@@ -64,6 +64,10 @@ for my $cid (sort keys %desc) {
   my $faln = "$tempdir/$cid.FASTA";
 #  system("esl-reformat stockholm $tempdir/$cid.FASTA | grep -v lcl.consensus > $faln");
   print STDERR "$cid | $faln >> $lib.aln\n";
+  if (not -r $faln) {
+    print STDERR "WARNING! skipping missing file: $faln\n";
+    next;
+  }
   my $in = Bio::AlignIO->new(-file=>$faln, -format=>'fasta');
   while (my $aln = $in->next_aln) {
 #    $aln->set_displayname_flat(); # remove bioperl suffix: "/begin-end"
