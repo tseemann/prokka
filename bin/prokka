@@ -1331,7 +1331,7 @@ sub cleanup_product {
 
   $p =~ s/^arCOG\d+\s+//;
   $p =~ s/\((EC|COG).*?\)//;
-  $p =~ s/\s+\w+\d{4,}c?//; # remove possible locus tags
+  $p =~ s/\s+\w+\d{4,}c?// unless $p =~ m/\bIS\d+\b/; # remove possible locus tags
   $p =~ s/ and (inactivated|related) \w+//;
   $p =~ s/,\s*family$//;
 
