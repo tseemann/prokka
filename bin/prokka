@@ -672,10 +672,15 @@ if ($tools{'minced'}->{HAVE}) {
   open my $MINCED, '-|', "minced -gff \Q$outdir/$prefix.fna\E";
   my $gff = Bio::Tools::GFF->new(-fh => $MINCED, -gff_version => 3);
   while (my $feat = $gff->next_feature) {
+    next unless $feat->primary_tag eq 'CRISPR';
+
     # format it properly for NCBI
     $feat->primary_tag("repeat_region");
     $feat->remove_tag('ID');
     $feat->add_tag_value('rpt_family', 'CRISPR');
+    # http://www.insdc.org/controlled-vocabulary-rpttype-qualifier
+    $feat->add_tag_value('rpt_type', 'direct');
+    $feat->add_tag_value('note', 'CRISPR with '.$feat->score.' repeat units');
 
     push @{$seq{$feat->seq_id}{FEATURE}}, $feat;
 
