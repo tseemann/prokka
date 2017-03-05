@@ -547,7 +547,7 @@ if ($kingdom ne 'Viruses' and !$norrna) {
   if ($tools{'barrnap'}->{HAVE}) {
     msg("Running Barrnap with $cpus threads");
     my $num_rrna=0;
-    open my $BARRNAP, '-|', "barrnap --kingdom $barrnap_mode --threads $cpus --quiet \Q$outdir/$prefix.fna\E";
+    open my $BARRNAP, '-|', "LC_ALL=C barrnap --kingdom $barrnap_mode --threads $cpus --quiet \Q$outdir/$prefix.fna\E";
     my $gff = Bio::Tools::GFF->new(-fh => $BARRNAP, -gff_version => 3);
     while (my $feat = $gff->next_feature) {
       $feat->remove_tag('Name'); # only want /product
