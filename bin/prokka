@@ -1206,7 +1206,7 @@ open my $tbl_fh, '>', "$outdir/$prefix.tbl";
 my $fsa_fh = Bio::SeqIO->new(-file=>">$outdir/$prefix.fsa", -format=>'fasta');
 
 open my $tsv_fh, '>', "$outdir/$prefix.tsv";
-print {$tsv_fh} tsv_line( qw(#locus_tag ftype gene EC_number product) );
+print {$tsv_fh} tsv_line( qw(locus_tag ftype gene EC_number product) );
 
 my $gff_factory = Bio::Tools::GFF->new(-gff_version=>$gffver);
 print $gff_fh "##gff-version $gffver\n";
