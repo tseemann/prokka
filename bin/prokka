@@ -125,7 +125,7 @@ my %tools = (
   'minced' => {
      GETVER => "minced --version | sed -n '1p'",
      REGEXP => qr/minced\s+\d+\.(\d+\.\d+)/,
-     MINVER => "1.6",
+     MINVER => "2.0",
      NEEDED => 0,
    },
   'cmscan' => {
@@ -1193,12 +1193,20 @@ msg("Assigned $num_lt locus_tags to CDS and RNA features.");
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
 # Write it all out!
 
+sub tsv_line {
+  return join("\t", @_)."\n";
+}
+
 msg("Writing outputs to $outdir/");
+
 open my $gff_fh, '>', "$outdir/$prefix.gff";
 my $faa_fh = Bio::SeqIO->new(-file=>">$outdir/$prefix.faa", -format=>'fasta');
 my $ffn_fh = Bio::SeqIO->new(-file=>">$outdir/$prefix.ffn", -format=>'fasta');
 open my $tbl_fh, '>', "$outdir/$prefix.tbl";
 my $fsa_fh = Bio::SeqIO->new(-file=>">$outdir/$prefix.fsa", -format=>'fasta');
+
+open my $tsv_fh, '>', "$outdir/$prefix.tsv";
+print {$tsv_fh} tsv_line( qw(#locus_tag ftype gene EC_number product) );
 
 my $gff_factory = Bio::Tools::GFF->new(-gff_version=>$gffver);
 print $gff_fh "##gff-version $gffver\n";
@@ -1253,6 +1261,14 @@ for my $sid (@seq) {
     if ($f->primary_tag =~ m/^(CDS|rRNA|tmRNA|tRNA|misc_RNA)$/) {
       $ffn_fh->write_seq($p);
     }
+    # tab separated format.
+    print ${tsv_fh} tsv_line( map { ($_ || '') } ( 
+        TAG($f, 'locus_tag'),
+        $f->primary_tag,
+        TAG($f, 'gene'),
+        TAG($f, 'EC_number'),
+        TAG($f, 'product'),
+      ) );
   }
 }
 

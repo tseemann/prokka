@@ -260,13 +260,14 @@ export PATH=$PATH:$HOME/prokka-1.11/bin
 | .gbk | This is a standard Genbank file derived from the master .gff. If the input to prokka was a multi-FASTA, then this will be a multi-Genbank, with one record for each sequence. |
 | .fna | Nucleotide FASTA file of the input contig sequences. |
 | .faa | Protein FASTA file of the translated CDS sequences. |
-| .ffn | Nucleotide FASTA file of all the annotated sequences, not just CDS. |
+| .ffn | Nucleotide FASTA file of all the prediction transcripts (CDS, rRNA, tRNA, tmRNA, misc_RNA) |
 | .sqn | An ASN1 format "Sequin" file for submission to Genbank. It needs to be edited to set the correct taxonomy, authors, related publication etc. |
 | .fsa | Nucleotide FASTA file of the input contig sequences, used by "tbl2asn" to create the .sqn file. It is mostly the same as the .fna file, but with extra Sequin tags in the sequence description lines. |
 | .tbl | Feature Table file, used by "tbl2asn" to create the .sqn file. |
 | .err | Unacceptable annotations - the NCBI discrepancy report. |
 | .log | Contains all the output that Prokka produced during its run. This is a record of what settings you used, even if the --quiet option was enabled. |
 | .txt | Statistics relating to the annotated features found. |
+| .tsv | Tab-separated file of all features: locus_tag,ftype,gene,EC_number,product |
 
 ##Command line options
 
