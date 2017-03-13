@@ -317,6 +317,21 @@ export PATH=$PATH:$HOME/prokka-1.11/bin
       --notrna          Don't run tRNA search (default OFF)
       --rnammer         Prefer RNAmmer over Barrnap for rRNA prediction (default OFF)
 
+### Option: --rawproduct
+
+Prokka annotates proteins by using sequence similarity to other proteins in its database,
+or the databses the user provides via `--proteins`. By default, Prokka tries to "cleans" the
+`/product` names to ensure they are compliant with Genbank/ENA conventions. 
+Some of the main things it does is:
+
+* set vague names to `hypothetical protein`
+* consistifies terms like `possible`, `probable`, `predicted`, ... to `putative`
+* removes EC, COG and locus_tag identifiers 
+
+Full details can be found in the `cleanup_product()` function in the `prokka` script.
+If you feel your annotations are being ruined, try using the `--rawproduct` option, 
+and please [file an issue](https://github.com/tseemann/prokka/issues/) if you find
+an example of where it is "behaving badly" and I will fix it.
 
 ##Databases
 
