@@ -176,6 +176,7 @@ my %tools = (
   'egrep'   => { NEEDED=>1 },
   'sed'     => { NEEDED=>1 },
   'find'    => { NEEDED=>1 },
+  'java'    => { NEEDED=>1 },
   # for the new --proteins option ability to take .gbk or .embl files
   'prokka-genbank_to_fasta_db'    => { NEEDED=>1 },
 );  
