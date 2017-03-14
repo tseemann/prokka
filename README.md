@@ -28,11 +28,11 @@ Before the main install can begin you need to install some system packages:
 
 **Centos/Fedora/RHEL (RPM)**
 ```bash
-sudo yum install perl-Time-Piece perl-XML-Simple perl-Digest-MD5
+sudo yum install perl-Time-Piece perl-XML-Simple perl-Digest-MD5 git java
 ```
 **Ubuntu/Debian/Mint (APT)**
 ```bash
-sudo apt-get install libdatetime-perl libxml-simple-perl libdigest-md5-perl bioperl
+sudo apt-get install libdatetime-perl libxml-simple-perl libdigest-md5-perl bioperl default-jre git
 ```
 **Mac OS X**
 ```bash
