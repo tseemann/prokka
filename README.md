@@ -28,15 +28,16 @@ Before the main install can begin you need to install some system packages:
 
 **Centos/Fedora/RHEL (RPM)**
 ```bash
-sudo yum install perl-Time-Piece perl-XML-Simple perl-Digest-MD5 git java
+sudo yum install perl-Time-Piece perl-XML-Simple perl-Digest-MD5 git java perl-CPAN perl-Module-Build
+sudo cpan -i Bio::Perl  # if you don't have Bioperl installed (it will be tedious)
 ```
 **Ubuntu/Debian/Mint (APT)**
 ```bash
-sudo apt-get install libdatetime-perl libxml-simple-perl libdigest-md5-perl bioperl default-jre git
+sudo apt-get install libdatetime-perl libxml-simple-perl libdigest-md5-perl git default-jre bioperl
 ```
 **Mac OS X**
 ```bash
-sudo cpan Time::Piece XML::Simple Bio::Perl Digest::MD5
+sudo cpan Time::Piece XML::Simple Digest::MD5 Bio::Perl
 ```
 
 There are currently 3 ways to install the main Prokka software: 
