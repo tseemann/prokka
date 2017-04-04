@@ -60,6 +60,7 @@ my @LOG; # buffer up log lines before we have log file ready
 my @GOOD_PROD = (
  'rep',
  'Conserved virulence factor B',
+ 'Cypemycin N-terminal methyltransferase',
 );
 my %GOOD_PROD = (map { ($_=>1) } @GOOD_PROD);
 
@@ -1376,6 +1377,9 @@ sub cleanup_product {
   if ($p =~ m/(domain|family|binding|fold|like|motif|repeat)\s*$/i and $p !~ m/,/)  {
     $p .= " protein";
   }
+  
+  $p =~ s/\s+/ /g;  # make multiple spaces into 1 space
+  
   return $p;
 }
 
