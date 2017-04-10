@@ -2,6 +2,19 @@
 Prokka ChangeLog
 ----------------
 
+v1.12 - 14 Mar 2017
+* Lots of bug fixes.
+* Improved documentation, especially installation
+* Newer static binaries for Linux and MacOS
+* Updated protein and ncRNA databases
+* Better default unique locus_tag based on contig MD5
+* Option --cdsrnaolap to allow tRNA/rRNA overlapping CDS
+* Option --addmrna to add mRNA features for each CDS
+* Option --noanno to just predict CDS coordinates but not /product
+* Option --fast to just BLAST sprot and ignore slower HMMs
+* Better log file
+* New .tsv output of annotated features
+
 v1.11 - 15 Feb 2015
 * Option --proteins now supports .GBK/.EMBL files directly!
 * Support for user supplied HMM via --hmms [Connor Driscoll]
