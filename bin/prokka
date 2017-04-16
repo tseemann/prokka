@@ -413,10 +413,12 @@ msg("Using genetic code table $gcode.");
 # read in sequences; remove small contigs; replace ambig with N
 
 msg("Loading and checking input file: $in");
+#my $fin = Bio::SeqIO->new(-file=>$in, -format=>'fasta');
 
+#MDC: replace the previous line with the following block
+########################## BLOCK START ###################################
+#check if input file is compressed by gzip or bzip2 --start
 my $fin;
-
-#check if input file is compressed by gzip or bzip2
 my $mime_type = mimetype($in);
 if ($mime_type eq "application/x-gzip"){
   msg("Open $in as a gzip file");
@@ -433,7 +435,10 @@ if ($mime_type eq "application/x-gzip"){
 }else{
   $fin = Bio::SeqIO->new(-file=>$in, -format=>'fasta');
 }
-#my $fin = Bio::SeqIO->new(-file=>$in, -format=>'fasta');
+
+#hold alignments
+my %alignments;
+########################## BLOCK END  ###################################
 
 my $fout = Bio::SeqIO->new(-file=>">$outdir/$prefix.fna", -format=>'fasta');
 my $ncontig = 0;
@@ -1076,6 +1081,21 @@ else {
       $cds{$pid}->add_tag_value('gene', $gene) if $gene;
       # only add /inference if this DB has a proper SRC to atrribute to
       $cds{$pid}->add_tag_value('inference', $db->{SRC}.$hit->name) if $db->{SRC};
+      
+
+#MDC added the following block to store alignments if exist
+###################### BLOCK START ####################################
+      my $hsp = $hit->next_hsp;# or next;
+      my $hsp_key = "pid=".$pid.
+		    ";db=".$db->{DB}.
+#		    ";hit_score=".$hit->score().
+#		    ";hit_bits=".$hit->bits().
+#		    ";hit_significance=".$hit->significance().
+                    ";hit_name=". $hit->name();
+
+      $cds{$pid}->add_tag_value('PID',$hsp_key);
+      $alignments{$hsp_key} = $hsp;
+##########################################################################
     }
     msg("Cleaned $num_cleaned /product names") if $num_cleaned > 0;
     delfile($faa_name, $bls_name);
@@ -1150,6 +1170,9 @@ msg("Fixed $num_collide colliding /gene names.");
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
 # Add locus_tags and protein_id[CDS only] (and Parent genes if asked)
 
+
+my %id_alignments;
+
 msg("Adding /locus_tag identifiers");
 my $num_lt=0;
 for my $sid (@seq) {
@@ -1157,6 +1180,15 @@ for my $sid (@seq) {
     next unless $f->primary_tag =~ m/CDS|RNA/;
     $num_lt++;
     my $ID = sprintf("${locustag}_%05d", $num_lt * $increment);
+    #MDC added the following block 
+    ####################################################################################
+    if ($f->has_tag('PID')){
+      my @keys = $f->remove_tag('PID');
+      $id_alignments{$ID}=$keys[0];
+      #$id_alignments{$ID}=$alignments{$keys[0]};
+     }
+    ####################################################################################
+
     $f->add_tag_value('ID', $ID);
     $f->add_tag_value('locus_tag', $ID);
     # it seems CDS features _must_ have a valid /protein_id to be output by tbl2asn into .gbk
@@ -1242,6 +1274,9 @@ for my $id (@seq) {
 my $fsa_desc = "[gcode=$gcode] [organism=$genus $species] [strain=$strain]";
 $fsa_desc .= " [plasmid=$plasmid]" if $plasmid;
 
+#MDC added the following line to create the alignment file
+open my $aln_fh, '>', "$outdir/$prefix.aln";
+
 for my $sid (@seq) {
   my $ctg = $seq{$sid}{DNA};
   $ctg->desc($fsa_desc);
@@ -1282,10 +1317,37 @@ for my $sid (@seq) {
 #    }
     if ($f->primary_tag eq 'CDS') {
       $faa_fh->write_seq( $p->translate(-codontable_id=>$gcode, -complete=>1) ); 
+    #MDC added the following block to write alignment to file
+    #####################################################################################
+    if (my $mykey = $id_alignments{$p->display_id}){
+      if (my $myhsp = $alignments{$mykey}){
+        print $aln_fh "#";
+        print $aln_fh $p->display_id, 
+          " query_start=", $myhsp->start('query'),
+	  ";query_end=",  $myhsp->end('query'),
+	  ";query_strand=", $myhsp->strand('query'),
+	  ";hit=", $myhsp->hit()->seq_id, 
+	  ";hit_start=", $myhsp->start('hit'), 
+	  ";hit_end=", $myhsp->end('hit'), 
+	  ";hit_strand=", $myhsp->strand('hit'), 
+	  ";evalue=", $myhsp->evalue(), 
+	  ";score=", $myhsp->score(), 
+	  ";significance=",$myhsp->significance(),
+#	  ";bits=",$myhsp->bits(),
+	  ";",$mykey,
+	  ";desc=", $p->desc(),"\n";
+        print $aln_fh $myhsp->query_string,"\n";
+        print $aln_fh $myhsp->homology_string,"\n";
+        print $aln_fh $myhsp->hit_string,"\n";
+      }
+    }
+    #####################################################################################
     }
     if ($f->primary_tag =~ m/^(CDS|rRNA|tmRNA|tRNA|misc_RNA)$/) {
       $ffn_fh->write_seq($p);
     }
+
+
     # tab separated format.
     print ${tsv_fh} tsv_line( map { ($_ || '') } ( 
         TAG($f, 'locus_tag'),
@@ -1296,6 +1358,8 @@ for my $sid (@seq) {
       ) );
   }
 }
+#MDC added the following line to close alignment file
+close $aln_fh;
 
 if (@seq) {
   print $gff_fh "##FASTA\n";
@@ -1304,9 +1368,6 @@ if (@seq) {
     $seqio->write_seq($seq{$sid}{DNA});
   }
 }
-
-# . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
-# Output a general .txt file with statistics about the annotation
 
 msg("Generating annotation statistics file");
 open my $txtFh, '>', "$outdir/$prefix.txt";
