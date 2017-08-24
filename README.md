@@ -106,7 +106,7 @@ document.
 
 #### Option 1 - Don't use one
 
-If Prokka can't find a predictor for rRNA featues (either Barrnap or RNAmmer
+If Prokka can't find a predictor for rRNA features (either Barrnap or RNAmmer
 below) then it simply won't annotate any.  Most people don't care that much
 about them anyway,
 
