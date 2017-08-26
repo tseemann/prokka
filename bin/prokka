@@ -1264,13 +1264,14 @@ for my $sid (@seq) {
       $ffn_fh->write_seq($p);
     }
     # tab separated format.
-    print ${tsv_fh} tsv_line( map { ($_ || '') } ( 
-        TAG($f, 'locus_tag'),
-        $f->primary_tag,
-        TAG($f, 'gene'),
-        TAG($f, 'EC_number'),
-        TAG($f, 'product'),
-      ) );
+    my @values = (
+      TAG($f, 'locus_tag'),
+      $f->primary_tag,
+      TAG($f, 'gene'),
+      TAG($f, 'EC_number'),
+      TAG($f, 'product'),
+    );
+    print ${tsv_fh} tsv_line( map { $_ || '' } @values );
   }
 }
 
@@ -1387,7 +1388,9 @@ sub cleanup_product {
 
 sub TAG {
   my($f, $tag) = @_;
-  return unless $f->has_tag($tag);
+  # very important to "return undef" here and not just "return"
+  # otherwise it becomes non-existent/collapsed in a list 
+  return undef unless $f->has_tag($tag);
   return ($f->get_tag_values($tag))[0];
 }
 
