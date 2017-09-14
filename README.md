@@ -370,14 +370,18 @@ a set of databases for the most common Bacterial genera; type prokka
 
 #### Adding a Genus Databases
 
-If you have a set of Genbank files and want to create a new Genus database, Prokka comes with a tool called 
-`prokka-genbank_to_fasta_db` to help. For example, if you had four annotated "Coccus" genomes, you could do the following:
+If you have a set of Genbank files and want to create a new Genus database,
+Prokka comes with a tool called `prokka-genbank_to_fasta_db` to help.  For
+example, if you had four annotated "Coccus" genomes, you could do the
+following:
 
-    % prokka-genbank_to_fasta_db Coccus1.gbk Coccus2.gbk Coccus3.gbk Coccus4.gbk > Coccus.faa
-    % cd-hit -i Coccus.faa -o Coccus -T 0 -M 0 -g 1 -s 0.8 -c 0.9
-    % rm -fv Coccus.faa Coccus.bak.clstr Coccus.clstr
-    % makeblastdb -dbtype prot -in Coccus
-    % mv Coccus.p* /path/to/prokka/db/genus/
+```
+% prokka-genbank_to_fasta_db Coccus1.gbk Coccus2.gbk Coccus3.gbk Coccus4.gbk > Coccus.faa
+% cd-hit -i Coccus.faa -o Coccus -T 0 -M 0 -g 1 -s 0.8 -c 0.9
+% rm -fv Coccus.faa Coccus.bak.clstr Coccus.clstr
+% makeblastdb -dbtype prot -in Coccus
+% mv Coccus.p* /path/to/prokka/db/genus/
+```
  
 ### The HMM Databases
 
@@ -392,61 +396,79 @@ Prokka understands two annotation tag formats, a plain one and a detailed one.
 
 The plain one is a standard FASTA-like line with the ID after the `>` sign, and the protein `/product` 
 after the ID (the "description" part of the line):
-
-    >SeqID product
+```
+>SeqID product
+```
 
 The detailed one consists of a special encoded three-part description line. The parts are the `/EC_number`, 
 the `/gene` code, then the `/product` - and they are separated by a special "~~~" sequence:
-
-    >SeqID EC_number~~~gene~~~product
+```
+>SeqID EC_number~~~gene~~~product
+```
 
 Here are some examples. Note that not all parts need to be present, but the "~~~" should still be there:
-
-    >YP_492693.1 2.1.1.48~~~ermC~~~rRNA adenine N-6-methyltransferase
-    MNEKNIKHSQNFITSKHNIDKIMTNIRLNEHDNIFEIGSGKGHFTLELVQRCNFVTAIEI
-    DHKLCKTTENKLVDHDNFQVLNKDILQFKFPKNQSYKIFGNIPYNISTDIIRKIVF*
-    >YP_492697.1 ~~~traB~~~transfer complex protein TraB
-    MIKKFSLTTVYVAFLSIVLSNITLGAENPGPKIEQGLQQVQTFLTGLIVAVGICAGVWIV
-    LKKLPGIDDPMVKNEMFRGVGMVLAGVAVGAALVWLVPWVYNLFQ*
-    >YP_492694.1 ~~~~~~transposase
-    MNYFRYKQFNKDVITVAVGYYLRYALSYRDISEILRGRGVNVHHSTVYRWVQEYAPILYQ
-    QSINTAKNTLKGIECIYALYKKNRRSLQIYGFSPCHEISIMLAS*
+```
+>YP_492693.1 2.1.1.48~~~ermC~~~rRNA adenine N-6-methyltransferase
+MNEKNIKHSQNFITSKHNIDKIMTNIRLNEHDNIFEIGSGKGHFTLELVQRCNFVTAIEI
+DHKLCKTTENKLVDHDNFQVLNKDILQFKFPKNQSYKIFGNIPYNISTDIIRKIVF*
+>YP_492697.1 ~~~traB~~~transfer complex protein TraB
+MIKKFSLTTVYVAFLSIVLSNITLGAENPGPKIEQGLQQVQTFLTGLIVAVGICAGVWIV
+LKKLPGIDDPMVKNEMFRGVGMVLAGVAVGAALVWLVPWVYNLFQ*
+>YP_492694.1 ~~~~~~transposase
+MNYFRYKQFNKDVITVAVGYYLRYALSYRDISEILRGRGVNVHHSTVYRWVQEYAPILYQ
+QSINTAKNTLKGIECIYALYKKNRRSLQIYGFSPCHEISIMLAS*
+```
 
 The same description lines apply to HMM models, except the "NAME" and "DESC" fields are used:
-
-    NAME  PRK00001
-    ACC   PRK00001
-    DESC  2.1.1.48~~~ermC~~~rRNA adenine N-6-methyltransferase
-    LENG  284
-    
+```
+NAME  PRK00001
+ACC   PRK00001
+DESC  2.1.1.48~~~ermC~~~rRNA adenine N-6-methyltransferase
+LENG  284
+```    
     
 ## FAQ
 
 * __Where does the name "Prokka" come from?__  
-Prokka is a contraction of "prokaryotic annotation". It's also relatively unique within Google, and also rhymes with a native Australian marsupial called the quokka.
+Prokka is a contraction of "prokaryotic annotation".  It's also relatively
+unique within Google, and also rhymes with a native Australian marsupial
+called the quokka.
 
 * __Can I annotate by eukaryote genome with Prokka?__  
-No. Prokka is specifically designed for Bacteria, Archaea and Viruses. It can't handle multi-exon gene models; I would recommend using MAKER 2 for that purpose.
+No.  Prokka is specifically designed for Bacteria, Archaea and Viruses.  It
+can't handle multi-exon gene models; I would recommend using MAKER 2 for
+that purpose.
 
 * __Why does Prokka keeps on crashing when it gets to tge "tbl2asn" stage?__  
-It seems that the tbl2asn program from NCBI "expires" after 12 months, and refuses to run. 
-Unfortunately you need to install a newer version which you can download from [here](http://www.ncbi.nlm.nih.gov/genbank/tbl2asn2/).
+It seems that the tbl2asn program from NCBI "expires" after 12 months, and
+refuses to run.  Unfortunately you need to install a newer version which you
+can download from [here](http://www.ncbi.nlm.nih.gov/genbank/tbl2asn2/).
 
 * __The hmmscan step seems to hang and do nothing?__      
-The problem here is GNU Parallel. It seems the Debian package for hmmer has modified it to require the `--gnu` option to behave in the 'default' way. There is no clear reason for this. The only way to restore normal behaviour is to edit the prokka script and change `parallel` to `parallel --gnu`.
+The problem here is GNU Parallel.  It seems the Debian package for hmmer has
+modified it to require the `--gnu` option to behave in the 'default' way. 
+There is no clear reason for this.  The only way to restore normal behaviour
+is to edit the prokka script and change `parallel` to `parallel --gnu`.
 
 * __Why does prokka fail when it gets to hmmscan?__  
-Unfortunately HMMER keeps changing it's database format, and they aren't upward compatible. If you upgraded HMMER (from 3.0 to 3.1 say) then you need to "re-press" the files. This can be done as follows:
-    cd /path/to/prokka/db/hmm
-    mkdir new
-    for D in *.hmm ; do hmmconvert $D > new/$D ; done
-    cd new
-    for D in *.hmm ; do hmmpress $D ; done
-    mv * ..
-    rmdir new
+Unfortunately HMMER keeps changing it's database format, and they aren't
+upward compatible.  If you upgraded HMMER (from 3.0 to 3.1 say) then you
+need to "re-press" the files.  This can be done as follows:
+```bash
+cd /path/to/prokka/db/hmm
+mkdir new
+for D in *.hmm ; do hmmconvert $D > new/$D ; done
+cd new
+for D in *.hmm ; do hmmpress $D ; done
+mv * ..
+rmdir new
+```
 
 * __Why does Prokka take so long to download?__  
-Our server is in Australia, and the international pipes aren't always flowing as well as we'd like. I try to put it on GoogleDrive. Dropbox is no longer possible due to bandwidth quotas. If you are able to mirror Prokka (~2 GB) outside please let me know.
+Our server is in Australia, and the international pipes aren't always
+flowing as well as we'd like.  I try to put it on GoogleDrive.  Dropbox is
+no longer possible due to bandwidth quotas.  If you are able to mirror
+Prokka (~2 GB) outside please let me know.
 
 * __Why can't I load Prokka .GBK files into Mauve?__  
 Mauve uses BioJava to parse GenBank files, and it is very picky about Genbank files. 
@@ -457,15 +479,14 @@ compliant. It does not like the ACCESSION and VERSION strings that Prokka
 produces via the "tbl2asn" tool. The following Unix command will fix them:
 `egrep -v '^(ACCESSION|VERSION)' prokka.gbk > mauve.gbk`
 
-
 ## Bugs
 
-* Submit problems or requests here: https://github.com/tseemann/prokka/issues
+** Submit problems or requests to the [Issue Tracker](https://github.com/tseemann/prokka/issues).
 
 ## Changes
 
-* ChangeLog.txt: https://raw.githubusercontent.com/tseemann/prokka/master/doc/ChangeLog.txt
-* Github commits: https://github.com/tseemann/prokka/commits/master
+* Read the [ChangeLog.txt](https://raw.githubusercontent.com/tseemann/prokka/master/doc/ChangeLog.txt)
+* Look at the [Github commits](https://github.com/tseemann/prokka/commits/master)
 
 ## Citation
 
