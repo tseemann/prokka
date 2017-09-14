@@ -1,0 +1,29 @@
+language: perl
+
+sudo: false
+
+perl:
+    - "5.14"
+    
+addons:
+    apt:
+        packages:
+            - emboss
+            - zip
+            - gzip
+            - git
+
+install:
+    - "cpanm --quiet --notest Time::Piece XML::Simple Digest::MD5 Bio::Perl"
+    - "export PATH=$PWD/bin:$PATH"
+
+script:
+    - "prokka --version"
+    - "prokka --help"
+    - "! prokka --doesnotexist"
+    - "prokka --depends"
+    - "prokka --setupdb"
+    - "prokka --listdb"
+    - "prokka --cpus 2 --outdir asm --prefix asm test/plasmid.fna"
+    - "grep '>' asm/asm.fna"
+    - "prokka --cleandb"
