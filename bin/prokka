@@ -1693,9 +1693,9 @@ sub setOptions {
     {OPT=>"rnammer!",  VAR=>\$rnammer, DEFAULT=>0, DESC=>"Prefer RNAmmer over Barrnap for rRNA prediction"},
   );
 
-  (!@ARGV) && (usage());
+  (!@ARGV) && (usage(1));
 
-  &GetOptions(map {$_->{OPT}, $_->{VAR}} grep { ref } @Options) || usage();
+  &GetOptions(map {$_->{OPT}, $_->{VAR}} grep { ref } @Options) || usage(1);
 
   # Now setup default values.
   foreach (@Options) {
@@ -1706,7 +1706,12 @@ sub setOptions {
 }
 
 sub usage {
-  print STDERR 
+  my($exitcode) = @_;
+  $exitcode ||= 0;
+  $exitcode = 0 if $exitcode eq 'help';  # what gets passed by getopt func ref
+  select STDERR if $exitcode;            # write to STDERR if exitcode is error
+
+  print
     "Name:\n  ", ucfirst($EXE), " $VERSION by $AUTHOR\n",
     "Synopsis:\n  rapid bacterial genome annotation\n",
     "Usage:\n  $EXE [options] <contigs.fasta>\n";
@@ -1722,10 +1727,10 @@ sub usage {
       printf STDERR "  --%-15s %s%s\n", $opt, $_->{DESC}, $def;
     }
     else {
-      print STDERR "$_\n";
+      print "$_\n"; # Subheadings in the help output
     }      
   }
-  exit(1);
+  exit($exitcode);
 }
 
 __DATA__
