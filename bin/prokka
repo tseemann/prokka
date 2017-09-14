@@ -1593,6 +1593,7 @@ sub clean_db {
   delfile( <$DBDIR/hmm/*.h3?> );
   delfile( <$DBDIR/cm/*.i1?> );
   msg("Cleaning complete.");
+  exit(0);
 }
 
 #----------------------------------------------------------------------
