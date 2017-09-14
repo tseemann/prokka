@@ -1557,7 +1557,7 @@ sub setup_db {
 
   add_bundle_to_path();
 
-  clean_db();
+  clean_db(0);  # don't quit, come back here
 
   check_tool('makeblastdb');
    for my $sprot (<$DBDIR/kingdom/*/sprot>) {
@@ -1587,13 +1587,14 @@ sub setup_db {
 #----------------------------------------------------------------------
 
 sub clean_db {
+  my($quit) = @_;
   msg("Cleaning databases in $DBDIR");
   delfile( <$DBDIR/kingdom/*/sprot.p??> );
   delfile( <$DBDIR/genus/*.p??> );
   delfile( <$DBDIR/hmm/*.h3?> );
   delfile( <$DBDIR/cm/*.i1?> );
   msg("Cleaning complete.");
-  exit(0);
+  exit(0) if $quit;
 }
 
 #----------------------------------------------------------------------
