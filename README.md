@@ -56,10 +56,6 @@ Clone the latest version of the repository:
 % git clone https://github.com/tseemann/prokka.git
 % ls prokka
 ```
-Index the sequence databases
-```bash
-% prokka/bin/prokka --setupdb
-```
 
 ### Homebrew
 
