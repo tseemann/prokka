@@ -104,7 +104,7 @@ my %tools = (
     NEEDED  => 0,
   },
   'barrnap' => {
-    GETVER  => "barrnap --version 2>&1",
+    GETVER  => "barrnap --version 2>&1 | grep -i 'barrnap'",
     REGEXP  => qr/($BIDEC)/,  
     MINVER  => "0.4",  
     NEEDED  => 0,
