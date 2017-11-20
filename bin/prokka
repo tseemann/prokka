@@ -1225,7 +1225,7 @@ for my $sid (@seq) {
   $fsa_fh->write_seq($ctg);
   $ctg->desc(undef);
   print $tbl_fh ">Feature $sid\n";
-  for my $f ( sort { $a->start <=> $b->start || $b->end <=> $a->end || $a->has_tag('Parent') <=> $b->has_tag('Parent') } @{ $seq{$sid}{FEATURE} }) {
+  for my $f ( sort { $a->start <=> $b->start } @{ $seq{$sid}{FEATURE} }) {
     if ($f->primary_tag eq 'CDS' and not $f->has_tag('product')) {
       $f->add_tag_value('product', $HYPO);
     }
