@@ -225,7 +225,7 @@ sub check_all_tools {
 # command line options
 
 my(@Options, $quiet, $debug, $kingdom, $fast, $force, $outdir, $prefix, $cpus, 
-             $addgenes, $addmrna, $cds_rna_olap,
+             $addgenes, $addmrna, $cds_rna_olap, $no_fasta_gff,
              $gcode, $gram, $gffver, $locustag, $increment, $mincontiglen, $evalue, $coverage,
              $genus, $species, $strain, $plasmid, 
              $usegenus, $proteins, $hmms, $centre, $scaffolds,
@@ -1275,7 +1275,7 @@ for my $sid (@seq) {
   }
 }
 
-if (@seq) {
+if (@seq and !$no_fasta_gff) {
   print $gff_fh "##FASTA\n";
   my $seqio = Bio::SeqIO->new(-fh=>$gff_fh, -format=>'fasta');
   for my $sid (@seq) {
@@ -1666,6 +1666,7 @@ sub setOptions {
     {OPT=>"compliant!",  VAR=>\$compliant, DEFAULT=>0, DESC=>"Force Genbank/ENA/DDJB compliance: --addgenes --mincontiglen 200 --centre XXX"},
     {OPT=>"centre=s",  VAR=>\$centre, DEFAULT=>'', DESC=>"Sequencing centre ID."},
     {OPT=>"accver=i",  VAR=>\$accver, DEFAULT=>1, DESC=>"Version to put in Genbank file"},
+    {OPT=>"nofastagff!",  VAR=>\$no_fasta_gff, DEFAULT=>0, DESC=>"Do not write FASTA sequence to GFF file."},	     
 #    {OPT=>"scaffolds!",  VAR=>\$scaffolds, DEFAULT=>0, DESC=>"Break scaffoldings into contigs and create .AGP file"},
     'Organism details:',
     {OPT=>"genus=s",  VAR=>\$genus, DEFAULT=>'Genus', DESC=>"Genus name"},
