@@ -2,8 +2,6 @@
 
 # Prokka: rapid prokaryotic genome annotation  
 
-Torsten Seemann (@torstenseemann)
-
 ## Introduction
 
 Whole genome annotation is the process of identifying features of interest
@@ -462,3 +460,14 @@ _Petersen TN et al. SignalP 4.0: discriminating signal peptides from transmembra
 * __Infernal__  
 Used for similarity searching against ncRNA family profiles  
 _D. L. Kolbe, S. R. Eddy. Fast Filtering for RNA Homology Search. Bioinformatics, 27:3102-3109, 2011._
+
+# Licence
+
+[GPL v3](https://raw.githubusercontent.com/tseemann/prokka/master/doc/LICENSE.Prokka)
+
+## Author
+
+* Torsten Seemann
+* Web: https://tseemann.github.io/
+* Twitter: [@torstenseemann](https://twitter.com/torstenseemann)
+* Blog: [The Genome Factory](https://thegenomefactory.blogspot.com/)
