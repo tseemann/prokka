@@ -173,7 +173,7 @@ $HOME/prokka/bin/prokka --setupdb
 | .err | Unacceptable annotations - the NCBI discrepancy report. |
 | .log | Contains all the output that Prokka produced during its run. This is a record of what settings you used, even if the --quiet option was enabled. |
 | .txt | Statistics relating to the annotated features found. |
-| .tsv | Tab-separated file of all features: locus_tag,ftype,gene,EC_number,product |
+| .tsv | Tab-separated file of all features: locus_tag,ftype,len_bp,gene,EC_number,COG,product |
 
 ## Command line options
 
@@ -320,18 +320,18 @@ after the ID (the "description" part of the line):
 The detailed one consists of a special encoded three-part description line. The parts are the `/EC_number`, 
 the `/gene` code, then the `/product` - and they are separated by a special "~~~" sequence:
 ```
->SeqID EC_number~~~gene~~~product
+>SeqID EC_number~~~gene~~~product~~~COG
 ```
 
 Here are some examples. Note that not all parts need to be present, but the "~~~" should still be there:
 ```
->YP_492693.1 2.1.1.48~~~ermC~~~rRNA adenine N-6-methyltransferase
+>YP_492693.1 2.1.1.48~~~ermC~~~rRNA adenine N-6-methyltransferase~~~COG1234
 MNEKNIKHSQNFITSKHNIDKIMTNIRLNEHDNIFEIGSGKGHFTLELVQRCNFVTAIEI
 DHKLCKTTENKLVDHDNFQVLNKDILQFKFPKNQSYKIFGNIPYNISTDIIRKIVF*
->YP_492697.1 ~~~traB~~~transfer complex protein TraB
+>YP_492697.1 ~~~traB~~~transfer complex protein TraB~~~
 MIKKFSLTTVYVAFLSIVLSNITLGAENPGPKIEQGLQQVQTFLTGLIVAVGICAGVWIV
 LKKLPGIDDPMVKNEMFRGVGMVLAGVAVGAALVWLVPWVYNLFQ*
->YP_492694.1 ~~~~~~transposase
+>YP_492694.1 ~~~~~~transposase~~~
 MNYFRYKQFNKDVITVAVGYYLRYALSYRDISEILRGRGVNVHHSTVYRWVQEYAPILYQ
 QSINTAKNTLKGIECIYALYKKNRRSLQIYGFSPCHEISIMLAS*
 ```
@@ -340,7 +340,7 @@ The same description lines apply to HMM models, except the "NAME" and "DESC" fie
 ```
 NAME  PRK00001
 ACC   PRK00001
-DESC  2.1.1.48~~~ermC~~~rRNA adenine N-6-methyltransferase
+DESC  2.1.1.48~~~ermC~~~rRNA adenine N-6-methyltransferase~~~COG1234
 LENG  284
 ```    
     

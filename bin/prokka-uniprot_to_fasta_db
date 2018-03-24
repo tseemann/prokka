@@ -55,8 +55,19 @@ while (<ARGV>)
   $gene = '' if $gene =~ m/\d{2}/ or $gene =~ m/\./;
 
   my $ec = ''; 
-#  my $prod = 'hypothetical protein'; 
   my $prod = ''; 
+  my $cog = '';
+
+  if (1) {
+    # [ 'eggNOG', 'COG4799', 'LUCA' ]
+    for my $dr ( @{ $entry->DRs->list } ) {
+#      print Dumper($dr);
+      if ($dr->[1] =~ m/^(COG\d+)$/) {
+        $cog = $1;
+        last;
+      }   
+    }
+  }
 
   if (1) {  
     for my $de ($entry->DEs->elements) {
@@ -68,6 +79,7 @@ while (<ARGV>)
       elsif ($de->type eq 'Full' and $de->category eq 'RecName') {
 	$prod = $de->text;
 	if ($prod =~ m/^UPF\d|^Uncharacterized protein|^ORF|^Protein /) {
+          next if ! $hypo;
 	  $prod = $HYPO;
 	}
       }
@@ -84,8 +96,8 @@ while (<ARGV>)
   $gene ||= $blank;
   $prod ||= $blank;
   
-  print STDERR join("\t", $entry->AC, $ec, $gene, $prod), "\n" if $verbose;
-  print ">", $entry->AC, " $ec$sep$gene$sep$prod\n", $entry->SQs->seq, "\n";
+  print STDERR join("\t", $entry->AC, $ec, $gene, $prod, $cog), "\n" if $verbose;
+  print ">", $entry->AC, " $ec$sep$gene$sep$prod$sep$cog\n", $entry->SQs->seq, "\n";
   
   $out++;
 
