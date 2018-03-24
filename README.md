@@ -2,20 +2,7 @@
 
 # Prokka: rapid prokaryotic genome annotation  
 
-Torsten Seemann (<torsten.seemann@gmail.com>) (@torstenseemann)
-
-## Contents
-
-- [Introduction](#introduction)
-- [Installation](#installation)
-- [Invoking Prokka](#invoking-prokka)
-- [Output Files](#output-files)
-- [Command line options](#command-line-options)
-- [Databases](#databases)
-- [FAQ](#faq)
-- [Changes](#changes)
-- [Citation](#citation)
-- [Dependencies](#dependencies)
+Torsten Seemann (@torstenseemann)
 
 ## Introduction
 
@@ -26,137 +13,44 @@ viral genomes quickly and produce standards-compliant output files.
 
 ## Installation
 
-Before the main install can begin you need to install some system packages:
-
-**Centos/Fedora/RHEL (RPM)**
-```bash
-sudo yum install perl-Time-Piece perl-XML-Simple perl-Digest-MD5 git java perl-CPAN perl-Module-Build
-sudo cpan -i Bio::Perl  # if you don't have Bioperl installed (it will be tedious)
+### Brew
+If you are using the [MacOS Brew](http://brew.sh/) 
+or [LinuxBrew](http://brew.sh/linuxbrew/) packaging system:
 ```
-**Ubuntu/Debian/Mint (APT)**
-```bash
+brew install brewsci/science/prokka
+```
+
+### Bioconda
+If you use [Conda](https://conda.io/docs/install/quick.html)
+you can use the [Bioconda channel](https://bioconda.github.io/):
+```
+conda install -c bioconda prokka
+```
+
+### Ubuntu/Debian/Mint
+```
 sudo apt-get install libdatetime-perl libxml-simple-perl libdigest-md5-perl git default-jre bioperl
+sudo cpan Bio::Perl
+git clone https://github.com/tseemann/prokka.git $HOME/prokka
+$HOME/prokka/bin/prokka --setupdb
 ```
-**Mac OS X**
-```bash
+
+### Centos/Fedora/RHEL
+```
+sudo yum install git perl-Time-Piece perl-XML-Simple perl-Digest-MD5 perl-App-cpanminus git java perl-CPAN perl-Module-Build
+sudo cpanm Bio::Perl
+git clone https://github.com/tseemann/prokka.git $HOME/prokka
+$HOME/prokka/bin/prokka --setupdb
+```
+
+### MacOS
+```
 sudo cpan Time::Piece XML::Simple Digest::MD5 Bio::Perl
+git clone https://github.com/tseemann/prokka.git $HOME/prokka
+$HOME/prokka/bin/prokka --setupdb
 ```
 
-There are currently 3 ways to install the main Prokka software: 
-[Github](#github), [Tarball](#tarball) or [Homebrew](#homebrew).
-
-### Github
-
-Choose somewhere to put it, for example in your home directory (no root access required):
-```bash
-% cd $HOME
-```
-Clone the latest version of the repository:
-```bash
-% git clone https://github.com/tseemann/prokka.git
-% ls prokka
-```
-Index the sequence databases
-```bash
-% prokka/bin/prokka --setupdb
-```
-
-### Homebrew
-
-Homebrew is a package manager which allows users to easily install complex software in their home directory. 
-Instructions for installing it are available for [Linux](http://linuxbrew.sh) and [Mac OS X](http://brew.sh/).
-
-Ensure you have `brew` installed:
-```bash
-% brew
-```
-Make sure you have the `homebrew-science` tap/channel enabled:
-```bash
-% brew tap homebrew/science
-% brew update
-```
-Install Prokka and all its dependencies:
-```bash
-% brew install prokka --HEAD
-```
-
-### Tarball
-
-**WARNING:** this method gives you very old version of prokka. The brew or github methods are preferred!
-
-Download the latest `prokka-1.xx.tar.gz` archive from http://www.bioinformatics.net.au/software.prokka.shtml
-```bash
-% wget http://www.vicbioinformatics.com/prokka-1.11.tar.gz
-```
-Choose somewhere to put it, for example in your home directory (no root access required):
-```bash
-% cd $HOME
-% tar zxvf prokka-1.11.tar.gz
-% ls prokka-1.11
-```
-
-### Install dependencies
-
-Prokka comes with many binaries for Linux and Mac OS X. It will always use
-your existing installed versions if they exist, but will use the included
-ones if that fails.  For some older systems (eg.  Centos 4.x) some of them
-won't work due to them being dynamically linked against new GLIBC libraries
-you don't have.  You can consult the list of dependencies later in this
-document.
-
-### Choose a rRNA predictor
-
-#### Option 1 - Don't use one
-
-If Prokka can't find a predictor for rRNA features (either Barrnap or RNAmmer
-below) then it simply won't annotate any.  Most people don't care that much
-about them anyway,
-
-#### Option 2 - Barrnap
-
-This was written by the author of Prokka and is recommended if you prefer
-speed over absolute accuracy.  It uses the new multi-core NHMMER for DNA:DNA
-profile searches.  Download it from https://github.com/tseemann/barrnap
-
-#### Option 3 - RNAmmer
-
-RNAmmer was written when HMMER 2.x was the latest release. Since them, HMMER
-3.x has been released, and uses the same executable binary names.  Prokka
-needs HMMER3 and RNAmmer (and hence HMMER2) so you need to edit your RNAmmer
-script to explicitly point your HMMER2 binary instead of using the HMMER3
-binary which is more likely to be in your PATH first.
-
-Type which rnammer to find the script, and then edit it with your favourite
-editor.  Find the following lines at the top:
-
-```perl
-if ( $uname eq "Linux" ) {
-#       $HMMSEARCH_BINARY = "/usr/cbs/bio/bin/linux64/hmmsearch";    # OLD
-        $HMMSEARCH_BINARY = "/path/to/my/hmmer-2.3.2/bin/hmmsearch"; # NEW (yours)
-}
-```
-
-If you are using Mac OS X, you'll also have to change the `"Linux"` to
-`"Darwin"` too.  As you can see, I have commented out the original part, and
-replaced it with the location of my HMMER2 hmmsearch tool, so it doesn't run
-the HMMER3 one.  You need to ensure HMMER3 is in your PATH before the old
-HMMER2 too.
-
-### Add to PATH
-
-Add the following line to your `$HOME/.bashrc` file, 
-or to `/etc/profile.d/prokka.sh` to make it available to all users:
-```bash
-export PATH=$PATH:$HOME/prokka-1.11/bin
-```
-
-### Index the sequence databases
-
-```bash
-% prokka --setupdb
-```
-
-### Test
+## Test
 
 * Type `prokka` and it should output it's help screen.
 * Type `prokka --version` and you should see an output like `prokka 1.x`
@@ -165,7 +59,7 @@ export PATH=$PATH:$HOME/prokka-1.11/bin
 ## Invoking Prokka
 
 ### Beginner
-```bash
+```
 # Vanilla (but with free toppings)
 % prokka contigs.fa
 
@@ -174,7 +68,7 @@ export PATH=$PATH:$HOME/prokka-1.11/bin
 ```
 
 ### Moderate
-```bash
+```
 # Choose the names of the output files
 % prokka --outdir mydir --prefix mygenome contigs.fa
 
@@ -182,17 +76,26 @@ export PATH=$PATH:$HOME/prokka-1.11/bin
 % art mydir/mygenome.gff
 ```
 
+### Specialist
+```
+# Have curated genomes I want to use to annotate from
+% prokka --proteins MG1655.gbk --outdir mutant --prefix K12_mut contigs.fa
+
+# Look at tabular features
+% less -S mutant/K12_mut.tsv
+```
+
 ### Expert
-```bash
+```
 # It's not just for bacteria, people
 % prokka --kingdom Archaea --outdir mydir --genus Pyrococcus --locustag PYCC
 
-# Search for my favourite gene
+# Search for your favourite gene
 % exonerate --bestn 1 zetatoxin.fasta mydir/PYCC_06072012.faa | less
 ```
 
 ### Wizard
-```bash
+```
 # Watch and learn
 % prokka --outdir mydir --locustag EHEC --proteins NewToxins.faa --evalue 0.001 --gram neg --addgenes contigs.fa
 
@@ -204,7 +107,7 @@ export PATH=$PATH:$HOME/prokka-1.11/bin
 ```
 
 ### NCBI Genbank submitter
-```bash
+```
 # Register your BioProject (e.g. PRJNA123456) and your locus_tag prefix (e.g. EHEC) first!
 % prokka --compliant --centre UoN --outdir PRJNA123456 --locustag EHEC --prefix EHEC-Chr1 contigs.fa
 
@@ -217,7 +120,7 @@ export PATH=$PATH:$HOME/prokka-1.11/bin
 
 ### European Nucleotide Archive (ENA) submitter
 
-```bash
+```
 # Register your BioProject (e.g. PRJEB12345) and your locus_tag (e.g. EHEC) prefix first!
 % prokka --compliant --centre UoN --outdir PRJEB12345 --locustag EHEC --prefix EHEC-Chr1 contigs.fa
 
@@ -242,7 +145,7 @@ export PATH=$PATH:$HOME/prokka-1.11/bin
 ```
 
 ### Crazy Person
-```bash
+```
 # No stinking Perl script is going to control me
 % prokka \
         --outdir $HOME/genomes/Ec_POO247 --force \
@@ -319,6 +222,20 @@ export PATH=$PATH:$HOME/prokka-1.11/bin
       --norrna          Don't run rRNA search (default OFF)
       --notrna          Don't run tRNA search (default OFF)
       --rnammer         Prefer RNAmmer over Barrnap for rRNA prediction (default OFF)
+
+### Option: --proteins
+
+The `--proteins` option is recommended when you have good quality reference genomes
+and want to ensure gene naming is consistent. Some species use specific terminology
+which will be often lost if you rely on the default Swiss-Prot database included
+with Prokka.
+
+If you have Genbank or Protein FASTA file(s) that you want to annotate genes from
+as the first priority, use the `--proteins myfile.gbk`. Please make sure it has a
+recognisable file extension like `.gb` or `.gbk` or auto-detect will fail.   The
+use of Genbank is recommended over FASTA, because it will provide `/gene` 
+and `/EC_number` annotations that a typical `.faa` file will not provide, unless
+you have specially formatted it for Prokka.
 
 ### Option: --rawproduct
 
@@ -440,7 +357,7 @@ can't handle multi-exon gene models; I would recommend using MAKER 2 for
 that purpose.
 
 * __Why does Prokka keeps on crashing when it gets to tge "tbl2asn" stage?__  
-It seems that the tbl2asn program from NCBI "expires" after 12 months, and
+It seems that the tbl2asn program from NCBI "expires" after 6-12 months, and
 refuses to run.  Unfortunately you need to install a newer version which you
 can download from [here](http://www.ncbi.nlm.nih.gov/genbank/tbl2asn2/).
 
@@ -454,7 +371,7 @@ is to edit the prokka script and change `parallel` to `parallel --gnu`.
 Unfortunately HMMER keeps changing it's database format, and they aren't
 upward compatible.  If you upgraded HMMER (from 3.0 to 3.1 say) then you
 need to "re-press" the files.  This can be done as follows:
-```bash
+```
 cd /path/to/prokka/db/hmm
 mkdir new
 for D in *.hmm ; do hmmconvert $D > new/$D ; done
@@ -463,12 +380,6 @@ for D in *.hmm ; do hmmpress $D ; done
 mv * ..
 rmdir new
 ```
-
-* __Why does Prokka take so long to download?__  
-Our server is in Australia, and the international pipes aren't always
-flowing as well as we'd like.  I try to put it on GoogleDrive.  Dropbox is
-no longer possible due to bandwidth quotas.  If you are able to mirror
-Prokka (~2 GB) outside please let me know.
 
 * __Why can't I load Prokka .GBK files into Mauve?__  
 Mauve uses BioJava to parse GenBank files, and it is very picky about Genbank files. 
@@ -481,10 +392,11 @@ produces via the "tbl2asn" tool. The following Unix command will fix them:
 
 ## Bugs
 
-** Submit problems or requests to the [Issue Tracker](https://github.com/tseemann/prokka/issues).
+Submit problems or requests to the [Issue Tracker](https://github.com/tseemann/prokka/issues).
 
 ## Changes
 
+* Read the [release notes](https://github.com/tseemann/prokka/releases)
 * Read the [ChangeLog.txt](https://raw.githubusercontent.com/tseemann/prokka/master/doc/ChangeLog.txt)
 * Look at the [Github commits](https://github.com/tseemann/prokka/commits/master)
 
@@ -529,15 +441,19 @@ _Laslett D, Canback B. ARAGORN, a program to detect tRNA genes and tmRNA genes i
 Used to predict ribosomal RNA features (rRNA). My licence-free replacement for RNAmmmer.  
 _Manuscript under preparation._
 
-* __RNAmmer__  
-Finds ribosomal RNA features (rRNA)  
-_Lagesen K et al. RNAmmer: consistent and rapid annotation of ribosomal RNA genes. Nucleic Acids Res. 2007;35(9):3100-8._
-
 * __HMMER3__  
 Used for similarity searching against protein family profiles  
 _Finn RD et al. HMMER web server: interactive sequence similarity searching. Nucleic Acids Res. 2011 Jul;39(Web Server issue):W29-37._
 
 ### Optional
+
+* __minced__  
+Finds CRISPR arrays
+[Minced home page](https://github.com/ctSkennerton/minced)
+
+* __RNAmmer__  
+Finds ribosomal RNA features (rRNA)  
+_Lagesen K et al. RNAmmer: consistent and rapid annotation of ribosomal RNA genes. Nucleic Acids Res. 2007;35(9):3100-8._
 
 * __SignalP__  
 Finds signal peptide features in CDS (sig_peptide)  
@@ -546,4 +462,3 @@ _Petersen TN et al. SignalP 4.0: discriminating signal peptides from transmembra
 * __Infernal__  
 Used for similarity searching against ncRNA family profiles  
 _D. L. Kolbe, S. R. Eddy. Fast Filtering for RNA Homology Search. Bioinformatics, 27:3102-3109, 2011._
-
