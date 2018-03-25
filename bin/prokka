@@ -19,6 +19,8 @@
 
 use strict;
 use warnings;
+use FindBin;
+use lib "$FindBin::RealBin/../perl5"; # for bundled Perl modules
 use File::Copy;
 use Time::Piece;
 use Time::Seconds;
@@ -34,8 +36,6 @@ use Bio::Seq;
 use Bio::SeqFeature::Generic;
 use Bio::Tools::GFF;
 use Bio::Tools::GuessSeqFormat;
-use FindBin;
-use lib "$FindBin::RealBin/../perl5"; # for bundled Perl modules
 
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
 # global variables
