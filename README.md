@@ -22,7 +22,7 @@ brew install brewsci/science/prokka
 If you use [Conda](https://conda.io/docs/install/quick.html)
 you can use the [Bioconda channel](https://bioconda.github.io/):
 ```
-conda install -c bioconda prokka
+conda install -c bioconda -c conda-forge prokka
 ```
 
 ### Ubuntu/Debian/Mint
