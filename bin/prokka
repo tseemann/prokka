@@ -247,7 +247,7 @@ msg("You have enabled DEBUG mode. Temporary files will NOT be deleted.") if $deb
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
 # check BioPerl version 
 
-my $minbpver = "1.006002"; # for Bio::SearcIO::hmmer3
+my $minbpver = "1.006002"; # for Bio::SearchIO::hmmer3
 my $bpver = $Bio::Root::Version::VERSION;
 msg("You have BioPerl $bpver");
 err("Please install BioPerl $minbpver or higher") if $bpver < $minbpver;
