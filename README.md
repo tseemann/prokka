@@ -15,7 +15,7 @@ viral genomes quickly and produce standards-compliant output files.
 If you are using the [MacOS Brew](http://brew.sh/) 
 or [LinuxBrew](http://brew.sh/linuxbrew/) packaging system:
 ```
-brew install brewsci/science/prokka
+brew install brewsci/bio/prokka
 ```
 
 ### Bioconda
