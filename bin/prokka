@@ -44,12 +44,11 @@ my @CMDLINE = ($0, @ARGV);
 my $OPSYS = $^O;
 my $BINDIR = "$FindBin::RealBin/../binaries/$OPSYS";
 my $EXE = $FindBin::RealScript;
-my $VERSION = "1.13";
+my $VERSION = "1.14-dev";
 my $AUTHOR = 'Torsten Seemann <torsten.seemann@gmail.com>';
 my $URL = 'https://github.com/tseemann/prokka';
 my $PROKKA_PMID = '24642063';
 my $PROKKA_DOI = '10.1093/bioinformatics/btu153';
-my $DBDIR = "$FindBin::RealBin/../db";
 my $HYPO = 'hypothetical protein';
 my $UNANN = 'unannotated protein';
 my $MAXCONTIGIDLEN = 37;  # Genbank rule
@@ -224,7 +223,7 @@ sub check_all_tools {
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
 # command line options
 
-my(@Options, $quiet, $debug, $kingdom, $fast, $force, $outdir, $prefix, $cpus, 
+my(@Options, $quiet, $debug, $kingdom, $fast, $force, $outdir, $prefix, $cpus, $dbdir,
              $addgenes, $addmrna, $cds_rna_olap,
              $gcode, $gram, $gffver, $locustag, $increment, $mincontiglen, $evalue, $coverage,
              $genus, $species, $strain, $plasmid, 
@@ -317,7 +316,7 @@ msg("Annotating as >>> $kingdom <<<");
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
 # check if --setupdb has been run
 
-if ( !  -r "$DBDIR/kingdom/$kingdom/sprot.pin" or ! "$DBDIR/hmm/HAMAP.hmm.h3i") {
+if ( !  -r "$dbdir/kingdom/$kingdom/sprot.pin" or ! "$dbdir/hmm/HAMAP.hmm.h3i") {
   err("The sequence databases have not been indexed. Please run 'prokka --setupdb' first.");
 }
 
@@ -611,7 +610,7 @@ else {
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
 # ncRNA via Rfam + Infernal
 
-my $cmdb = "$DBDIR/cm/$kingdom";
+my $cmdb = "$dbdir/cm/$kingdom";
 if ($rfam) {
   if (-r "$cmdb.i1m") {
     msg("Scanning for ncRNAs... please be patient.");
@@ -873,7 +872,7 @@ if ($tools{signalp}->{HAVE}) {
 # primary data source is a curated subset of uniprot (evidence <= 1 per Phylum)
 my @database = (
   {
-    DB  => "$DBDIR/kingdom/$kingdom/sprot",
+    DB  => "$dbdir/kingdom/$kingdom/sprot",
     SRC => 'similar to AA sequence:UniProtKB:',
     FMT => 'blast',
     CMD => $BLASTPCMD,
@@ -883,7 +882,7 @@ my @database = (
 # secondary sources are a series of HMMs
 unless ($kingdom eq 'Viruses') {
   for my $name ( hmms() ) {
-    my $dbfile = "$DBDIR/hmm/$name.hmm";
+    my $dbfile = "$dbdir/hmm/$name.hmm";
     if (-r $dbfile) {
       push @database, {
         DB  => $dbfile,
@@ -902,8 +901,8 @@ unless ($kingdom eq 'Viruses') {
 # if --usegenus is enabled 
 # AND user supplies a genus, and we have a custom file (from GenBank) do it first!
 if ($usegenus) {
-  if ($genus and -r "$DBDIR/genus/$genus.pin") {
-    my $blastdb = "$DBDIR/genus/$genus";
+  if ($genus and -r "$dbdir/genus/$genus.pin") {
+    my $blastdb = "$dbdir/genus/$genus";
     msg("Using custom $genus database for annotation");
     unshift @database, {
       DB  => $blastdb,
@@ -913,7 +912,7 @@ if ($usegenus) {
     };    
   }  
   else {
-    msg("Skipping genus-specific proteins as can't see $DBDIR/$genus");
+    msg("Skipping genus-specific proteins as can't see $dbdir/$genus");
   }
 }
 else {
@@ -1531,25 +1530,25 @@ sub add_bundle_to_path {
 #----------------------------------------------------------------------
 
 sub kingdoms {
-  return map { m{kingdom/(\w+?)/}; $1 } glob("$DBDIR/kingdom/*/*.pin");
+  return map { m{kingdom/(\w+?)/}; $1 } glob("$dbdir/kingdom/*/*.pin");
 }
 
 sub genera {
-  return map { m{([^/]+)(\.\d+)?\.pin$}; $1 } glob("$DBDIR/genus/*.pin");
+  return map { m{([^/]+)(\.\d+)?\.pin$}; $1 } glob("$dbdir/genus/*.pin");
 }
 
 sub hmms {
-  return map { m{([^/]+)\.hmm\.h3m$}; $1 } glob("$DBDIR/hmm/*.h3m");
+  return map { m{([^/]+)\.hmm\.h3m$}; $1 } glob("$dbdir/hmm/*.h3m");
 }
 
 sub cms {
-  return map { m{([^/]+)\.i1m$}; $1 } glob("$DBDIR/cm/*.i1m");
+  return map { m{([^/]+)\.i1m$}; $1 } glob("$dbdir/cm/*.i1m");
 }
 
 #----------------------------------------------------------------------
 
 sub list_db {
-  msg( "Looking for databases in: $DBDIR" );
+  msg( "Looking for databases in: $dbdir" );
   msg( "* Kingdoms:", kingdoms() );
   msg( "* Genera:", genera() );
   msg( "* HMMs:", hmms() );
@@ -1566,23 +1565,23 @@ sub setup_db {
   clean_db(0);  # don't quit, come back here
 
   check_tool('makeblastdb');
-   for my $sprot (<$DBDIR/kingdom/*/sprot>) {
+   for my $sprot (<$dbdir/kingdom/*/sprot>) {
     msg("Making kingdom BLASTP database: $sprot");
     runcmd("makeblastdb -hash_index -dbtype prot -in \Q$sprot\E -logfile /dev/null");
   }
-  for my $genus (<$DBDIR/genus/*>) {
+  for my $genus (<$dbdir/genus/*>) {
     msg("Making genus BLASTP database: $genus");
     runcmd("makeblastdb -hash_index -dbtype prot -in \Q$genus\E -logfile /dev/null");
   }
 
   check_tool('hmmpress');
-  for my $hmm (<$DBDIR/hmm/*.hmm>) {
+  for my $hmm (<$dbdir/hmm/*.hmm>) {
     msg("Pressing HMM database: $hmm");
     runcmd("hmmpress \Q$hmm\E");
   }
 
   check_tool('cmpress');
-  for my $cm (<$DBDIR/cm/{Viruses,Bacteria}>) {
+  for my $cm (<$dbdir/cm/{Viruses,Bacteria}>) {
     msg("Pressing CM database: $cm");    
     runcmd("cmpress \Q$cm\E");
   }
@@ -1594,11 +1593,11 @@ sub setup_db {
 
 sub clean_db {
   my($quit) = @_;
-  msg("Cleaning databases in $DBDIR");
-  delfile( <$DBDIR/kingdom/*/sprot.p??> );
-  delfile( <$DBDIR/genus/*.p??> );
-  delfile( <$DBDIR/hmm/*.h3?> );
-  delfile( <$DBDIR/cm/*.i1?> );
+  msg("Cleaning databases in $dbdir");
+  delfile( <$dbdir/kingdom/*/sprot.p??> );
+  delfile( <$dbdir/genus/*.p??> );
+  delfile( <$dbdir/hmm/*.h3?> );
+  delfile( <$dbdir/cm/*.i1?> );
   msg("Cleaning complete.");
   exit(0) if $quit;
 }
@@ -1660,6 +1659,7 @@ sub setOptions {
     {OPT=>"setupdb",  VAR=>\&setup_db,         DESC=>"Index all installed databases"},
     {OPT=>"cleandb",  VAR=>\&clean_db,         DESC=>"Remove all database indices"},
     {OPT=>"depends",  VAR=>\&list_depends,     DESC=>"List all software dependencies"},
+    {OPT=>"dbdir=s",  VAR=>\$dbdir, DEFAULT=>$ENV{'PROKKA_DBDIR'} || "$FindBin::RealBin/../db", DESC=>"Prokka database root folders"},
     'Outputs:',
     {OPT=>"outdir=s",  VAR=>\$outdir, DEFAULT=>'', DESC=>"Output folder [auto]"},
     {OPT=>"force!",  VAR=>\$force, DEFAULT=>0, DESC=>"Force overwriting existing output folder"},
