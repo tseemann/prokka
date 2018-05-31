@@ -3,7 +3,7 @@ language: perl
 sudo: false
 
 perl:
-    - "5.14"
+    - "5.26"
     
 install:
     - "cpanm --quiet --notest Time::Piece XML::Simple Digest::MD5 Bio::Perl"
