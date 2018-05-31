@@ -21,6 +21,7 @@ use strict;
 use warnings;
 use FindBin;
 use lib "$FindBin::RealBin/../perl5"; # for bundled Perl modules
+use Cwd qw(abs_path);
 use File::Copy;
 use Time::Piece;
 use Time::Seconds;
@@ -230,6 +231,9 @@ my(@Options, $quiet, $debug, $kingdom, $fast, $force, $outdir, $prefix, $cpus, $
              $usegenus, $proteins, $hmms, $centre, $scaffolds,
              $rfam, $norrna, $notrna, $rnammer, $rawproduct, $noanno, $accver,
 	     $metagenome, $compliant, $listdb, $citation);
+
+$dbdir = $ENV{'PROKKA_DBDIR'} || abs_path("$FindBin::RealBin/../db");
+
 setOptions();
 
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
@@ -1655,11 +1659,11 @@ sub setOptions {
     {OPT=>"quiet!",  VAR=>\$quiet, DEFAULT=>0, DESC=>"No screen output"},
     {OPT=>"debug!",  VAR=>\$debug, DEFAULT=>0, DESC=>"Debug mode: keep all temporary files"},
     'Setup:',
+    {OPT=>"dbdir=s",  VAR=>\$dbdir, DEFAULT=>$dbdir, DESC=>"Prokka database root folders"},
     {OPT=>"listdb",   VAR=>\&list_db,    DESC=>"List all configured databases"},
     {OPT=>"setupdb",  VAR=>\&setup_db,         DESC=>"Index all installed databases"},
     {OPT=>"cleandb",  VAR=>\&clean_db,         DESC=>"Remove all database indices"},
     {OPT=>"depends",  VAR=>\&list_depends,     DESC=>"List all software dependencies"},
-    {OPT=>"dbdir=s",  VAR=>\$dbdir, DEFAULT=>$ENV{'PROKKA_DBDIR'} || "$FindBin::RealBin/../db", DESC=>"Prokka database root folders"},
     'Outputs:',
     {OPT=>"outdir=s",  VAR=>\$outdir, DEFAULT=>'', DESC=>"Output folder [auto]"},
     {OPT=>"force!",  VAR=>\$force, DEFAULT=>0, DESC=>"Force overwriting existing output folder"},
@@ -1732,7 +1736,7 @@ sub usage {
       $opt =~ s/=s$/ [X]/; 
       $opt =~ s/=i$/ [N]/;
       $opt =~ s/=f$/ [n.n]/;
-      printf STDERR "  --%-15s %s%s\n", $opt, $_->{DESC}, $def;
+      printf STDERR "  --%-16s %s%s\n", $opt, $_->{DESC}, $def;
     }
     else {
       print "$_\n"; # Subheadings in the help output
