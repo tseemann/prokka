@@ -344,7 +344,8 @@ if ($compliant) {
 #$centre or err("You must set --centre or the NCBI tbl2asn tool won't work properly, sorry.");
 ($gcode < 1 or $gcode > 25) and err("Invalid genetic code, must be 1..25");
 $evalue >= 0 or err("Invalid --evalue, must be >= 0");
-($coverage >= 0 and $coverage <= 100) or err("Invalid --coverage, must be 0..100");
+$proteins_evalue >= 0 or err("Invalid --proteins_evalue, must be >= 0");
+#($coverage >= 0 and $coverage <= 100) or err("Invalid --coverage, must be 0..100");
 $increment >= 1 or err("Invalid --increment, must be >= 1");
 # http://www.ncbi.nlm.nih.gov/genomes/static/Annotation_pipeline_README.txt
 $prefix ||= 'PROKKA_'.(localtime->mdy('')); # NCBI wants US format, ech.
@@ -969,6 +970,7 @@ unless ($kingdom eq 'Viruses') {
     if (-r $dbfile) {
       push @database, {
         DB  => $dbfile,
+        EVALUE => $evalue,
         SRC => "protein motif:$name:",
         FMT => 'hmmer3',
         CMD => $HMMER3CMD,
@@ -989,6 +991,7 @@ if ($usegenus) {
     msg("Using custom $genus database for annotation");
     unshift @database, {
       DB  => $blastdb,
+      EVALUE => $evalue,
       SRC => 'similar to AA sequence:RefSeq:',
       FMT => 'blast',
       CMD => $BLASTPCMD,
@@ -1012,6 +1015,7 @@ if ($hmms) {
   msg("Using /inference source as '$src'");
   unshift @database, {
     DB  => $hmms,
+    EVALUE => $evalue,
     SRC => $compliant ? "" : "protein motif:$src:",
     FMT => 'hmmer3',
     CMD => $HMMER3CMD,
@@ -1034,16 +1038,33 @@ if (-r $proteins) {
   elsif ($format ne 'fasta') {
     err("Option --proteins only supports FASTA, GenBank, and EMBL formats.");
   }
-  runcmd("makeblastdb -dbtype prot -in \Q$faa_file\E -out \Q$outdir/proteins\E -logfile /dev/null");
-  my $src = $proteins;
-  $src =~ s{^.*/}{};
-  msg("Using /inference source as '$src'");
-  unshift @database, {
-    DB  => "$outdir/proteins",
-    SRC => $compliant ? "" : "similar to AA sequence:$src:",
-    FMT => 'blast',
-    CMD => $BLASTPCMD,
-  };
+
+  ## if supplied argument already indicates a blastdb, don't regenerate ##
+  if (-f $proteins . '.pin') {
+    my $src = $proteins;
+    $src =~ s{^.*/}{};
+    msg("Using /inference source as '$src'");
+    unshift @database, {
+      DB  => "$proteins",
+      EVALUE => $proteins_evalue,
+      SRC => $compliant ? "" : "similar to AA sequence:$src:",
+      FMT => 'blast',
+      CMD => $BLASTPCMD,
+    };
+
+  } else {
+    runcmd("makeblastdb -dbtype prot -in \Q$faa_file\E -out \Q$outdir/proteins\E -logfile /dev/null");
+    my $src = $proteins;
+    $src =~ s{^.*/}{};
+    msg("Using /inference source as '$src'");
+    unshift @database, {
+      DB  => "$outdir/proteins",
+      EVALUE => $proteins_evalue,
+      SRC => $compliant ? "" : "similar to AA sequence:$src:",
+      FMT => 'blast',
+      CMD => $BLASTPCMD,
+    };
+  }
 }
 
 if ($noanno) {
@@ -1092,8 +1113,11 @@ else {
     my $db_evalue = exists $db->{EVALUE} ? $db->{EVALUE} : $evalue;
     my $db_cov = exists $db->{MINCOV} ? $db->{MINCOV} : $coverage;
     my $cmd = $db->{CMD};
-    $cmd =~ s/%e/$db_evalue/g;
-    $cmd =~ s/%c/$db_cov/g;
+
+#    $cmd =~ s/%i/{}/g;
+#    $cmd =~ s/%o/{}.out/g;
+#    $cmd =~ s/%e/$evalue/g;
+    $cmd =~ s,%e,$db->{EVALUE},g;
     $cmd =~ s,%d,$db->{DB},g;
 
     #
@@ -1777,6 +1801,9 @@ sub setOptions {
     {OPT=>"fast!",  VAR=>\$fast, DEFAULT=>0, DESC=>"Fast mode - only use basic BLASTP databases"},
     {OPT=>"noanno!",  VAR=>\$noanno, DEFAULT=>0, DESC=>qq'For CDS just set /product="$UNANN"'},
     {OPT=>"mincontiglen=i",  VAR=>\$mincontiglen, DEFAULT=>1, DESC=>"Minimum contig size [NCBI needs 200]"},
+    {OPT=>"evalue=f",  VAR=>\$evalue, DEFAULT=>1E-12, DESC=>"Similarity e-value cut-off"},
+    {OPT=>"proteins_evalue=f",  VAR=>\$proteins_evalue, DEFAULT=>1E-24, DESC=>"Similarity e-value cut-off for custom protein blast (ignored unless --proteins argument is given)"},
+#    {OPT=>"coverage=f",  VAR=>\$coverage, DEFAULT=>0, DESC=>"Similarity \%id cut-off (otherwise /pseudo)"},
     {OPT=>"rfam",  VAR=>\$rfam, DEFAULT=>0, DESC=>"Enable searching for ncRNAs with Infernal+Rfam (SLOW!)"},
     {OPT=>"norrna!",  VAR=>\$norrna, DEFAULT=>0, DESC=>"Don't run rRNA search"},
     {OPT=>"notrna!",  VAR=>\$notrna, DEFAULT=>0, DESC=>"Don't run tRNA search"},
