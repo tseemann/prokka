@@ -682,6 +682,7 @@ if ($tools{'minced'}->{HAVE}) {
     # format it properly for NCBI
     $feat->primary_tag("repeat_region");
     $feat->remove_tag('ID');
+    $feat->remove_tag('score'); # https://github.com/tseemann/prokka/issues/328
     $feat->add_tag_value('rpt_family', 'CRISPR');
     # http://www.insdc.org/controlled-vocabulary-rpttype-qualifier
     $feat->add_tag_value('rpt_type', 'direct');
