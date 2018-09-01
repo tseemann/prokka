@@ -1,0 +1,35 @@
+#!/usr/bin/env perl
+
+# IN
+#>ncbi~~~A7J11_00131~~~A7J11_00131 bifunctional aminoglycoside N-acetyltransferase AAC(3)-Ib/aminoglycoside N-acetyltransferase AAC(6')-Ib''
+#ATGAGCATCATTGCAACCGTCAAGATCGGCCCTGACGAAATTTCAGCCATGAGGGCTGTG
+#CTCGATCTCTTCGGCAAAGAGTTTGAGGACATTCCAACCTACTCTGATCGCCAGCCGACC
+#AATGAGTATCTTGCCAATCTTCTGCACAGCGAGACGTTCATCGCGCTCGCTGCTTTTGAC
+
+# OUT
+#>Q92AT0 2.4.1.333~~~~~~1,2-beta-oligoglucan phosphorylase~~~COG3459
+#MTMLKEIKKADLSAAFYPSGELAWLKLKDIMLNQVIQNPLENRLSQIYVRAHVGDKIEIYPLLSRDAEVGFNENGVEYRGVVGPFRYSVQMHFHTRGWFYDVTVDGD
+
+use Bio::SeqIO;
+use Data::Dumper;
+
+@ARGV or die "USAGE: $0".
+  ' $(dirname $(which abricate))/../db/ncbi/sequences'.
+  ' > $(dirname $(which prokka))/../db/kingdom/Bacteria/AMR';
+
+my $in  = Bio::SeqIO->new(-fh=>\*ARGV,   -format=>'fasta');
+my $out = Bio::SeqIO->new(-fh=>\*STDOUT, -format=>'fasta');
+
+my %seen;
+
+while (my $seq = $in->next_seq) {
+  my(undef,$gene,$locustag) = split m"~~~", $seq->id;
+  $gene = '' if $gene eq $locustag;
+  my $prot = $seq->translate;
+  die Dumper($prot) if $prot->seq =~ m/\*./; # check for stop codon in middle
+  die Dumper($prot) if $seen{$prot->seq}++;  # check for dupes
+  $prot->id($locustag);
+  $prot->desc( join('~~~', '', $gene, $prot->desc, '') );
+  $out->write_seq($prot);
+}
+

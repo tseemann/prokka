@@ -45,7 +45,7 @@ my @CMDLINE = ($0, @ARGV);
 my $OPSYS = $^O;
 my $BINDIR = "$FindBin::RealBin/../binaries/$OPSYS";
 my $EXE = $FindBin::RealScript;
-my $VERSION = "1.13.1";
+my $VERSION = "1.13.2";
 my $AUTHOR = 'Torsten Seemann <torsten.seemann@gmail.com>';
 my $URL = 'https://github.com/tseemann/prokka';
 my $PROKKA_PMID = '24642063';
@@ -65,7 +65,7 @@ my @GOOD_PROD = (
 my %GOOD_PROD = (map { ($_=>1) } @GOOD_PROD);
 
 # these should accept .faa on STDIN and write report to STDOUT
-my $BLASTPCMD = "blastp -query - -db %d -evalue %e -num_threads 1 -num_descriptions 1 -num_alignments 1 -seg no";
+my $BLASTPCMD = "blastp -query - -db %d -evalue %e -qcov_hsp_perc %c -num_threads 1 -num_descriptions 1 -num_alignments 1 -seg no";
 my $HMMER3CMD = "hmmscan --noali --notextw --acc -E %e --cpu 1 %d /dev/stdin";
 
 my $rnammer_mode = 'bac';
@@ -341,7 +341,7 @@ if ($compliant) {
 #$centre or err("You must set --centre or the NCBI tbl2asn tool won't work properly, sorry.");
 ($gcode < 1 or $gcode > 25) and err("Invalid genetic code, must be 1..25");
 $evalue >= 0 or err("Invalid --evalue, must be >= 0");
-#($coverage >= 0 and $coverage <= 100) or err("Invalid --coverage, must be 0..100");
+($coverage >= 0 and $coverage <= 100) or err("Invalid --coverage, must be 0..100");
 $increment >= 1 or err("Invalid --increment, must be >= 1");
 # http://www.ncbi.nlm.nih.gov/genomes/static/Annotation_pipeline_README.txt
 $prefix ||= 'PROKKA_'.(localtime->mdy('')); # NCBI wants US format, ech.
@@ -876,15 +876,43 @@ if ($tools{signalp}->{HAVE}) {
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
 # Annotate CDS
 
-# primary data source is a curated subset of uniprot (evidence <= 1 per Phylum)
-my @database = (
-  {
-    DB  => "$dbdir/kingdom/$kingdom/sprot",
-    SRC => 'similar to AA sequence:UniProtKB:',
+my @database; # list of databases to use, in priority order
+
+# https://isfinder.biotoul.fr/
+# if there is an IS (Insertion Sequence) database we use that first
+my $IS_db = "$dbdir/kingdom/$kingdom/IS";
+if (-r $IS_db) {
+  push @database, {
+    DB  => $IS_db,
+    SRC => 'similar to AA sequence:ISfinder:',
     FMT => 'blast',
     CMD => $BLASTPCMD,
-  },
-);
+    MINCOV => 90,
+    EVALUE => 1E-30,  # IS families are quite specific
+  };
+}
+
+# https://www.ncbi.nlm.nih.gov/bioproject/PRJNA313047
+# if there is an AMR (antimicrobial resitance) database we use that early on
+my $AMR_db = "$dbdir/kingdom/$kingdom/AMR";
+if (-r $AMR_db) {
+  push @database, {
+    DB  => $AMR_db,
+    SRC => 'similar to AA sequence:BARRGD:',
+    FMT => 'blast',
+    CMD => $BLASTPCMD,
+    MINCOV => 90,
+    EVALUE => 1E-300,   # need to exact alleles (~ MIN_DBL, 0.0 not accepted)
+  };
+}
+
+# primary data source is a curated subset of uniprot (evidence <= 1 per Phylum)
+push @database, {
+  DB  => "$dbdir/kingdom/$kingdom/sprot",
+  SRC => 'similar to AA sequence:UniProtKB:',
+  FMT => 'blast',
+  CMD => $BLASTPCMD,
+};
 
 # secondary sources are a series of HMMs
 unless ($kingdom eq 'Viruses') {
@@ -1013,10 +1041,12 @@ else {
     msg("There are still $count unannotated CDS left (started with $num_cds)");
     msg("Will use", $db->{FMT}, "to search against", $db->{DB}, "with $cpus CPUs");
 
+    # fill in the custom parameters
+    my $db_evalue = exists $db->{EVALUE} ? $db->{EVALUE} : $evalue;
+    my $db_cov = exists $db->{MINCOV} ? $db->{MINCOV} : $coverage;
     my $cmd = $db->{CMD};
-#    $cmd =~ s/%i/{}/g;
-#    $cmd =~ s/%o/{}.out/g;
-    $cmd =~ s/%e/$evalue/g;
+    $cmd =~ s/%e/$db_evalue/g;
+    $cmd =~ s/%c/$db_cov/g;
     $cmd =~ s,%d,$db->{DB},g;
 
     #
@@ -1572,9 +1602,13 @@ sub setup_db {
   clean_db(0);  # don't quit, come back here
 
   check_tool('makeblastdb');
-   for my $sprot (<$dbdir/kingdom/*/sprot>) {
-    msg("Making kingdom BLASTP database: $sprot");
-    runcmd("makeblastdb -hash_index -dbtype prot -in \Q$sprot\E -logfile /dev/null");
+
+  for my $db (qw/sprot IS AMR/) {
+    for my $fasta (<$dbdir/kingdom/*/$db>) {
+      next unless -r $fasta;
+      msg("Making kingdom BLASTP database: $fasta");
+      runcmd("makeblastdb -hash_index -dbtype prot -in \Q$fasta\E -logfile /dev/null");
+    }
   }
   for my $genus (<$dbdir/genus/*>) {
     msg("Making genus BLASTP database: $genus");
@@ -1601,7 +1635,7 @@ sub setup_db {
 sub clean_db {
   my($quit) = @_;
   msg("Cleaning databases in $dbdir");
-  delfile( <$dbdir/kingdom/*/sprot.p??> );
+  delfile( <$dbdir/kingdom/*/*.p??> );
   delfile( <$dbdir/genus/*.p??> );
   delfile( <$dbdir/hmm/*.h3?> );
   delfile( <$dbdir/cm/*.i1?> );
@@ -1695,13 +1729,14 @@ sub setOptions {
     {OPT=>"metagenome!",  VAR=>\$metagenome, DEFAULT=>0, DESC=>"Improve gene predictions for highly fragmented genomes"},
     {OPT=>"rawproduct!",  VAR=>\$rawproduct, DEFAULT=>0, DESC=>"Do not clean up /product annotation"},
     {OPT=>"cdsrnaolap!",  VAR=>\$cds_rna_olap, DEFAULT=>0, DESC=>"Allow [tr]RNA to overlap CDS"},
+    'Matching:',
+    {OPT=>"evalue=f",  VAR=>\$evalue, DEFAULT=>1E-9, DESC=>"Similarity e-value cut-off"},
+    {OPT=>"coverage=f",  VAR=>\$coverage, DEFAULT=>80, DESC=>"Minimum coverage on query protein"},
     'Computation:',
     {OPT=>"cpus=i",  VAR=>\$cpus, DEFAULT=>8, DESC=>"Number of CPUs to use [0=all]"},
     {OPT=>"fast!",  VAR=>\$fast, DEFAULT=>0, DESC=>"Fast mode - only use basic BLASTP databases"},
     {OPT=>"noanno!",  VAR=>\$noanno, DEFAULT=>0, DESC=>qq'For CDS just set /product="$UNANN"'},
     {OPT=>"mincontiglen=i",  VAR=>\$mincontiglen, DEFAULT=>1, DESC=>"Minimum contig size [NCBI needs 200]"},
-    {OPT=>"evalue=f",  VAR=>\$evalue, DEFAULT=>1E-6, DESC=>"Similarity e-value cut-off"},
-#    {OPT=>"coverage=f",  VAR=>\$coverage, DEFAULT=>0, DESC=>"Similarity \%id cut-off (otherwise /pseudo)"},
     {OPT=>"rfam",  VAR=>\$rfam, DEFAULT=>0, DESC=>"Enable searching for ncRNAs with Infernal+Rfam (SLOW!)"},
     {OPT=>"norrna!",  VAR=>\$norrna, DEFAULT=>0, DESC=>"Don't run rRNA search"},
     {OPT=>"notrna!",  VAR=>\$notrna, DEFAULT=>0, DESC=>"Don't run tRNA search"},
