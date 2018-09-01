@@ -45,7 +45,7 @@ my @CMDLINE = ($0, @ARGV);
 my $OPSYS = $^O;
 my $BINDIR = "$FindBin::RealBin/../binaries/$OPSYS";
 my $EXE = $FindBin::RealScript;
-my $VERSION = "1.14-dev";
+my $VERSION = "1.13.1";
 my $AUTHOR = 'Torsten Seemann <torsten.seemann@gmail.com>';
 my $URL = 'https://github.com/tseemann/prokka';
 my $PROKKA_PMID = '24642063';
@@ -126,7 +126,7 @@ my %tools = (
   'minced' => {
      GETVER => "minced --version | sed -n '1p'",
      REGEXP => qr/minced\s+\d+\.(\d+\.\d+)/,
-     MINVER => "2.0",
+     MINVER => "2.0",  # really 0.3 as we skip first number
      NEEDED => 0,
    },
   'cmscan' => {
@@ -674,19 +674,21 @@ msg("Total of", scalar(@allrna), "tRNA + rRNA features");
 if ($tools{'minced'}->{HAVE}) {
   msg("Searching for CRISPR repeats");
   my $num_crispr=0;
+  # ##gff-version 3
+  #                                                               [score] = # rpts
+  # JXCI01000002.1  minced:0.3.0    repeat_region   11491   12592   16      .       .
+  # ID=CRISPR1;rpt_family=CRISPR;rpt_unit_seq=GTCGAAAGACATTGCCCTGTTCCAAAGGGATTGAGAC
   open my $MINCED, '-|', "minced -gff \Q$outdir/$prefix.fna\E";
   my $gff = Bio::Tools::GFF->new(-fh => $MINCED, -gff_version => 3);
   while (my $feat = $gff->next_feature) {
-    next unless $feat->primary_tag eq 'CRISPR';
-
-    # format it properly for NCBI
-    $feat->primary_tag("repeat_region");
-    $feat->remove_tag('ID');
+    my $num_rpt = $feat->score; # save for later
+    $feat->remove_tag('ID');    # we don't give these a locus_tag ?
     $feat->remove_tag('score'); # https://github.com/tseemann/prokka/issues/328
-    $feat->add_tag_value('rpt_family', 'CRISPR');
+
     # http://www.insdc.org/controlled-vocabulary-rpttype-qualifier
-    $feat->add_tag_value('rpt_type', 'direct');
-    $feat->add_tag_value('note', 'CRISPR with '.$feat->score.' repeat units');
+    $feat->add_tag_value('rpt_family', 'CRISPR') unless $feat->has_tag('rpt_family');
+    $feat->add_tag_value('rpt_type', 'direct') unless $feat->has_tag('rpt_type');
+    $feat->add_tag_value('note', "CRISPR with $num_rpt repeat units");
 
     push @{$seq{$feat->seq_id}{FEATURE}}, $feat;
 
@@ -694,7 +696,7 @@ if ($tools{'minced'}->{HAVE}) {
     # will occasionally create ORFs in these regions. Got to stop that.
     push @allrna, $feat;
     $num_crispr++;
-    msg("CRISPR$num_crispr", $feat->seq_id, $feat->start, "with", $feat->score, "spacers");
+    msg("CRISPR$num_crispr", $feat->seq_id, $feat->start, "with $num_rpt spacers");
   }
   msg("Found $num_crispr CRISPRs");
 }
