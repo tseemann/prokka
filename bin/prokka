@@ -958,6 +958,8 @@ if (-r $AMR_db) {
 # primary data source is a curated subset of uniprot (evidence <= 1 per Phylum)
 push @database, {
   DB  => "$dbdir/kingdom/$kingdom/sprot",
+  MINCOV => 90,
+  EVALUE => $evalue,
   SRC => 'similar to AA sequence:UniProtKB:',
   FMT => 'blast',
   CMD => $BLASTPCMD,
@@ -991,8 +993,8 @@ if ($usegenus) {
     msg("Using custom $genus database for annotation");
     unshift @database, {
       DB  => $blastdb,
-      EVALUE => $evalue,
-      MINCOV => 90,
+      # EVALUE => $evalue,
+      # MINCOV => 90,
       SRC => 'similar to AA sequence:RefSeq:',
       FMT => 'blast',
       CMD => $BLASTPCMD,
@@ -1016,7 +1018,7 @@ if ($hmms) {
   msg("Using /inference source as '$src'");
   unshift @database, {
     DB  => $hmms,
-    EVALUE => $evalue,
+#    EVALUE => $evalue,
     SRC => $compliant ? "" : "protein motif:$src:",
     FMT => 'hmmer3',
     CMD => $HMMER3CMD,
