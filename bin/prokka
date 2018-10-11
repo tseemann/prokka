@@ -992,6 +992,7 @@ if ($usegenus) {
     unshift @database, {
       DB  => $blastdb,
       EVALUE => $evalue,
+      MINCOV => 90,
       SRC => 'similar to AA sequence:RefSeq:',
       FMT => 'blast',
       CMD => $BLASTPCMD,
@@ -1047,6 +1048,7 @@ if (-r $proteins) {
     unshift @database, {
       DB  => "$proteins",
       EVALUE => $proteins_evalue,
+      MINCOV => 90,
       SRC => $compliant ? "" : "similar to AA sequence:$src:",
       FMT => 'blast',
       CMD => $BLASTPCMD,
@@ -1060,6 +1062,7 @@ if (-r $proteins) {
     unshift @database, {
       DB  => "$outdir/proteins",
       EVALUE => $proteins_evalue,
+      MINCOV => 90,
       SRC => $compliant ? "" : "similar to AA sequence:$src:",
       FMT => 'blast',
       CMD => $BLASTPCMD,
@@ -1117,6 +1120,7 @@ else {
 #    $cmd =~ s/%i/{}/g;
 #    $cmd =~ s/%o/{}.out/g;
 #    $cmd =~ s/%e/$evalue/g;
+    $cmd =~ s,%c,$db->{MINCOV},g;
     $cmd =~ s,%e,$db->{EVALUE},g;
     $cmd =~ s,%d,$db->{DB},g;
 
