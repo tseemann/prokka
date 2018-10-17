@@ -1,8 +1,8 @@
 #!/usr/bin/env perl
 use strict;
 use warnings;
-use Bio::SeqIO;
-use Data::Dumper;
+# use Bio::SeqIO;
+# use Data::Dumper;
 use File::Temp qw(tempdir);
 
 my(@Options, $verbose, $datadir, $hypo, $sep, $blank, $pseudo, $minlen);
@@ -15,7 +15,7 @@ my $dir = tempdir(CLEANUP=>1);
 print STDERR "Using $dir as temp folder.\n";
 
 my %DESC;
-my $ali_fh = get_file("alignment_id.dat", "alignment /gene /product info");
+my $ali_fh = get_file("rules_index.dat", "alignment /gene /product info");
 while (<$ali_fh>) {
   chomp;
   my @x = split m/\t/;
@@ -25,14 +25,14 @@ while (<$ali_fh>) {
 }
 printf STDERR "Accepted descriptions for %d families\n", scalar keys %DESC;
 
-my $fam_fh = get_file("hamap_families.dat", "alignment /EC_number");
+my $fam_fh = get_file("hamap_rules.dat", "alignment /EC_number");
 my($AC,$EC,$Bac);
 while (<$fam_fh>) {
   chomp;
   if (m{^//}) {
     #print STDERR "AC=$AC EC=$EC Bac=$Bac\n";
     if ($AC and $EC and exists $DESC{$AC}) {
-      $DESC{$AC} = $EC.$DESC{$AC}; 
+      $DESC{$AC} = $EC.$DESC{$AC};
     }
     if ($AC and ! $Bac) {
       print STDERR "Removing $AC as non-Bacterial\n";
@@ -110,7 +110,7 @@ sub setOptions {
   @Options = (
     {OPT=>"help",      VAR=>\&usage,                   DESC=>"This help"},
     {OPT=>"verbose!",  VAR=>\$verbose, DEFAULT=>0,     DESC=>"Verbose progress"},
-    {OPT=>"datadir=s", VAR=>\$datadir, DEFAULT=>'',    DESC=>"Path to downloaded HAMAP folder (ftp://ftp.expasy.org/databases/hamap/)" },
+    {OPT=>"datadir=s", VAR=>\$datadir, DEFAULT=>'',    DESC=>"Path to directory containing hamap_rules.dat, hamap_seed_alignments.tar.gz, and rules_index.dat (ftp://ftp.expasy.org/databases/hamap/)" },
     {OPT=>"sep=s",     VAR=>\$sep,     DEFAULT=>'~~~', DESC=>"Separator between EC/gene/product" },
     {OPT=>"blank=s",   VAR=>\$blank,   DEFAULT=>'',    DESC=>"Replace empty EC/gene/product with this"},
 #    {OPT=>"pseudo!",   VAR=>\$pseudo,  DEFAULT=>0,     DESC=>"Include /pseudo genes"},
@@ -138,5 +138,5 @@ sub usage {
   }
   exit(1);
 }
- 
+
 #----------------------------------------------------------------------
