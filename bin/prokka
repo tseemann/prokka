@@ -1567,7 +1567,9 @@ sub add_bundle_to_path {
 #----------------------------------------------------------------------
 
 sub kingdoms {
-  return map { m{kingdom/(\w+?)/}; $1 } glob("$dbdir/kingdom/*/*.pin");
+  #Removing duplicates with hash
+  my %seen;
+  return grep { !$seen{$_}++ } map { m{kingdom/(\w+?)/}; $1 } glob("$dbdir/kingdom/*/*.pin");
 }
 
 sub genera {
