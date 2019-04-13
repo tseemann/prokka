@@ -86,8 +86,8 @@ my $BIDEC = '(\d+\.\d+)';  # pattern of NN.NN for versions that can be compared
 
 my %tools = (
   'parallel' => {
-    GETVER  => "parallel --version | grep '^GNU parallel 2'",
-    REGEXP  => qr/GNU parallel (\d+)/,
+    GETVER  => "parallel --version | grep -E 'parallel 2[0-9]{7}\$'",
+    REGEXP  => qr/parallel (\d+)/,
     MINVER  => "20130422",
     NEEDED  => 1,
   },
