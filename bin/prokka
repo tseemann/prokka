@@ -229,7 +229,7 @@ my(@Options, $quiet, $debug, $kingdom, $fast, $force, $outdir, $prefix, $cpus, $
              $gcode, $gram, $gffver, $locustag, $increment, $mincontiglen, $evalue, $coverage,
              $genus, $species, $strain, $plasmid, 
              $usegenus, $proteins, $hmms, $centre, $scaffolds,
-             $rfam, $norrna, $notrna, $rnammer, $rawproduct, $noanno, $accver,
+             $rfam, $norrna, $notrna, $notbl2asn, $rnammer, $rawproduct, $noanno, $accver,
 	     $metagenome, $compliant, $listdb, $citation);
 
 $dbdir = $ENV{'PROKKA_DBDIR'} || abs_path("$FindBin::RealBin/../db");
@@ -1352,26 +1352,31 @@ close $txtFh;
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
 # Use tbl2asn tool to make .gbk and .sqn for us
 
-# NOTE: the -A and -N  fake accession and version needed for Mauve!
-# BUT: -A xxx has a bug where it uses xxx as the LOCUS (contig) ID for 1st contig
-# SO: *sigh*
+if (!$notbl2asn) {
+  # NOTE: the -A and -N  fake accession and version needed for Mauve!
+  # BUT: -A xxx has a bug where it uses xxx as the LOCUS (contig) ID for 1st contig
+  # SO: *sigh*
 
-my $tbl2asn_opt = @seq > 10_000 ? '-M b' : '-M n';  # Issue 93 - big assemblies
+  my $tbl2asn_opt = @seq > 10_000 ? '-M b' : '-M n';  # Issue 93 - big assemblies
 
-msg("Generating Genbank and Sequin files");
-#runcmd("tbl2asn -a s -q F -A $prefix -N 1 -y 'Annotated using $EXE $VERSION from $URL' -Z $outdir/$prefix.err -M n -V b -i $outdir/$prefix.fsa -f $outdir/$prefix.tbl 2> /dev/null");
-#runcmd("tbl2asn -V b -a s -A $prefix -N 1 -y 'Annotated using $EXE $VERSION from $URL' -Z $outdir/$prefix.err -i $outdir/$prefix.fsa");
-#runcmd("tbl2asn -V b -a s -N 1 -y 'Annotated using $EXE $VERSION from $URL' -Z $outdir/$prefix.err -i $outdir/$prefix.fsa 2> /dev/null");
-runcmd(
-  "tbl2asn -V b -a r10k -l paired-ends $tbl2asn_opt -N $accver -y 'Annotated using $EXE $VERSION from $URL'".
-  " -Z \Q$outdir/$prefix.err\E -i \Q$outdir/$prefix.fsa\E 2> /dev/null"
-);
-delfile("$outdir/errorsummary.val");
-delfile( map { "$outdir/$prefix.$_" } qw(dr fixedproducts ecn val) );
+  msg("Generating Genbank and Sequin files");
+  #runcmd("tbl2asn -a s -q F -A $prefix -N 1 -y 'Annotated using $EXE $VERSION from $URL' -Z $outdir/$prefix.err -M n -V b -i $outdir/$prefix.fsa -f $outdir/$prefix.tbl 2> /dev/null");
+  #runcmd("tbl2asn -V b -a s -A $prefix -N 1 -y 'Annotated using $EXE $VERSION from $URL' -Z $outdir/$prefix.err -i $outdir/$prefix.fsa");
+  #runcmd("tbl2asn -V b -a s -N 1 -y 'Annotated using $EXE $VERSION from $URL' -Z $outdir/$prefix.err -i $outdir/$prefix.fsa 2> /dev/null");
+  runcmd(
+    "tbl2asn -V b -a r10k -l paired-ends $tbl2asn_opt -N $accver -y 'Annotated using $EXE $VERSION from $URL'".
+    " -Z \Q$outdir/$prefix.err\E -i \Q$outdir/$prefix.fsa\E 2> /dev/null"
+  );
+  delfile("$outdir/errorsummary.val");
+  delfile( map { "$outdir/$prefix.$_" } qw(dr fixedproducts ecn val) );
 
-msg("Repairing broken .GBK output that tbl2asn produces...");
-runcmd("sed 's/COORDINATES: profile/COORDINATES:profile/' < \Q$outdir/$prefix.gbf\E > \Q$outdir/$prefix.gbk\E");
-delfile("$outdir/$prefix.gbf");
+  msg("Repairing broken .GBK output that tbl2asn produces...");
+  runcmd("sed 's/COORDINATES: profile/COORDINATES:profile/' < \Q$outdir/$prefix.gbf\E > \Q$outdir/$prefix.gbk\E");
+  delfile("$outdir/$prefix.gbf");
+}
+else {
+  msg("Disabling tbl2asn");
+}
 
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
 # Some final log output
@@ -1740,6 +1745,7 @@ sub setOptions {
     {OPT=>"rfam",  VAR=>\$rfam, DEFAULT=>0, DESC=>"Enable searching for ncRNAs with Infernal+Rfam (SLOW!)"},
     {OPT=>"norrna!",  VAR=>\$norrna, DEFAULT=>0, DESC=>"Don't run rRNA search"},
     {OPT=>"notrna!",  VAR=>\$notrna, DEFAULT=>0, DESC=>"Don't run tRNA search"},
+    {OPT=>"notbl2asn!",  VAR=>\$notbl2asn, DEFAULT=>0, DESC=>"Don't run tbl2asn"},
     {OPT=>"rnammer!",  VAR=>\$rnammer, DEFAULT=>0, DESC=>"Prefer RNAmmer over Barrnap for rRNA prediction"},
   );
 
