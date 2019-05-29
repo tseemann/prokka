@@ -45,7 +45,7 @@ my @CMDLINE = ($0, @ARGV);
 my $OPSYS = $^O;
 my $BINDIR = "$FindBin::RealBin/../binaries/$OPSYS";
 my $EXE = $FindBin::RealScript;
-my $VERSION = "1.13.6";
+my $VERSION = "1.13.7";
 my $AUTHOR = 'Torsten Seemann <torsten.seemann@gmail.com>';
 my $URL = 'https://github.com/tseemann/prokka';
 my $PROKKA_PMID = '24642063';
@@ -1342,7 +1342,7 @@ for my $sid (@seq) {
     $count{ $f->primary_tag }++;
   }
 }
-for my $ft (keys %count) {
+for my $ft (sort keys %count) {
   printf "%s: %d\n", $ft, $count{$ft};
 }
 
