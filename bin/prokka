@@ -45,7 +45,7 @@ my @CMDLINE = ($0, @ARGV);
 my $OPSYS = $^O;
 my $BINDIR = "$FindBin::RealBin/../binaries/$OPSYS";
 my $EXE = $FindBin::RealScript;
-my $VERSION = "1.13.5";
+my $VERSION = "1.13.6";
 my $AUTHOR = 'Torsten Seemann <torsten.seemann@gmail.com>';
 my $URL = 'https://github.com/tseemann/prokka';
 my $PROKKA_PMID = '24642063';
@@ -156,13 +156,13 @@ my %tools = (
   'blastp' => {
     GETVER  => "blastp -version",
     REGEXP  => qr/blastp:\s+($BIDEC)/,
-    MINVER  => "2.2",
+    MINVER  => "2.8",
     NEEDED  => 1,
   },
   'makeblastdb' => {
     GETVER  => "makeblastdb -version",
     REGEXP  => qr/makeblastdb:\s+($BIDEC)/,
-    MINVER  => "2.2",
+    MINVER  => "2.8",
     NEEDED  => 0,  # only if --proteins used
   },
   'tbl2asn' => {
