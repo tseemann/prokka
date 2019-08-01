@@ -67,7 +67,7 @@ my %GOOD_PROD = (map { ($_=>1) } @GOOD_PROD);
 
 # these should accept .faa on STDIN and write report to STDOUT
 my $BLASTPCMD = "blastp -query - -db %d -evalue %e -qcov_hsp_perc %c -num_threads 1 -num_descriptions 1 -num_alignments 1 -seg no";
-my $HMMER3CMD = "hmmscan --noali --notextw --acc -E %e --cpu 1 %d /dev/stdin";
+my $HMMER3CMD = "hmmscan --noali --notextw --cut_tc --acc --cpu 1 %d /dev/stdin";
 
 my $rnammer_mode = 'bac';
 my $barrnap_mode = 'bac';
