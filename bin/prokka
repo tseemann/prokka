@@ -1370,7 +1370,14 @@ delfile("$outdir/errorsummary.val");
 delfile( map { "$outdir/$prefix.$_" } qw(dr fixedproducts ecn val) );
 
 msg("Repairing broken .GBK output that tbl2asn produces...");
-runcmd("sed 's/COORDINATES: profile/COORDINATES:profile/' < \Q$outdir/$prefix.gbf\E > \Q$outdir/$prefix.gbk\E");
+open(my $gbfFh, "<", "$outdir/$prefix.gbf") or die "ERROR: could not read $outdir/$prefix.gbf: $!";
+open(my $gbkFh, ">", "$outdir/$prefix.gbk") or die "ERROR: could not write to $outdir/$prefix.gbk: $!";
+while(<$gbfFh>){
+  s/COORDINATES: profile/COORDINATES:profile/;
+  print $gbkFh $_;
+}
+close $gbkFh;
+close $gbfFh;
 delfile("$outdir/$prefix.gbf");
 
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
