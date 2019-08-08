@@ -45,7 +45,7 @@ my @CMDLINE = ($0, @ARGV);
 my $OPSYS = $^O;
 my $BINDIR = "$FindBin::RealBin/../binaries/$OPSYS";
 my $EXE = $FindBin::RealScript;
-my $VERSION = "1.13.7";
+our $VERSION = "1.13.7";
 my $AUTHOR = 'Torsten Seemann <torsten.seemann@gmail.com>';
 my $URL = 'https://github.com/tseemann/prokka';
 my $PROKKA_PMID = '24642063';
@@ -55,6 +55,16 @@ my $UNANN = 'unannotated protein';
 my $MAXCONTIGIDLEN = 37;  # Genbank rule
 my $SIGNALP_MAXSEQ = 10_000;  # maximum allowed input for signalp
 my @LOG; # buffer up log lines before we have log file ready
+
+=pod
+
+=head1 NAME 
+
+prokka - genome annotator
+
+=head1 AUTHOR tseemann
+
+=cut
 
 # list of exceptions to /product annotations
 my @GOOD_PROD = (
