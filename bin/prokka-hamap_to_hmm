@@ -1,6 +1,7 @@
 #!/usr/bin/env perl
 use strict;
 use warnings;
+###BREWCONDA###
 use Bio::SeqIO;
 use Data::Dumper;
 use File::Temp qw(tempdir);

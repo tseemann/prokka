@@ -1,6 +1,7 @@
 #!/usr/bin/env perl
 use strict;
 use warnings;
+###BREWCONDA###
 use Bio::SeqIO;
 
 my(@Options, $verbose, $format, $hypo, $idtag, $sep, $blank, $pseudo, $minlen);
