@@ -1,0 +1,1127 @@
+RF00008	Gene; ribozyme;	Hammerhead ribozyme (type III)
+RF00010	Gene; ribozyme;	Bacterial RNase P class A
+RF00011	Gene; ribozyme;	Bacterial RNase P class B
+RF00012	Gene; snRNA; snoRNA; CD-box;	Small nucleolar RNA U3
+RF00013	Gene;	6S / SsrS RNA
+RF00014	Gene; sRNA;	DsrA RNA
+RF00017	Gene;	Metazoan signal recognition particle RNA
+RF00018	Gene; sRNA;	CsrB/RsmB RNA family
+RF00021	Gene; sRNA;	Spot 42 RNA
+RF00022	Gene;	GcvB RNA
+RF00028	Intron;	Group I catalytic intron
+RF00029	Intron;	Group II catalytic intron
+RF00032	Cis-reg;	Histone 3' UTR stem-loop
+RF00033	Gene; antisense;	MicF RNA
+RF00034	Gene; sRNA;	RprA RNA
+RF00035	Gene; sRNA;	OxyS RNA
+RF00038	Cis-reg; thermoregulator;	PrfA thermoregulator UTR
+RF00039	Gene; antisense;	DicF RNA
+RF00040	Cis-reg;	RNase E 5' UTR element
+RF00042	Gene; antisense;	CopA-like RNA
+RF00043	Gene; antisense;	R1162-like plasmid antisense RNA
+RF00049	Gene; snRNA; snoRNA; CD-box;	Small nucleolar RNA SNORD36
+RF00050	Cis-reg; riboswitch;	FMN riboswitch (RFN element)
+RF00057	Gene; sRNA;	RyhB RNA
+RF00059	Cis-reg; riboswitch;	TPP riboswitch (THI element)
+RF00066	Gene; snRNA;	U7 small nuclear RNA
+RF00077	Gene; sRNA;	SraB RNA
+RF00078	Gene; sRNA;	MicA sRNA
+RF00079	Gene; sRNA;	OmrA-B family
+RF00080	Cis-reg; riboswitch;	yybP-ykoY manganese riboswitch
+RF00081	Gene; sRNA;	ArcZ RNA
+RF00082	Gene; sRNA;	SraG RNA
+RF00083	Gene; sRNA;	GlmZ RNA activator of glmS mRNA
+RF00084	Gene; sRNA;	CsrC RNA family
+RF00101	Gene; sRNA;	SraC/RyeA RNA
+RF00104	Gene; miRNA;	mir-10 microRNA precursor family
+RF00106	Gene; antisense;	RNAI
+RF00107	Gene;	FinP
+RF00109	Cis-reg;	Vimentin 3' UTR protein-binding region
+RF00110	Gene; sRNA;	RybB RNA
+RF00111	Gene; sRNA;	SdsR_RyeB RNA
+RF00112	Gene; sRNA;	CyaR/Rye RNA
+RF00113	Gene; antitoxin;	Short Intergenic Abundant RNA
+RF00114	Cis-reg; leader;	Ribosomal S15 leader
+RF00115	Gene; sRNA;	McaS/IsrA RNA
+RF00116	Gene; sRNA;	C0465 RNA
+RF00117	Gene; sRNA;	C0719 RNA
+RF00118	Gene; sRNA;	rydB RNA
+RF00119	Gene; sRNA;	C0299 RNA
+RF00121	Gene; sRNA;	MicC RNA
+RF00122	Gene; sRNA;	GadY
+RF00124	Gene; sRNA;	IS102 RNA
+RF00125	Gene; sRNA;	IS128 RNA
+RF00126	Gene; sRNA;	ryfA RNA
+RF00127	Gene; sRNA;	t44 RNA
+RF00128	Gene; sRNA;	Glm Y RNA activator of glmS mRNA
+RF00140	Cis-reg;	Alpha operon ribosome binding site
+RF00162	Cis-reg; riboswitch;	SAM riboswitch (S box leader)
+RF00166	Gene; sRNA;	PrrB/RsmZ RNA family
+RF00167	Cis-reg; riboswitch;	Purine riboswitch
+RF00168	Cis-reg; riboswitch;	Lysine riboswitch
+RF00169	Gene;	Bacterial small signal recognition particle RNA
+RF00170	Gene;	Retron msr RNA
+RF00174	Cis-reg; riboswitch;	Cobalamin riboswitch
+RF00195	Gene; sRNA;	RsmY RNA family
+RF00199	Gene;	SL2 RNA
+RF00207	Cis-reg;	K10 transport/localisation element (TLS)
+RF00210	Cis-reg; IRES;	Aphthovirus internal ribosome entry site (IRES)
+RF00230	Cis-reg; leader;	T-box leader
+RF00234	Cis-reg; riboswitch;	glmS glucosamine-6-phosphate activated ribozyme
+RF00235	Gene;	Plasmid RNAIII
+RF00236	Gene; antisense;	ctRNA
+RF00238	Gene; antisense;	ctRNA
+RF00240	Gene; antisense;	RNA-OUT
+RF00241	Gene; miRNA;	mir-8/mir-141/mir-200 microRNA precursor family
+RF00242	Gene; antisense;	ctRNA
+RF00243	Cis-reg;	traJ 5' UTR
+RF00250	Gene; miRNA;	Trans-activation response element (TAR)
+RF00262	Gene; antisense;	sar RNA
+RF00368	Gene; sRNA;	sroB RNA
+RF00369	Gene; sRNA;	sroC RNA
+RF00370	Gene; sRNA;	sroD RNA
+RF00371	Gene; sRNA;	sroE RNA
+RF00372	Gene; sRNA;	sroH RNA
+RF00373	Gene; ribozyme;	Archaeal RNase P
+RF00375	Cis-reg;	HIV primer binding site (PBS)
+RF00378	Gene; sRNA;	Qrr RNA
+RF00379	Cis-reg; riboswitch;	ydaO/yuaA leader
+RF00380	Cis-reg; riboswitch;	ykoK leader
+RF00382	Cis-reg; frameshift_element;	DnaX ribosomal frameshifting element
+RF00383	Cis-reg; frameshift_element;	Insertion sequence IS1222 ribosomal frameshifting element
+RF00388	Gene; antisense;	Anti-Q RNA
+RF00391	Cis-reg;	RtT RNA
+RF00392	Gene; snRNA; snoRNA; HACA-box;	Small nucleolar RNA SNORA5
+RF00397	Gene; snRNA; snoRNA; HACA-box;	Small nucleolar RNA SNORA14
+RF00435	Cis-reg; thermoregulator;	Repression of heat shock gene expression (ROSE) element
+RF00442	Cis-reg; riboswitch;	Guanidine-I riboswitch
+RF00444	Gene; sRNA;	PrrF RNA
+RF00456	Gene; miRNA;	mir-34 microRNA precursor family
+RF00485	Cis-reg;	Potassium channel RNA editing signal
+RF00489	Gene; antisense;	ctRNA
+RF00490	Cis-reg;	S-element
+RF00503	Gene;	RNAIII
+RF00504	Cis-reg; riboswitch;	Glycine riboswitch
+RF00505	Gene; sRNA;	RydC RNA
+RF00506	Cis-reg; leader;	Threonine operon leader
+RF00512	Cis-reg; leader;	Leucine operon leader
+RF00513	Cis-reg; leader;	Tryptophan operon leader
+RF00514	Cis-reg; leader;	Histidine operon leader
+RF00515	Cis-reg;	PyrR binding site
+RF00516	Cis-reg; leader;	ylbH leader
+RF00517	Cis-reg; leader;	serC leader
+RF00518	Cis-reg; leader;	speF leader
+RF00519	Gene; sRNA;	Makes More Granules Regulator RNA (mmgR)
+RF00520	Cis-reg; leader;	ybhL leader
+RF00521	Cis-reg; riboswitch;	SAM riboswitch (alpha-proteobacteria)
+RF00522	Cis-reg; riboswitch;	PreQ1 riboswitch
+RF00523	Cis-reg;	Prion pseudoknot
+RF00534	Gene; antisense;	SgrS RNA
+RF00552	Cis-reg;	rncO
+RF00555	Cis-reg; leader;	Ribosomal protein L13 leader
+RF00556	Cis-reg; leader;	Ribosomal protein L19 leader
+RF00557	Cis-reg; leader;	Ribosomal protein L10 leader
+RF00558	Cis-reg; leader;	Ribosomal protein L20 leader
+RF00559	Cis-reg; leader;	Ribosomal protein L21 leader
+RF00560	Gene; snRNA; snoRNA; HACA-box;	Small nucleolar RNA SNORA17
+RF00598	Gene; snRNA; snoRNA; HACA-box;	Small nucleolar RNA SNORA76
+RF00615	Gene; sRNA;	Listeria Hfq binding LhrA
+RF00616	Gene; sRNA;	Listeria LhrC
+RF00623	Gene;	Pseudomonas sRNA P1
+RF00624	Gene;	Pseudomonas sRNA P9
+RF00625	Gene;	Pseudomonas sRNA P11
+RF00627	Gene;	Pseudomonas sRNA P15
+RF00629	Gene;	Pseudomonas sRNA P24
+RF00630	Gene;	Pseudomonas sRNA P26
+RF00632	Cis-reg;	sxy 5' UTR element
+RF00634	Cis-reg; riboswitch;	S-adenosyl methionine (SAM) riboswitch,
+RF00655	Gene; miRNA;	microRNA mir-28
+RF00660	Gene; miRNA;	microRNA mir-214
+RF00722	Gene; miRNA;	microRNA mir-451
+RF00782	Gene; miRNA;	microRNA MIR480
+RF00804	Gene; miRNA;	microRNA mir-240
+RF00824	Gene; miRNA;	microRNA mir-50
+RF00828	Gene; miRNA;	microRNA mir-75
+RF00843	Gene; miRNA;	microRNA mir-228
+RF00845	Gene; miRNA;	microRNA MIR158
+RF00846	Gene; miRNA;	microRNA mir-64
+RF00848	Gene; miRNA;	microRNA mir-61
+RF00857	Gene; miRNA;	microRNA mir-233
+RF00882	Gene; miRNA;	microRNA MIR811
+RF00892	Gene; miRNA;	microRNA mir-551
+RF00898	Gene; miRNA;	microRNA mir-242
+RF01016	Gene; miRNA;	microRNA mir-584
+RF01031	Gene; miRNA;	microRNA mir-639
+RF01051	Cis-reg;	Cyclic di-GMP-I riboswitch
+RF01053	Gene;	Deinococcus radiodurans Y RNA
+RF01054	Cis-reg; riboswitch;	preQ1-II (pre queuosine) riboswitch
+RF01055	Cis-reg; riboswitch;	Moco (molybdenum cofactor) riboswitch
+RF01056	Cis-reg; riboswitch;	Magnesium Sensor
+RF01057	Cis-reg; riboswitch;	S-adenosyl-L-homocysteine riboswitch
+RF01059	Gene; miRNA;	microRNA mir-598
+RF01065	Cis-reg;	23S methyl RNA motif
+RF01066	Cis-reg;	6C RNA
+RF01067	Gene;	ATPC RNA motif
+RF01068	Cis-reg;	Guanidine-II riboswitch
+RF01069	Cis-reg;	purD RNA motif
+RF01070	Cis-reg;	SucA RNA motif
+RF01071	Gene;	Ornate Large Extremophilic RNA
+RF01072	Cis-reg;	Pseudoknot of upstream pseudoknot domain (UPD) of the 3'UTR
+RF01077	Cis-reg;	Pseudoknot of tRNA-like structure
+RF01083	Cis-reg;	Pseudoknot of upstream pseudoknot domain (UPD) of the 3'UTR
+RF01087	Cis-reg;	Pseudoknot of the regulatory region of the repZ gene
+RF01089	Cis-reg;	Pseudoknot of the regulatory region of the repBA gene
+RF01114	Cis-reg;	Pseudoknot of upstream pseudoknot domain (UPD) of the 3'UTR
+RF01116	Gene; sRNA;	Cyanobacterial functional RNA 1
+RF01131	Gene; snRNA; snoRNA; CD-box;	Small nucleolar RNA sR47
+RF01133	Gene; snRNA; snoRNA; CD-box;	Small nucleolar RNA sR3
+RF01197	Gene; snRNA; snoRNA; CD-box;	Small nucleolar RNA snR39
+RF01262	Gene; snRNA; snoRNA; HACA-box;	Small nucleolar RNA snR44
+RF01277	Gene; snRNA; snoRNA; CD-box;	Small nucleolar RNA U54
+RF01315	Gene; CRISPR;	CRISPR RNA direct repeat element
+RF01316	Gene; CRISPR;	CRISPR RNA direct repeat element
+RF01317	Gene; CRISPR;	CRISPR RNA direct repeat element
+RF01318	Gene; CRISPR;	CRISPR RNA direct repeat element
+RF01320	Gene; CRISPR;	CRISPR RNA direct repeat element
+RF01321	Gene; CRISPR;	CRISPR RNA direct repeat element
+RF01322	Gene; CRISPR;	CRISPR RNA direct repeat element
+RF01323	Gene; CRISPR;	CRISPR RNA direct repeat element
+RF01325	Gene; CRISPR;	CRISPR RNA direct repeat element
+RF01327	Gene; CRISPR;	CRISPR RNA direct repeat element
+RF01329	Gene; CRISPR;	CRISPR RNA direct repeat element
+RF01330	Gene; CRISPR;	CRISPR RNA direct repeat element
+RF01331	Gene; CRISPR;	CRISPR RNA direct repeat element
+RF01332	Gene; CRISPR;	CRISPR RNA direct repeat element
+RF01333	Gene; CRISPR;	CRISPR RNA direct repeat element
+RF01334	Gene; CRISPR;	CRISPR RNA direct repeat element
+RF01335	Gene; CRISPR;	CRISPR RNA direct repeat element
+RF01336	Gene; CRISPR;	CRISPR RNA direct repeat element
+RF01339	Gene; CRISPR;	CRISPR RNA direct repeat element
+RF01340	Gene; CRISPR;	CRISPR RNA direct repeat element
+RF01341	Gene; CRISPR;	CRISPR RNA direct repeat element
+RF01342	Gene; CRISPR;	CRISPR RNA direct repeat element
+RF01343	Gene; CRISPR;	CRISPR RNA direct repeat element
+RF01344	Gene; CRISPR;	CRISPR RNA direct repeat element
+RF01345	Gene; CRISPR;	CRISPR RNA direct repeat element
+RF01346	Gene; CRISPR;	CRISPR RNA direct repeat element
+RF01347	Gene; CRISPR;	CRISPR RNA direct repeat element
+RF01348	Gene; CRISPR;	CRISPR RNA direct repeat element
+RF01349	Gene; CRISPR;	CRISPR RNA direct repeat element
+RF01352	Gene; CRISPR;	CRISPR RNA direct repeat element
+RF01353	Gene; CRISPR;	CRISPR RNA direct repeat element
+RF01356	Gene; CRISPR;	CRISPR RNA direct repeat element
+RF01357	Gene; CRISPR;	CRISPR RNA direct repeat element
+RF01359	Gene; CRISPR;	CRISPR RNA direct repeat element
+RF01361	Gene; CRISPR;	CRISPR RNA direct repeat element
+RF01362	Gene; CRISPR;	CRISPR RNA direct repeat element
+RF01363	Gene; CRISPR;	CRISPR RNA direct repeat element
+RF01364	Gene; CRISPR;	CRISPR RNA direct repeat element
+RF01365	Gene; CRISPR;	CRISPR RNA direct repeat element
+RF01366	Gene; CRISPR;	CRISPR RNA direct repeat element
+RF01367	Gene; CRISPR;	CRISPR RNA direct repeat element
+RF01368	Gene; CRISPR;	CRISPR RNA direct repeat element
+RF01370	Gene; CRISPR;	CRISPR RNA direct repeat element
+RF01371	Gene; CRISPR;	CRISPR RNA direct repeat element
+RF01374	Gene; CRISPR;	CRISPR RNA direct repeat element
+RF01376	Gene; CRISPR;	CRISPR RNA direct repeat element
+RF01379	Gene; CRISPR;	CRISPR RNA direct repeat element
+RF01380	Cis-reg;	Human immunodeficiency virus type 1 major splice donor
+RF01383	Gene;	GRIK4 3 prime UTR element
+RF01384	Gene;	Invasion gene-associated RNA
+RF01385	Gene; sRNA;	isrA Hfq binding RNA
+RF01386	Gene; sRNA;	isrB Hfq binding RNA
+RF01387	Gene; sRNA;	isrC Hfq binding RNA
+RF01388	Gene; sRNA;	isrD Hfq binding RNA
+RF01389	Gene; sRNA;	isrF Hfq binding RNA
+RF01390	Gene; sRNA;	isrG Hfq binding RNA
+RF01391	Gene; sRNA;	isrH Hfq binding RNA
+RF01392	Gene; sRNA;	isrI Hfq binding RNA
+RF01393	Gene; sRNA;	isrJ Hfq binding RNA
+RF01394	Gene; sRNA;	isrK Hfq binding RNA
+RF01395	Gene; sRNA;	isrL Hfq binding RNA
+RF01396	Gene; sRNA;	isrN Hfq binding RNA
+RF01397	Gene; sRNA;	isrO Hfq binding RNA
+RF01398	Gene; sRNA;	isrP Hfq binding RNA
+RF01399	Gene; sRNA;	isrQ Hfq binding RNA
+RF01400	Gene; antitoxin;	istR Hfq binding RNA
+RF01401	Gene; sRNA;	rseX Hfq binding RNA
+RF01402	Gene; sRNA;	STnc150 Hfq binding RNA
+RF01403	Gene; sRNA;	STnc290 Hfq binding RNA
+RF01404	Gene; sRNA;	PinT (STnc440) Hfq binding RNA
+RF01405	Gene; sRNA;	STnc490 Hfq binding RNA
+RF01406	Gene; sRNA;	STnc500 Hfq binding RNA
+RF01407	Gene; sRNA;	STnc560 Hfq binding RNA
+RF01408	Gene; sRNA;	sraL Hfq binding RNA
+RF01409	Gene; sRNA;	STnc250 Hfq binding RNA
+RF01410	Gene; sRNA;	BsrC
+RF01411	Gene; sRNA;	BsrF
+RF01412	Gene; sRNA;	BsrG
+RF01416	Gene; antisense;	NrrF RNA
+RF01419	Gene; antisense;	Antisense RNA which regulates isiA expression
+RF01456	Gene; antisense;	Vibrio regulatory RNA of OmpA
+RF01457	Gene; sRNA;	Listeria sRNA rli22
+RF01458	Gene; antisense;	Listeria snRNA rli23
+RF01459	Gene; sRNA;	Listeria sRNA rliE
+RF01460	Gene; sRNA;	Listeria sRNA rliH
+RF01461	Gene; sRNA;	Listeria sRNA rli22
+RF01462	Gene; sRNA;	Listeria sRNA rli26
+RF01463	Gene; sRNA;	Listeria sRNA rli27
+RF01464	Gene; sRNA;	Listeria sRNA rliA
+RF01465	Gene; sRNA;	Listeria sRNA rli31
+RF01466	Gene; sRNA;	Listeria sRNA rli34
+RF01467	Gene; sRNA;	Listeria sRNA rli36
+RF01468	Gene; sRNA;	Listeria sRNA rli32
+RF01469	Gene; sRNA;	Listeria sRNA rli33
+RF01470	Gene; sRNA;	Listeria sRNA rli38
+RF01471	Gene; sRNA;	Listeria sRNA rliB
+RF01472	Gene; sRNA;	Listeria sRNA rli40
+RF01473	Gene; sRNA;	Listeria sRNA rli41
+RF01474	Gene; sRNA;	Listeia sRNA rli42
+RF01475	Gene; antisense;	Listeria snRNA rli45
+RF01476	Gene; sRNA;	Listeria sRNA rliF
+RF01477	Gene; sRNA;	Listeria sRNA rli43
+RF01478	Gene; sRNA;	Listeria sRNA rli47
+RF01479	Gene; sRNA;	Listeria sRNA rli48
+RF01480	Cis-reg;	Listeria sRNA rli52
+RF01481	Cis-reg;	Listeria sRNA rli53
+RF01482	Cis-reg; riboswitch;	AdoCbl riboswitch
+RF01483	Cis-reg;	Listeria sRNA rli56
+RF01484	Cis-reg;	Listeria sRNA rli59
+RF01485	Cis-reg;	Listeria sRNA rli61
+RF01486	Cis-reg;	Listeria sRNA rli62
+RF01487	Gene; sRNA;	Listeria sRNA rliI
+RF01488	Gene; sRNA;	Listeria sRNA rli49
+RF01489	Gene; sRNA;	Listeria sRNA sbrA
+RF01490	Cis-reg;	Listeria snRNA rli51
+RF01491	Cis-reg;	Listeria sRNA rli54
+RF01492	Gene; sRNA;	Listeria sRNA rli28
+RF01493	Gene; sRNA;	Listeria sRNA rli37
+RF01494	Gene; antisense;	Listeria sRNA rliD
+RF01497	Cis-reg;	ALIL pseudoknot
+RF01510	Cis-reg; riboswitch;	M. florum riboswitch
+RF01515	Gene; snRNA; snoRNA; CD-box;	A. fumigatus snoRNA Afu_514
+RF01517	Cis-reg;	iscR stability element
+RF01519	Gene; sRNA;	Caulobacter sRNA CC0196
+RF01520	Gene; sRNA;	caulobacter sRNA CC0734
+RF01521	Gene; sRNA;	caulobacter sRNA CC1840
+RF01527	Gene; sRNA;	Caulobacter sRNA CrfA
+RF01528	Gene; sRNA;	caulobacter sRNA CC3513
+RF01529	Gene; sRNA;	Cauldobacter sRNA CC3552
+RF01530	Gene; sRNA;	Caulobacter sRNA CC3664
+RF01656	Gene; sRNA;	Nematode sRNA ceN72-3_ceN74-2
+RF01665	Gene; sRNA;	Pseudomonas sRNA P13
+RF01668	Gene; sRNA;	Pseudomonas sRNA P10
+RF01669	Gene; sRNA;	Pseudomonas sRNA P14
+RF01670	Gene; sRNA;	Pseudomonas sRNA P17
+RF01671	Gene; sRNA;	Pseudomonas sRNA P18
+RF01672	Gene; sRNA;	Psudomonas sRNA P2
+RF01673	Gene; sRNA;	PhrS
+RF01674	Gene; sRNA;	Pseudomonas sRNA P27
+RF01675	Gene; sRNA;	Pseudomonas sRNA CrcZ
+RF01676	Gene; sRNA;	Pseudomonas sRNA P31
+RF01677	Gene; sRNA;	Pseudomonas sRNA P35
+RF01678	Gene; sRNA;	Pseudomonas sRNA P37
+RF01679	Gene; sRNA;	Pseudomonas sRNA P36
+RF01680	Gene; sRNA;	Pseudomonas sRNA P5
+RF01681	Gene; sRNA;	Pseudomonas sRNA P4
+RF01682	Gene; sRNA;	Pseudomonas sRNA P8
+RF01683	Gene; sRNA;	Pseudomonas sRNA P6
+RF01685	Gene; sRNA;	6S-Flavo RNA
+RF01686	Gene; sRNA;	Acido-1 RNA
+RF01687	Gene; sRNA;	Acido-Lenti-1 RNA
+RF01688	Cis-reg;	Actino-pnp RNA
+RF01689	Cis-reg; riboswitch;	AdoCbl variant RNA
+RF01690	Gene; sRNA;	Bacillaceae-1 RNA
+RF01691	Gene; sRNA;	Bacillus-plasmid RNA
+RF01692	Cis-reg; leader;	Bacteroidete tryptophan peptide leader RNA
+RF01693	Gene; sRNA;	Bacteroidales-1 RNA
+RF01694	Gene; sRNA;	Bacteroides-1 RNA
+RF01695	Gene; antisense;	C4 antisense RNA
+RF01696	Gene; sRNA;	Chlorobi-1 RNA
+RF01697	Cis-reg;	Chlorobi-RRM RNA
+RF01698	Gene; sRNA;	Chloroflexi-1 RNA
+RF01699	Gene; sRNA;	Clostridiales-1 RNA
+RF01700	Gene; sRNA;	Collinsella-1 RNA
+RF01701	Gene; sRNA;	Cyano-1 RNA
+RF01702	Gene; sRNA;	Cyano-2 RNA
+RF01703	Gene; sRNA;	Dictyoglomi-1 RNA
+RF01704	Cis-reg;	Downstream peptide RNA
+RF01705	Gene; sRNA;	Flavo-1 RNA
+RF01706	Gene; sRNA;	Gut-1 RNA
+RF01707	Cis-reg;	JUMPstart RNA
+RF01708	Cis-reg;	L17 ribosomal protein downstream element
+RF01709	Cis-reg;	Lacto-rpoB RNA
+RF01710	Gene; sRNA;	Lacto-usp RNA
+RF01711	Cis-reg;	Lnt RNA
+RF01712	Gene; sRNA;	Methylobacterium-1 RNA
+RF01713	Cis-reg;	Moco-II RNA
+RF01715	Cis-reg;	Pedo-repair RNA
+RF01716	Cis-reg;	PhotoRC-I RNA
+RF01717	Cis-reg;	PhotoRC-II RNA
+RF01718	Gene; sRNA;	Polynucleobacter-1 RNA
+RF01719	Gene; sRNA;	Pseudomon-1/ErsA RNA
+RF01720	Cis-reg;	Pseudomon-Rho RNA
+RF01721	Cis-reg;	Pseudomon-groES RNA
+RF01723	Gene; sRNA;	Rhizobiales-2 RNA
+RF01724	Cis-reg;	SAM-Chlorobi RNA
+RF01725	Cis-reg; riboswitch;	SAM-I/IV variant riboswitch
+RF01726	Cis-reg;	SAM-II long loop
+RF01727	Cis-reg; riboswitch;	SAM/SAH riboswitch
+RF01728	Gene; sRNA;	STAXI RNA
+RF01729	Cis-reg;	Termite-flg RNA
+RF01731	Cis-reg;	TwoAYGGAY RNA
+RF01732	Gene; sRNA;	MarS sRNA
+RF01733	Cis-reg;	atoC RNA
+RF01734	Cis-reg; riboswitch;	Fluoride riboswitch
+RF01735	Cis-reg;	epsC RNA
+RF01736	Cis-reg;	flg-Rhizobiales RNA
+RF01738	Cis-reg;	gabT RNA
+RF01739	Cis-reg; riboswitch;	Glutamine riboswitch
+RF01740	Cis-reg;	gyrA RNA
+RF01742	Gene; sRNA;	lactis-plasmid RNA
+RF01743	Cis-reg; leader;	leu/phe leader RNA from Lactococcus
+RF01744	Cis-reg;	livK RNA
+RF01745	Cis-reg;	manA RNA
+RF01746	Cis-reg;	mraW RNA
+RF01747	Cis-reg;	msiK RNA
+RF01748	Cis-reg;	nuoG RNA
+RF01749	Cis-reg;	pan motif
+RF01750	Cis-reg; riboswitch;	ZMP/ZTP riboswitch
+RF01752	Cis-reg;	psaA RNA
+RF01753	Cis-reg;	psbNH RNA
+RF01754	Cis-reg;	radC RNA
+RF01755	Cis-reg;	rmf RNA
+RF01756	Cis-reg;	rne-II RNA
+RF01757	Gene; sRNA;	sbcD RNA
+RF01758	Cis-reg;	sucA-II RNA
+RF01759	Cis-reg;	sucC RNA
+RF01760	Cis-reg;	traJ-II RNA
+RF01762	Gene; sRNA;	Whalefall-1 RNA
+RF01763	Cis-reg;	Guanidine-III riboswitch
+RF01764	Cis-reg;	yjdF RNA
+RF01766	Cis-reg; thermoregulator;	cspA thermoregulator
+RF01767	Cis-reg; riboswitch;	SMK box translational riboswitch
+RF01769	Cis-reg; leader;	Enterobacteria greA leader
+RF01770	Cis-reg; leader;	Gammaprotebacteria rimP leader
+RF01771	Cis-reg; leader;	Enterobacteria rnk leader
+RF01772	Cis-reg; leader;	Pseudomonas rnk leader
+RF01773	Cis-reg; leader;	Pseudomonas rpsL leader
+RF01774	Cis-reg; leader;	Rickettsia rpsL leader
+RF01775	Gene; sRNA;	RNA S.aureus Orsay G
+RF01776	Gene; antitoxin;	RNA anti-toxin A
+RF01779	Gene;	AS1726 sRNA
+RF01780	Gene;	AS1890 sRNA
+RF01781	Gene; sRNA;	ASdes TB sRNA
+RF01782	Gene; antisense;	ASpks TB sRNA
+RF01783	Gene; sRNA;	Mycobacterium B11
+RF01784	Gene; sRNA;	bablM sRNA
+RF01786	Cis-reg; riboswitch;	Cyclic di-GMP-II riboswitch
+RF01791	Gene; sRNA;	F6 TB sRNA
+RF01793	Gene; sRNA;	ffh sRNA
+RF01794	Gene; antitoxin;	sok antitoxin (CssrC)
+RF01795	Cis-reg; thermoregulator;	FourU thermometer RNA element
+RF01796	Gene; sRNA;	Fumarate/nitrate reductase regulator sRNA
+RF01797	Gene; antitoxin;	Fst antitoxin sRNA
+RF01798	Gene;	G2
+RF01804	Cis-reg; thermoregulator;	Lambda phage CIII thermoregulator element
+RF01808	Gene; sRNA;	MicX Vibrio cholerae sRNA
+RF01809	Gene; antitoxin;	SymR antitoxin
+RF01810	Gene; sRNA;	pntA sRNA
+RF01811	Gene; antitoxin;	Plasmid transferred anti-sense RNA
+RF01812	Gene; sRNA;	Pxr regulatory sRNA
+RF01813	Gene; antitoxin;	rdlD antitoxin
+RF01814	Gene; sRNA;	rhtB sRNA
+RF01815	Gene; sRNA;	rpsB sRNA
+RF01816	Gene; sRNA;	RNA Staph. aureus A
+RF01817	Gene; sRNA;	RNA Staph. aureus A
+RF01818	Gene; sRNA;	RNA Staph. aureus C
+RF01819	Gene; sRNA;	RNA Staph. aureus D
+RF01820	Gene; sRNA;	RNA Staph. aureus E (RoxS)
+RF01821	Gene; sRNA;	RNA Staph. aureus H
+RF01822	Gene; sRNA;	RNA Staph. aureus A
+RF01823	Gene; sRNA;	rpsL sRNA
+RF01826	Cis-reg; riboswitch;	SAM-V riboswitch
+RF01827	Gene; sRNA;	SAR11_0636 sRNA
+RF01828	Gene; sRNA;	Small pathogenicity island RNA D
+RF01830	Gene;	Salmonella enterica Typhi npcRNA 44
+RF01831	Cis-reg; riboswitch;	THF riboswitch
+RF01832	Cis-reg; thermoregulator;	Repression of heat shock gene expression (ROSE) element
+RF01836	Cis-reg; frameshift_element;	ribosomal frameshift site
+RF01842	Cis-reg; frameshift_element;	mycoplasma ribosomal frameshift element
+RF01843	Cis-reg; frameshift_element;	neiserria ribosomal frameshift element
+RF01846	Gene; snRNA; snoRNA; CD-box;	Fungal small nucleolar RNA U3
+RF01854	Gene;	Bacterial large signal recognition particle RNA
+RF01855	Gene;	Plant signal recognition particle RNA
+RF01856	Gene;	Protozoan signal recognition particle RNA
+RF01857	Gene;	Archaeal signal recognition particle RNA
+RF01858	Gene; sRNA;	RNA Staph. aureus F
+RF01859	Cis-reg; leader;	Phenylalanine leader peptide
+RF01867	Gene; sRNA;	caulobacter sRNA CC2171
+RF01982	Cis-reg;	Pyrrolysine insertion sequence 1
+RF01988	Cis-reg;	Selenocysteine insertion sequence 2
+RF01989	Cis-reg;	Selenocysteine insertion sequence 3
+RF01990	Cis-reg;	Selenocysteine insertion sequence 4
+RF01998	Intron;	Group II catalytic intron D1-D4-1
+RF01999	Intron;	Group II catalytic intron D1-D4-2
+RF02000	Gene; miRNA;	microRNA MIR1846
+RF02001	Intron;	Group II catalytic intron D1-D4-3
+RF02003	Intron;	Group II catalytic intron D1-D4-4
+RF02004	Intron;	Group II catalytic intron D1-D4-5
+RF02005	Intron;	Group II catalytic intron D1-D4-6
+RF02012	Intron;	Group II catalytic intron D1-D4-7
+RF02029	Gene; sRNA;	sraA
+RF02030	Gene; sRNA;	tp2
+RF02031	Gene; sRNA;	tpke11
+RF02032	Gene;	Giant, ornate, lake- and Lactobacillales-derived (GOLLD) RNA
+RF02033	Gene;	HNH endonuclease-associated RNA and ORF (HEARO) RNA
+RF02034	Gene;	IMES-1 RNA motif
+RF02035	Gene;	IMES-2 RNA motif
+RF02048	Gene; sRNA;	Salmonella enterica conserved region STnc30
+RF02049	Gene; sRNA;	Salmonella enterica sRNA STnc460
+RF02050	Gene; sRNA;	Salmonella enterica sRNA STnc470
+RF02051	Gene; sRNA;	Enterobacterial sRNA STnc450
+RF02052	Gene; sRNA;	Enterobacterial sRNA STnc630
+RF02053	Gene; sRNA;	Enterobacterial sRNA STnc430
+RF02054	Gene; sRNA;	Salmonella enterica sRNA STnc420
+RF02055	Gene; sRNA;	Enterobacterial sRNA STnc380
+RF02056	Gene; sRNA;	Salmonella sRNA STnc390
+RF02057	Gene; sRNA;	Salmonella enterica sRNA STnc40
+RF02058	Gene;	Gammaproteobacterial sRNA STnc400
+RF02059	Gene; sRNA;	Salmonella enterica sRNA STnc40
+RF02060	Gene; sRNA;	Enterobacterial sRNA STnc410
+RF02062	Gene; sRNA;	Salmonella enterica sRNA STnc361
+RF02063	Gene; sRNA;	Salmonella enterica sRNA STnc350
+RF02064	Gene; sRNA;	Enterobacterial sRNA STnc370
+RF02065	Gene; sRNA;	Enterobacterial sRNA STnc340
+RF02066	Gene; sRNA;	Salmonella enterica sRNA STnc320
+RF02067	Gene; sRNA;	Salmonella enterica sRNA STnc310
+RF02068	Gene; sRNA;	Enterobacterial sRNA STnc480
+RF02069	Gene; sRNA;	Enterobacterial sRNA STnc70
+RF02070	Gene; sRNA;	Salmonella enterica sRNA STnc300
+RF02071	Gene; sRNA;	Salmonella enterica sRNA STnc280
+RF02072	Gene; sRNA;	Salmonella enterica sRNA STnc590
+RF02073	Gene; sRNA;	Salmonella enterica sRNA STnc260
+RF02074	Gene; sRNA;	Enterobacterial sRNA STnc240
+RF02075	Gene; sRNA;	Enterobacterial sRNA STnc230
+RF02076	Gene; sRNA;	Gammaproteobacterial sRNA STnc100
+RF02077	Gene; sRNA;	Salmonella enterica sRNA STnc220
+RF02078	Gene; sRNA;	Salmonella enterica sRNA STnc210
+RF02079	Gene; sRNA;	Enterobacterial sRNA STnc180
+RF02080	Gene; sRNA;	Salmonella enterica sRNA STnc170
+RF02081	Gene; sRNA;	Enterobacterial sRNA STnc550
+RF02082	Gene; sRNA;	Enterobacterial sRNA STnc540
+RF02083	Gene; antitoxin;	OrzO-P RNA antitoxin family
+RF02084	Gene; sRNA;	Enterobacteria sRNA STnc130
+RF02088	Gene; sRNA;	Enterobacterial sRNA STnc510
+RF02099	Gene; sRNA;	rivX sRNA
+RF02100	Gene; sRNA;	Translational regulator of tfoXVC
+RF02111	Gene;	IS009
+RF02144	Gene;	rsmX
+RF02194	Gene; antisense;	Bacterial antisense RNA HPnc0260
+RF02221	Gene; sRNA;	sRNA-Xcc1
+RF02222	Gene; sRNA;	Xanthomonas sRNA sX2
+RF02223	Gene; sRNA;	Proteobacterial sRNA sX4
+RF02224	Gene; sRNA;	Xanthomonadaceae sRNA sX5
+RF02225	Gene; sRNA;	Proteobacterial sRNA sX6
+RF02226	Gene; sRNA;	Xanthomonas sRNA sX7
+RF02227	Gene; sRNA;	Proteobacterial sRNA sX8
+RF02228	Gene; sRNA;	Xanthomonas sRNA sX9
+RF02230	Gene; sRNA;	Proteobacterial sRNA sX11
+RF02231	Gene; sRNA;	Xanthomonas sRNA sX12
+RF02232	Gene; sRNA;	Xanthomonadaceae sRNA sX13
+RF02233	Gene; sRNA;	Xanthomonas sRNA sX14/Xoo3
+RF02234	Gene; sRNA;	Xanthomonadaceae sRNA sX15
+RF02235	Gene; sRNA;	Xanthomonadaceae sRNA asX1
+RF02236	Gene; sRNA;	Xanthomonas sRNA asX2
+RF02237	Gene; sRNA;	Xanthomonas sRNA asX3
+RF02238	Gene; sRNA;	Xanthomonas sRNA asX4/Xoo4
+RF02239	Gene; sRNA;	Xanthomonas sRNA asX6
+RF02240	Gene; sRNA;	Xanthomonadaceae sRNA Xoo1
+RF02241	Gene; sRNA;	Xanthomonadaceae sRNA Xoo2
+RF02242	Gene; sRNA;	Xanthomonadaceae sRNA Xoo5
+RF02243	Gene; sRNA;	Proteobacterial sRNA Xoo8
+RF02253	Cis-reg;	Iron response element II
+RF02268	Gene; sRNA;	MtlS RNA
+RF02269	Gene; sRNA;	Heliobacter pylori small RNA HPnc0580
+RF02270	Gene;	Neisseria sigma-E sRNA
+RF02273	Gene;	FsrA
+RF02274	Gene;	AniS
+RF02276	Gene; ribozyme;	Hammerhead ribozyme (type II)
+RF02278	Gene; sRNA;	Betaproteobacteria toxic small RNA
+RF02341	Gene; sRNA;	Mycobacterium sRNA ncrMT1302
+RF02342	Gene; sRNA;	Alphaproteobacterial sRNA ar7
+RF02343	Gene; sRNA;	Alphaproteobacterial sRNA ar9
+RF02344	Gene; sRNA;	Alphaproteobacterial ar14
+RF02345	Gene; sRNA;	Alphaproteobacterial ar15
+RF02346	Gene; sRNA;	Alphaproteobacterial sRNA ar35
+RF02347	Gene; sRNA;	Alphaproteobacterial sRNA ar45
+RF02348	Gene;	Trans-activating crRNA
+RF02349	Gene; sRNA;	Proteobacterial sRNA psRNA2
+RF02350	Gene; sRNA;	Nitrosomonas sRNA psRNA6
+RF02351	Gene; sRNA;	Proteobacteria sRNA psRNA14
+RF02353	Gene; sRNA;	Bradyrhizobiaceae sRNA BjrC68
+RF02354	Gene; sRNA;	Bradyrhizobiaceae sRNA BjrC80
+RF02355	Gene; sRNA;	Bradyrhizobiaceae sRNA BjrC174
+RF02356	Gene; sRNA;	Alphaproteobacterial sRNA BjrC1505
+RF02358	Cis-reg; thermoregulator;	Hsp17 thermometer
+RF02360	Gene; sRNA;	Cyanobacterial functional RNA 8/9
+RF02362	Gene; sRNA;	Cyanobacterial functional RNA 10
+RF02363	Gene; sRNA;	Cyanobacterial functional RNA 11
+RF02364	Gene; sRNA;	Cyanobacterial functional RNA 13
+RF02365	Gene; sRNA;	Cyanobacterial functional RNA 17
+RF02366	Gene; sRNA;	Cyanobacterial functional RNA 19
+RF02367	Gene; sRNA;	Cyanobacterial functional RNA 20
+RF02368	Gene; sRNA;	Cyanobacterial functional RNA 21
+RF02369	Gene; sRNA;	h2cR sRNA
+RF02370	Cis-reg; leader;	Bacillus tryptophan operon leader
+RF02371	Cis-reg; leader;	PyrG leader
+RF02372	Cis-reg; leader;	PyrC leader
+RF02373	Cis-reg; leader;	PyrD leader
+RF02374	Gene; sRNA;	Yersinia YenS sRNA
+RF02375	Gene; sRNA;	Aar sRNA
+RF02376	Gene; sRNA;	SR1 sRNA
+RF02377	Gene; sRNA;	SurA sRNA
+RF02378	Gene; sRNA;	SurC sRNA
+RF02379	Gene; sRNA;	Cia-dependent small RNA csRNA1
+RF02384	Gene; sRNA;	FasX small RNA
+RF02385	Gene; sRNA;	Staphylococcus sRNA sau-13
+RF02386	Gene; sRNA;	Staphylococcus sRNA sau-19
+RF02387	Gene; sRNA;	Staphylococcus sRNA sau-27
+RF02388	Gene; sRNA;	Staphylococcus sRNA sau-30
+RF02389	Gene; sRNA;	Staphylococcus sRNA sau-31
+RF02390	Gene; sRNA;	Staphylococcus sRNA sau-41
+RF02392	Gene; sRNA;	Staphylococcus sRNA sau-53
+RF02393	Gene; sRNA;	Staphylococcus sRNA sau-59
+RF02394	Gene; sRNA;	Staphylococcus sRNA sau-63
+RF02395	Gene; sRNA;	Staphylococcus sRNA sau-66
+RF02396	Gene; sRNA;	Staphylococcus sRNA sau-5949
+RF02397	Gene; sRNA;	Staphylococcus sRNA sau-5971
+RF02398	Gene; sRNA;	Staphylococcus sRNA sau-6072
+RF02399	Gene; sRNA;	Nitrogen stress-induced RNA 1
+RF02401	Cis-reg;	ClpQY promoter
+RF02404	Gene; sRNA;	Pseudomonas sRNA P33
+RF02405	Gene; sRNA;	Pseudomonas sRNA P34
+RF02414	Gene; sRNA;	Listeria sRNA rli60
+RF02415	Gene; sRNA;	Listeria sRNA rliG
+RF02417	Gene; sRNA;	VR-RNA
+RF02418	Gene; sRNA;	Streptococcus sRNA Spd-sr07
+RF02419	Gene; sRNA;	Streptococcus sRNA Spd-sr37
+RF02420	Gene; sRNA;	Burkholderia sRNA Bp1_Cand612_SIPHT
+RF02421	Gene; sRNA;	Burkholderia sRNA Bp1_Cand684_SIPHT
+RF02422	Gene; sRNA;	Burkholderia sRNA Bp1_Cand738_SIPHT
+RF02423	Gene; sRNA;	Burkholderia sRNA Bp1_Cand871_SIPHT
+RF02424	Gene; sRNA;	Burkholderia sRNA Bp2_Cand287_SIPHT
+RF02425	Gene; sRNA;	Streptococcus sRNA SpF01
+RF02426	Gene; sRNA;	Streptococcus sRNA SpF03
+RF02427	Gene; sRNA;	Streptococcus sRNA SpF10
+RF02428	Gene; sRNA;	Streptococcus sRNA SpF11
+RF02429	Gene; sRNA;	Streptococcus sRNA SpF14
+RF02430	Gene; sRNA;	Streptococcus sRNA SpF19
+RF02431	Gene; sRNA;	Streptococcus sRNA SpF22
+RF02432	Gene; sRNA;	Streptococcus sRNA SpF25
+RF02433	Gene; sRNA;	Streptococcus sRNA SpF36
+RF02434	Gene; sRNA;	Streptococcus sRNA SpF39
+RF02435	Gene; sRNA;	Streptococcus sRNA SpF41
+RF02436	Gene; sRNA;	Streptococcus sRNA SpF43
+RF02437	Gene; sRNA;	Streptococcus sRNA SpF44
+RF02438	Gene; sRNA;	Streptococcus sRNA SpF51
+RF02439	Gene; sRNA;	Streptococcus sRNA SpF56
+RF02440	Gene; sRNA;	Streptococcus sRNA SpF59 (ldcC RNA)
+RF02441	Gene; sRNA;	Streptococcus sRNA SpF61
+RF02442	Gene; sRNA;	Streptococcus sRNA SpF66
+RF02443	Gene; sRNA;	Streptococcus sRNA SpR08
+RF02444	Gene; sRNA;	Streptococcus sRNA SpR10
+RF02445	Gene; sRNA;	Streptococcus sRNA SpR14
+RF02446	Gene; sRNA;	Streptococcus sRNA SpR18
+RF02447	Gene; sRNA;	Streptococcus sRNA SpR19
+RF02448	Gene; sRNA;	Streptococcus sRNA SpR20
+RF02449	Gene; sRNA;	Bacillus sRNA ncr1015
+RF02450	Gene; sRNA;	Bacillus sRNA ncr1175
+RF02451	Gene; sRNA;	Bacillus sRNA ncr1241
+RF02452	Gene; sRNA;	Bacillus sRNA ncr1575
+RF02453	Gene; sRNA;	Bacillus sRNA ncr952
+RF02454	Gene; sRNA;	Bacillus sRNA ncr982
+RF02463	Gene; sRNA;	Mycobacterium sRNA Ms_AS-1
+RF02464	Gene; sRNA;	Actinobacteria sRNA Ms_AS-4
+RF02465	Gene; sRNA;	Mycobacterium sRNA Ms_AS-5
+RF02466	Gene; sRNA;	Actinobacteria sRNA Ms_AS-8
+RF02467	Gene; sRNA;	Mycobacterium sRNA Ms_IGR-2
+RF02468	Gene; sRNA;	Mycobacterium sRNA Ms_IGR-4
+RF02469	Gene; sRNA;	Actinobacteria sRNA Ms_IGR-7
+RF02470	Gene; sRNA;	Mycobacterium sRNA Ms_IGR-8
+RF02471	Gene; sRNA;	Actinobacteria sRNA Ms_IGR-5
+RF02495	Gene; antitoxin;	Oppression of Hydrophobic ORF by sRNA
+RF02496	Gene; sRNA;	Rhizobiales sRNA Atu_At1
+RF02497	Gene; sRNA;	Rhizobiales sRNA Atu_C10
+RF02498	Gene; sRNA;	Rhizobiales sRNA Atu_C3
+RF02499	Gene; sRNA;	Rhizobiales sRNA Atu_C4
+RF02500	Gene; sRNA;	EcpR1
+RF02501	Gene; sRNA;	Rhizobiales sRNA Atu_C7
+RF02502	Gene; sRNA;	Rhizobiales sRNA Atu_C8
+RF02503	Gene; sRNA;	Rhizobiales sRNA Atu_C9
+RF02504	Gene; sRNA;	Rhizobiales sRNA Atu_L1
+RF02505	Gene; sRNA;	Rhizobiales sRNA Atu_L6
+RF02506	Gene; sRNA;	Rhizobiales sRNA Atu_Ti1
+RF02507	Gene; sRNA;	Rhizobiales sRNA Atu_Ti3
+RF02508	Gene; sRNA;	Rhizobiales sRNA Atu_Ti4
+RF02509	Cis-reg;	Pyrrolysine insertion sequence mtbB
+RF02510	Cis-reg;	Pyrrolysine insertion sequence mttB
+RF02514	Gene; sRNA;	5' ureB small RNA
+RF02515	Gene; sRNA;	AfaR small RNA
+RF02519	Gene; antitoxin;	ToxI antitoxin
+RF02523	Cis-reg; thermoregulator;	Repression of heat shock gene expression (ROSE) element
+RF02524	Gene; sRNA;	Streptococcus sRNA sagA
+RF02525	Gene; sRNA;	Streptococcus sRNA SSRC30
+RF02526	Gene; sRNA;	Streptococcus sRNA SSRC34
+RF02527	Gene; sRNA;	Streptococcus sRNA SSRC38
+RF02528	Gene; sRNA;	Streptococcus sRNA SSRC41
+RF02529	Gene; sRNA;	Streptococcus sRNA SSRC8
+RF02537	Gene; sRNA;	Vibrio ToxT activated RNA TarA
+RF02538	Gene; sRNA;	Vibrio ToxT activated RNA TarB
+RF02550	Gene; sRNA;	RnaG sRNA
+RF02551	Cis-reg;	ABC transporter regulator
+RF02552	Gene; sRNA;	RcsR1 sRNA
+RF02553	Gene; sRNA;	Y RNA-like
+RF02557	Gene; sRNA;	Coxiella burnetii sRNA 1
+RF02558	Gene; antisense;	Coxiella burnetii sRNA 2
+RF02559	Gene; antisense;	Coxiella burnetii sRNA 4
+RF02560	Gene; antisense;	Coxiella burnetii sRNA 9
+RF02561	Gene; sRNA;	Coxiella burnetii sRNA 12
+RF02562	Gene; sRNA;	Coxiella burnetii sRNA 14
+RF02563	Gene; antisense;	Coxiella burnetii sRNA 3
+RF02564	Gene; sRNA;	Nucleoid-associated noncoding RNA 4 (CssrE)
+RF02565	Gene; sRNA;	Y RNA-like
+RF02566	Gene; sRNA;	Mycobacterium smegmatis small RNA 1
+RF02567	Gene; sRNA;	Vibrio alginolyticus sRNA 907
+RF02568	Gene; sRNA;	Escherichia coli small RNA (uptR) gene
+RF02569	Gene; sRNA;	IhtA sRNA
+RF02570	Gene; sRNA;	Brucella melitensis small RNA 0117
+RF02571	Gene; sRNA;	mcr7 sRNA
+RF02572	Cis-reg;	Brucella babR 5'UTR
+RF02573	Gene; sRNA;	Lactococcus lactis non-coding RNA 147
+RF02574	Gene; sRNA;	Rickettsia sRNA 10
+RF02576	Gene; sRNA;	tsr1 small RNA
+RF02577	Gene; sRNA;	S. aureus tsr24 small RNA
+RF02578	Gene; sRNA;	S. aureus tsr25 small RNA
+RF02579	Gene; sRNA;	S. aureus tsr26 small RNA
+RF02580	Gene; sRNA;	S. aureus tsr31 small RNA
+RF02581	Gene; sRNA;	S. aureus tsr32 small RNA
+RF02582	Gene; sRNA;	S. aureus tsr33 small RNA
+RF02583	Gene; sRNA;	S. aureus Teg23 small RNA
+RF02589	Gene; sRNA;	S. pyogenes small RNA 779816
+RF02590	Gene; sRNA;	S. pyogenes small RNA 1186876
+RF02591	Gene; sRNA;	S. pyogenes small RNA 1786666
+RF02592	Gene; antisense;	S. pyogenes antisense RNA 392987
+RF02593	Gene; sRNA;	Nitrogen stress-induced RNA 8
+RF02594	Gene; sRNA;	Nitrogen stress-induced RNA 9
+RF02596	Gene; sRNA;	Cyanobacteria heterocyst sRNA
+RF02597	Cis-reg; thermoregulator;	shuA/chuA 5' UTR thermoregulator
+RF02598	Gene;	Epstein-Barr virus stable intronic sequence RNA 2
+RF02599	Gene; sRNA;	Brucella sRNA CI408
+RF02600	Gene; sRNA;	Brucella sRNA CI27
+RF02601	Gene; sRNA;	Brucella sRNA CI337
+RF02602	Gene; sRNA;	Brucella sRNA CI414
+RF02603	Gene; sRNA;	Brucella sRNA CII26
+RF02604	Gene; sRNA;	Brucella sRNA CI153
+RF02605	Gene; sRNA;	Streptomyces sRNA scr5239
+RF02606	Gene; sRNA;	Acinetobacter sRNA 28
+RF02607	Gene; sRNA;	Acinetobacter sRNA 25
+RF02608	Gene; sRNA;	Acinetobacter sRNA 11
+RF02609	Gene; sRNA;	Brucella sRNA 0602
+RF02610	Gene; sRNA;	Brucella sRNA 0709
+RF02611	Gene; sRNA;	Brucella sRNA 0653
+RF02612	Gene; sRNA;	Brucella sRNA 1350
+RF02613	Gene; sRNA;	Brucella sRNA 0739
+RF02614	Gene; sRNA;	Brucella sRNA 1073
+RF02615	Gene; sRNA;	Brucella sRNA 0626
+RF02616	Gene; sRNA;	Streptococcus sRNA 8
+RF02617	Gene; sRNA;	Streptococcus sRNA 10
+RF02618	Gene; sRNA;	Streptococcus sRNA 34
+RF02619	Gene; sRNA;	Brucella sRNA 115
+RF02620	Gene; sRNA;	Brucella sRNA 119
+RF02621	Gene; sRNA;	Brucella sRNA 120
+RF02622	Gene; sRNA;	Brucella sRNA 121
+RF02623	Gene; sRNA;	Brucella sRNA 140
+RF02624	Gene; sRNA;	Brucella sRNA 150
+RF02625	Gene; sRNA;	Wolbachia sRNA 46
+RF02626	Gene; sRNA;	Wolbachia sRNA 59
+RF02627	Gene; sRNA;	Shigella small RNA 1
+RF02628	Gene; sRNA;	Hfq-regulated sRNA 1
+RF02629	Gene; sRNA;	Regulator of motility and amylovoran A
+RF02630	Gene; sRNA;	Hfq-regulated sRNA 12
+RF02631	Gene; sRNA;	Hfq-regulated sRNA 13
+RF02632	Gene; sRNA;	Hfq-regulated sRNA 10
+RF02633	Gene; sRNA;	Hfq-regulated sRNA 21
+RF02634	Gene; sRNA;	Enterococcus sRNA EF3314_EF3315
+RF02635	Gene; sRNA;	Enterococcus sRNA EF0820_EF0821
+RF02636	Gene; sRNA;	Enterococcus sRNA EF1368_EF1369
+RF02637	Gene; sRNA;	Enterococcus sRNA EF0408_EF0409
+RF02638	Gene; sRNA;	Enterococcus sRNA EF0605_EF0606
+RF02639	Gene; sRNA;	Enterococcus sRNA EF0869_EF0870
+RF02640	Gene; sRNA;	S. pyogenes small RNA MOSES4
+RF02641	Gene; sRNA;	S. pyogenes small RNA Spy490483c
+RF02642	Gene; sRNA;	S. pyogenes small RNA Spy491311c
+RF02643	Gene; sRNA;	S. pyogenes small RNA Spy491738
+RF02644	Gene; sRNA;	S. pyogenes small RNA Spy490380c
+RF02645	Gene; sRNA;	Ruegeria cis2 sRNA
+RF02646	Gene; sRNA;	Ruegeria cis8 sRNA
+RF02647	Gene; sRNA;	Ruegeria cis52 sRNA
+RF02648	Gene; sRNA;	Ruegeria cis90 sRNA
+RF02649	Gene; sRNA;	Ruegeria trans44 sRNA
+RF02650	Gene; sRNA;	Cag non-coding RNA1
+RF02651	Gene; sRNA;	Singlet oxygen resistance RNA Y
+RF02652	Gene; sRNA;	Salmonella enterica Typhi npcRNA 3
+RF02653	Gene; sRNA;	Salmonella enterica Typhi npcRNA 143
+RF02654	Gene; sRNA;	MicL sRNA
+RF02655	Gene; sRNA;	Brucella BSR0441 sRNA
+RF02659	Gene; sRNA;	ncRv12659 sRNA
+RF02660	Cis-reg;	icaR 3'UTR
+RF02661	Cis-reg;	icaR 5' UTR
+RF02662	Gene; antisense;	Bacillus asRNA 0872
+RF02671	Gene; sRNA;	Yersinia sRNA 35
+RF02672	Gene; sRNA;	Small pathogenicity island RNA X
+RF02673	Gene; sRNA;	Streptomyces sRNA 4677
+RF02674	Gene; antisense;	antisense RNA of dnaA mRNA
+RF02675	Gene; sRNA;	Yersinia sRNA 141
+RF02676	Gene; sRNA;	Enterohemorrhagic E. coli sRNA 41
+RF02677	Gene; sRNA;	Nitrogen stress-induced RNA 4
+RF02678	Gene; ribozyme;	Hatchet ribozyme
+RF02679	Gene; ribozyme;	Pistol ribozyme
+RF02680	Cis-reg; riboswitch;	PreQ1-III riboswitch
+RF02681	Gene; ribozyme;	Twister_sister_ribozyme
+RF02682	Gene; ribozyme;	HDV ribozyme from F. prausnitzii
+RF02683	Cis-reg; riboswitch;	NiCo riboswitch
+RF02684	Gene; ribozyme;	Type-P5 twister ribozyme
+RF02685	Gene; ribozyme;	RAGATH-5 RNA
+RF02687	Gene; ribozyme;	RAGATH-8 RNA
+RF02688	Gene; ribozyme;	RAGATH-13 RNA
+RF02689	Cis-reg;	hilD 3'UTR
+RF02690	Gene; sRNA;	Burkholderia sRNA 1
+RF02691	Gene; sRNA;	Burkholderia sRNA 19
+RF02692	Gene; sRNA;	Burkholderia sRNA 39
+RF02693	Gene; sRNA;	psm_mec locus RNA
+RF02694	Gene; sRNA;	RalR antitoxin
+RF02695	Gene; sRNA;	Nitrogen regulated small RNA
+RF02696	Gene; sRNA;	Teg49 sRNA
+RF02698	Cis-reg; thermoregulator;	Avalong 5' UTR thermometer
+RF02699	Cis-reg; thermoregulator;	Avashort 5' UTR thermometer
+RF02700	Cis-reg; thermoregulator;	HtrA 5' UTR thermometer
+RF02702	Gene; sRNA;	Anti GcvB sRNA
+RF02703	Gene; sRNA;	Anti stx2 sRNA
+RF02704	Cis-reg; thermoregulator;	LcrF intergenic thermometer
+RF02713	Gene; sRNA;	Mycoplasma sRNA MCS4
+RF02728	Gene; sRNA;	Haemophilus regulatory RNA responsive to iron
+RF02729	Gene; sRNA;	Aggregatibacter sRNA JA01
+RF02730	Gene; sRNA;	Aggregatibacter sRNA JA02
+RF02731	Gene; sRNA;	Aggregatibacter sRNA JA03
+RF02732	Gene; sRNA;	Aggregatibacter sRNA JA04
+RF02733	Cis-reg; thermoregulator;	ToxT 5' UTR thermometer
+RF02734	Gene; sRNA;	Corynebacterium sRNA 105
+RF02737	Gene; antisense;	Soft rot Enterobacteriaceae Rev 13 asRNA
+RF02738	Gene; antisense;	Soft rot Enterobacteriaceae Rev 24 asRNA
+RF02739	Gene; sRNA;	Soft rot Enterobacteriaceae Rev 41 sRNA
+RF02742	Gene; antisense;	Soft rot Enterobacteriaceae Rev 72 asRNA
+RF02743	Gene; antisense;	Saccharopolyspora sRNA 389
+RF02744	Cis-reg;	Soft rot Enterobacteriaceae Rev 39 5'UTR
+RF02745	Cis-reg;	Soft rot Enterobacteriaceae Rev 42 5'UTR
+RF02747	Gene; sRNA;	Francisella sRNA A
+RF02748	Gene; sRNA;	Francisella sRNA B
+RF02749	Gene; sRNA;	Wolbachia sRNA mel02
+RF02750	Gene; sRNA;	ES003 sRNA
+RF02751	Gene; sRNA;	ES036 (CssrF) sRNA
+RF02752	Gene; sRNA;	ES056 sRNA
+RF02753	Gene; sRNA;	ES173 sRNA
+RF02754	Gene; sRNA;	ES205 sRNA
+RF02755	Gene; sRNA;	ES222 sRNA
+RF02756	Gene; sRNA;	ES239 sRNA
+RF02757	Gene; sRNA;	Erse small RNA
+RF02758	Cis-reg; thermoregulator;	RhlA 5' UTR ROSE like thermometer
+RF02759	Cis-reg; thermoregulator;	LasI 5' UTR ROSE like thermometer
+RF02760	Gene; sRNA;	sR035 sRNA
+RF02761	Gene; sRNA;	sR084 sRNA
+RF02762	Cis-reg; thermoregulator;	C1_109596F  5' UTR thermometer
+RF02763	Gene; sRNA;	IsrM sRNA
+RF02764	Gene; sRNA;	Yersinia sRNA 190
+RF02765	Gene; sRNA;	Yersinia sRNA 209
+RF02766	Gene; sRNA;	Yersinia sRNA 49
+RF02767	Gene; sRNA;	Yersinia sRNA 186/sR026/CsrC
+RF02768	Gene; sRNA;	Yersinia sRNA 155(RyfD)
+RF02769	Gene; sRNA;	Yersinia sRNA 202
+RF02770	Gene; sRNA;	Yersinia sRNA 224
+RF02771	Cis-reg; thermoregulator;	CnfY 5' UTR thermometer
+RF02772	Cis-reg; thermoregulator;	AilA 5' UTR thermometer
+RF02773	Cis-reg; thermoregulator;	TrxA 5' UTR thermometer
+RF02774	Cis-reg; thermoregulator;	KatA 5' UTR thermometer
+RF02775	Cis-reg; thermoregulator;	SodB 5' UTR thermometer
+RF02776	Cis-reg; thermoregulator;	SodC 5' UTR thermometer
+RF02777	Cis-reg; thermoregulator;	OppA 5' UTR thermometer
+RF02778	Cis-reg; thermoregulator;	FdoG-1 5' UTR thermometer
+RF02779	Cis-reg; thermoregulator;	PepN 5' UTR thermometer
+RF02780	Cis-reg; thermoregulator;	PutA 5' UTR thermometer
+RF02781	Cis-reg; thermoregulator;	ManX 5' UTR thermometer
+RF02784	Gene; sRNA;	Singlet oxygen resistance RNA X
+RF02790	Gene; sRNA;	sodF sRNA
+RF02791	Gene; sRNA;	Conserved CCUCCUCCC motif stress-induced RNA 1
+RF02797	Gene; sRNA;	Plasmid-encoded Shigella sRNA A
+RF02798	Gene; sRNA;	Chromosome-encoded Shigella sRNA A
+RF02799	Gene; sRNA;	Chromosome-encoded Shigella sRNA B
+RF02800	Gene; sRNA;	Rickettsia sRNA47
+RF02809	Gene; sRNA;	RsmW RNA family
+RF02810	Cis-reg; thermoregulator;	Lst 5' UTR thermometer
+RF02811	Cis-reg; thermoregulator;	FHbp 5' UTR thermometer
+RF02812	Gene; antisense;	anti ponA RNA
+RF02813	Cis-reg; thermoregulator;	Pseudomonas PA5194 thermometer
+RF02815	Cis-reg; thermoregulator;	Lig 5' UTR thermometer
+RF02818	Gene; antisense;	Vibrio RNA AS5
+RF02819	Gene; antisense;	Vibrio RNA AS7
+RF02820	Gene; antisense;	Vibrio RNA AS9
+RF02821	Gene; sRNA;	Vibrio RNA IGR5
+RF02822	Gene; sRNA;	Streptococcus RNA 266
+RF02823	Gene; sRNA;	Legionella RNA 69
+RF02824	Gene; sRNA;	Legionella RNA 10
+RF02825	Gene; sRNA;	Legionella RNA 17
+RF02826	Gene; sRNA;	Streptomyces RNA 6925
+RF02827	Gene; sRNA;	Streptomyces RNA 6106
+RF02828	Gene; sRNA;	Streptomyces RNA 3920
+RF02829	Gene; sRNA;	Streptomyces RNA 4115
+RF02830	Gene; sRNA;	Streptomyces RNA 1601
+RF02831	Gene; sRNA;	Streptomyces RNA 2736
+RF02832	Gene; sRNA;	Streptomyces RNA 5676
+RF02833	Gene; sRNA;	Streptomyces RNA 3202
+RF02834	Gene; sRNA;	Vibrio RNA VqmR
+RF02835	Gene; sRNA;	Burkholderia RNA 11
+RF02836	Gene; sRNA;	Burkholderia RNA 14
+RF02837	Gene; sRNA;	Burkholderia RNA 7 (anti-hemB)
+RF02838	Gene; sRNA;	Enterococcus sRNA 55
+RF02839	Gene; antisense;	Enterococcus sRNA 66
+RF02840	Gene; sRNA;	Enterococcus sRNA 68 (Lacto-3 RNA)
+RF02841	Gene; sRNA;	Enterococcus sRNA 70
+RF02842	Gene; sRNA;	Enterococcus sRNA A1
+RF02843	Gene; antisense;	Enterococcus sRNA A5
+RF02844	Gene; antisense;	Enterococcus sRNA A9
+RF02845	Gene; sRNA;	Enterococcus sRNA 1C
+RF02846	Gene; antisense;	Enterococcus sRNA 84
+RF02847	Gene; sRNA;	Enterococcus sRNA 64
+RF02848	Gene; sRNA;	Enterococcus sRNA B11
+RF02849	Gene; sRNA;	Yersinia sRNA 197
+RF02850	Gene; antisense;	Yersinia sRNA 276
+RF02851	Gene; antisense;	Yersinia sRNA 283
+RF02852	Gene; sRNA;	Yersinia sRNA 206
+RF02854	Gene; sRNA;	Yersinia sRNA 100
+RF02855	Gene; antisense;	Yersinia sRNA 251
+RF02856	Gene; sRNA;	Leptospira sRNA 30_292
+RF02857	Gene; sRNA;	Leptospira sRNA 30_255
+RF02858	Gene; sRNA;	Actinobacillus sRNA 08
+RF02859	Gene; sRNA;	Actinobacillus sRNA 11
+RF02860	Gene; sRNA;	Actinobacillus sRNA 14
+RF02861	Gene; sRNA;	Neisseria sRNA 84
+RF02862	Gene; sRNA;	Enterococcus sRNA 1300
+RF02863	Gene; sRNA;	Enterococcus sRNA 2410
+RF02864	Gene; sRNA;	Enterococcus sRNA 30
+RF02865	Gene; sRNA;	Burkholderia sRNA 1
+RF02866	Gene; sRNA;	Burkholderia sRNA 16 (Bc_KC_sr1)
+RF02867	Gene; sRNA;	Burkholderia sRNA 11
+RF02868	Gene; sRNA;	Burkholderia sRNA 37
+RF02869	Gene; sRNA;	Burkholderia sRNA 25
+RF02870	Gene; sRNA;	Burkholderia sRNA 35
+RF02871	Gene; sRNA;	Burkholderia sRNA 54
+RF02872	Gene; sRNA;	sRNA regulator of biofilms A
+RF02873	Gene; antisense;	Antisense to traI
+RF02874	Gene; antisense;	Antisense to traG
+RF02875	Gene; antisense;	Antisense to pHK01_035
+RF02876	Gene; antisense;	Antisense to pHK01_099
+RF02877	Gene; sRNA;	Neisseria metabolic switch regulator b (RcoF1/NgncR163)
+RF02878	Gene; sRNA;	Mesorhizobail RNA 7
+RF02879	Gene; sRNA;	Mesorhizobail RNA 10
+RF02880	Gene; sRNA;	Mesorhizobail RNA 15
+RF02881	Gene; sRNA;	Mesorhizobail RNA 25
+RF02882	Gene; sRNA;	Mesorhizobail RNA 36
+RF02883	Gene; sRNA;	Burkholderia sRNA 2
+RF02884	Gene; sRNA;	Burkholderia sRNA 7
+RF02885	Cis-reg; riboswitch;	SAM-VI riboswitch
+RF02886	Gene; sRNA;	Mycobacterium sRNA 6715
+RF02887	Cis-reg; leader;	Salmonella mgtC leader RNA
+RF02888	Gene; sRNA;	Bacillus sRNA 1
+RF02889	Gene; sRNA;	Pseudomonas sRNA 6
+RF02890	Gene; sRNA;	Small pathogenicity island RNA C (srn_3610)
+RF02891	Gene; antisense;	ArsR-gov region gene B
+RF02892	Gene; antisense;	Bacillus SR6 antitoxin
+RF02893	Cis-reg; leader;	RpsF leader
+RF02894	Gene; sRNA;	Staphylococcus sRNA 35 (srn_0335)
+RF02895	Gene; sRNA;	Staphylococcus sRNA 414
+RF02896	Gene; sRNA;	Staphylococcus sRNA 774
+RF02897	Gene; sRNA;	Staphylococcus sRNA 808
+RF02898	Gene; sRNA;	Aggregatibacter sRNA 20
+RF02899	Gene; sRNA;	Aggregatibacter sRNA 54
+RF02900	Gene; sRNA;	Aggregatibacter sRNA 82
+RF02901	Gene; sRNA;	Aggregatibacter sRNA 41
+RF02902	Gene; sRNA;	Aggregatibacter sRNA 22
+RF02903	Gene; antisense;	Aggregatibacter sRNA 96
+RF02904	Gene; sRNA;	Aggregatibacter sRNA 69
+RF02907	Cis-reg; leader;	patAB leader
+RF02909	Gene; sRNA;	Listeria sRNA rli117
+RF02912	Cis-reg; riboswitch;	AAC AAD 5' leader riboswitch
+RF02913	Cis-reg;	pemK RNA
+RF02914	Cis-reg;	DUF805b RNA
+RF02915	Cis-reg;	DUF3800-VI RNA
+RF02916	Cis-reg;	atpB RNA
+RF02917	Cis-reg;	Burkholderiales-2 RNA
+RF02918	Cis-reg;	MDR-NUDIX RNA
+RF02919	Cis-reg;	ilvB-OMG RNA
+RF02920	Cis-reg;	Fusobacteriales-1 RNA
+RF02921	Gene; sRNA;	RT-14 RNA
+RF02922	Cis-reg;	RAGATH-32 RNA
+RF02923	Cis-reg;	HTH-XRE RNA
+RF02924	Gene; sRNA;	skipping-rope RNA
+RF02925	Gene; sRNA;	6A RNA
+RF02926	Gene; sRNA;	DUF2693-FD RNA
+RF02927	Gene; sRNA;	Actino-ugpB RNA
+RF02928	Gene; sRNA;	Actinomyces-1 RNA
+RF02929	Cis-reg;	algC RNA
+RF02930	Cis-reg;	aspS RNA
+RF02931	Gene; sRNA;	Bacilli-1 RNA
+RF02932	Gene; sRNA;	Betaproteobacteria-1 RNA
+RF02933	Gene; sRNA;	ARRPOF RNA
+RF02934	Gene; sRNA;	caiA RNA
+RF02935	Gene; sRNA;	che1 RNA
+RF02936	Gene; sRNA;	Chloroflexus-1 RNA
+RF02937	Gene; sRNA;	Clostridiales-2 RNA
+RF02938	Gene; sRNA;	COG2827 RNA
+RF02940	Cis-reg;	COG3860 RNA
+RF02942	Gene; sRNA;	Clostridiales-3 RNA
+RF02943	Gene; sRNA;	Bacteroidales-2 RNA
+RF02944	Gene; sRNA;	c4-2 RNA
+RF02945	Gene; sRNA;	Corio-PBP RNA
+RF02949	Gene; sRNA;	Cupriavidus-1 RNA
+RF02951	Cis-reg;	DABA-DC-AT RNA
+RF02952	Gene; sRNA;	dfrA-dnaX RNA
+RF02954	Cis-reg;	DUF3577 RNA
+RF02955	Gene; sRNA;	EGFOA RNA
+RF02956	Gene; sRNA;	DUF2693 RNA
+RF02957	Gene; sRNA;	EFASI RNA
+RF02958	Gene; sRNA;	drum RNA
+RF02959	Cis-reg;	DUF3085 RNA
+RF02960	Cis-reg;	DUF2800 RNA
+RF02961	Gene; sRNA;	DUF3800-II RNA
+RF02962	Gene; sRNA;	DUF3800-III RNA
+RF02963	Gene; sRNA;	DUF3800-IV RNA
+RF02964	Gene; sRNA;	DUF3800-V RNA
+RF02965	Gene; sRNA;	CyVA-1 RNA
+RF02966	Gene; sRNA;	DUF3268 RNA
+RF02967	Gene; sRNA;	DUF3800-VII RNA
+RF02968	Gene; sRNA;	DUF3800-IX RNA
+RF02969	Gene; sRNA;	DUF3800-I RNA
+RF02971	Gene; sRNA;	emrB-Lactobacillus RNA
+RF02972	Cis-reg;	engA RNA
+RF02973	Gene; sRNA;	Enterococcus-1 RNA
+RF02974	Cis-reg;	Fibro-purF RNA
+RF02975	Gene; sRNA;	DUF3800-XI RNA
+RF02976	Gene; sRNA;	Flavobacterium-1 RNA
+RF02977	Cis-reg;	folE RNA
+RF02978	Cis-reg;	folP RNA
+RF02981	Cis-reg;	FTHFS RNA
+RF02982	Cis-reg;	gltS RNA
+RF02983	Gene; sRNA;	Fibrobacter-1 RNA
+RF02985	Gene; sRNA;	ftsZ-DE RNA
+RF02986	Gene; sRNA;	FuFi-1 RNA
+RF02987	Gene; sRNA;	GA-cis RNA
+RF02988	Gene; sRNA;	GEBRO RNA
+RF02989	Gene; sRNA;	gntR-DTE RNA
+RF02990	Gene; sRNA;	gut-2 RNA
+RF02992	Cis-reg;	hya RNA
+RF02993	Cis-reg;	ilvH RNA
+RF02994	Gene; sRNA;	IMPDH RNA
+RF02996	Gene; sRNA;	int-alpA RNA
+RF02999	Cis-reg;	ivy-DE RNA
+RF03000	Gene; sRNA;	LOOT RNA
+RF03002	Cis-reg;	lysM-Prevotella RNA
+RF03003	Cis-reg;	GP20-b RNA
+RF03004	Gene; sRNA;	Lacto-phage-1 RNA
+RF03005	Cis-reg;	lysM-TM7 RNA
+RF03006	Gene; sRNA;	M23 RNA
+RF03007	Gene; sRNA;	Mahella-1 RNA
+RF03008	Cis-reg;	malK-II RNA
+RF03009	Cis-reg;	malK-III RNA
+RF03010	Gene; sRNA;	mcrA RNA
+RF03011	Gene; sRNA;	Methylophilales-1 RNA
+RF03012	Gene; sRNA;	Mu-gpT-DE RNA
+RF03013	Gene; sRNA;	nadA RNA
+RF03014	Gene; sRNA;	Transposase-1 RNA
+RF03015	Gene; sRNA;	Transposase-2 RNA
+RF03016	Gene; sRNA;	RT-12 RNA
+RF03017	Gene; sRNA;	RT-13 RNA
+RF03018	Gene; sRNA;	RT-15 RNA
+RF03019	Gene; sRNA;	RT-16 RNA
+RF03020	Gene; sRNA;	RT-17 RNA
+RF03021	Gene; sRNA;	RT-18 RNA
+RF03022	Gene; sRNA;	RT-10 RNA
+RF03023	Gene; sRNA;	rpfG RNA
+RF03024	Cis-reg;	Rothia-sucC RNA
+RF03025	Gene; sRNA;	RT-4 RNA
+RF03026	Gene; sRNA;	RT-5 RNA
+RF03027	Gene; sRNA;	RT-6 RNA
+RF03028	Gene; sRNA;	RT-7 RNA
+RF03029	Gene; sRNA;	RT-8 RNA
+RF03030	Gene; sRNA;	salivarius-1 RNA
+RF03031	Cis-reg;	ssnA RNA
+RF03032	Cis-reg;	narK RNA
+RF03033	Cis-reg;	NLPC-P60 RNA
+RF03034	Gene; sRNA;	nrdJ RNA
+RF03035	Gene; sRNA;	nqrA-Marinomonas RNA
+RF03036	Gene; sRNA;	osmY RNA
+RF03037	Gene; sRNA;	PAGEV RNA
+RF03038	Cis-reg;	nhaA-II RNA
+RF03039	Cis-reg;	Peptidase-S11 RNA
+RF03040	Cis-reg;	PGK RNA
+RF03042	Gene; sRNA;	porB RNA
+RF03043	Gene; sRNA;	Prevotella-2 RNA
+RF03044	Gene; sRNA;	Proteo-phage-1 RNA
+RF03045	Gene; sRNA;	proV RNA
+RF03046	Gene; sRNA;	Pseudomonadales-1 RNA
+RF03050	Gene; sRNA;	RAGATH-25 RNA
+RF03052	Gene; sRNA;	RAGATH-28 RNA
+RF03054	Cis-reg;	NMT1 RNA
+RF03056	Gene; sRNA;	RAGATH-35 RNA
+RF03057	Cis-reg; riboswitch;	nhaA-I RNA
+RF03058	Cis-reg; riboswitch;	sul1 RNA
+RF03059	Gene; sRNA;	raiA-hairpin RNA
+RF03060	Cis-reg;	uup RNA
+RF03061	Gene; sRNA;	uxuA RNA
+RF03062	Cis-reg;	xerDC RNA
+RF03063	Gene; sRNA;	Streptomyces-metK RNA
+RF03064	Gene; sRNA;	RAGATH-18 RNA
+RF03065	Gene; sRNA;	IS605-orfB-I RNA
+RF03066	Gene; sRNA;	COG3610-DE RNA
+RF03067	Cis-reg;	terC RNA
+RF03068	Gene; sRNA;	RT-3 RNA
+RF03069	Cis-reg;	malK-I RNA
+RF03070	Gene; sRNA;	ssNA-helicase RNA
+RF03071	Cis-reg; riboswitch;	DUF1646 RNA
+RF03072	Cis-reg; riboswitch;	raiA RNA
+RF03073	Gene; sRNA;	RT-19 RNA
+RF03074	Cis-reg;	Rhodo-rpoB RNA
+RF03075	Gene; sRNA;	DUF3800-VIII RNA
+RF03076	Gene; sRNA;	Streptomyces-metH RNA
+RF03077	Gene; sRNA;	RT-2 RNA
+RF03078	Cis-reg;	chrB-a RNA
+RF03079	Gene; sRNA;	MISL RNA
+RF03080	Gene; sRNA;	RT-9 RNA
+RF03081	Cis-reg;	DUF805 RNA
+RF03082	Gene; sRNA;	dinG RNA
+RF03085	Gene; sRNA;	abiF RNA
+RF03086	Cis-reg;	chrB-b RNA
+RF03087	Gene; sRNA;	ROOL RNA
+RF03088	Gene; sRNA;	Parabacteroides-1 RNA
+RF03090	Cis-reg;	lysM-Actino RNA
+RF03091	Gene; sRNA;	Clostridium-PBP RNA
+RF03097	Gene; sRNA;	RAGATH-21 RNA
+RF03098	Gene; sRNA;	RAGATH-22 RNA
+RF03100	Gene; sRNA;	RAGATH-27 RNA
+RF03101	Gene; sRNA;	RAGATH-31 RNA
+RF03108	Gene; sRNA;	Methylosinus-1 RNA
+RF03109	Cis-reg;	Thermales-rpoB RNA
+RF03111	Gene; sRNA;	Zeta-pan RNA
+RF03112	Gene; sRNA;	Staphylococcus-1 RNA
+RF03113	Gene; sRNA;	Poribacteria-1 RNA
+RF03114	Gene; sRNA;	RT-1 RNA
+RF03115	Gene; sRNA;	KDPG-aldolase RNA

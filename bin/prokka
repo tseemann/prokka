@@ -621,7 +621,8 @@ if ($rfam) {
     my $num_ncrna = 0;
     my $tool = "Infernal:".$tools{'cmscan'}->{VERSION};
     my $icpu = $cpus || 1;
-    my $cmd = "cmscan --rfam --cpu $icpu -E $evalue --tblout /dev/stdout -o /dev/null --noali $cmdb \Q$outdir/$prefix.fna\E";
+    my $dbsize = $total_bp * 2 / 1000000;
+    my $cmd = "cmscan -Z $dbsize --cut_ga --rfam --nohmmonly --cpu $icpu -E $evalue --tblout /dev/stdout -o /dev/null --noali $cmdb \Q$outdir/$prefix.fna\E";
     msg("Running: $cmd");
     open INFERNAL, '-|', $cmd;
     while (<INFERNAL>) {
@@ -1622,7 +1623,7 @@ sub setup_db {
   }
 
   check_tool('cmpress');
-  for my $cm (<$dbdir/cm/{Viruses,Bacteria}>) {
+  for my $cm (<$dbdir/cm/{Viruses,Bacteria,Archaea}>) {
     msg("Pressing CM database: $cm");    
     runcmd("cmpress \Q$cm\E");
   }
