@@ -622,7 +622,7 @@ if ($rfam) {
     my $tool = "Infernal:".$tools{'cmscan'}->{VERSION};
     my $icpu = $cpus || 1;
     my $dbsize = $total_bp * 2 / 1000000;
-    my $cmd = "cmscan -Z $dbsize --cut_ga --rfam --nohmmonly --cpu $icpu -E $evalue --tblout /dev/stdout -o /dev/null --noali $cmdb \Q$outdir/$prefix.fna\E";
+    my $cmd = "cmscan -Z $dbsize --cut_ga --rfam --nohmmonly --cpu $icpu --tblout /dev/stdout -o /dev/null --noali $cmdb \Q$outdir/$prefix.fna\E";
     msg("Running: $cmd");
     open INFERNAL, '-|', $cmd;
     while (<INFERNAL>) {
