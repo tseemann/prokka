@@ -1,6 +1,7 @@
 name: prokka
 channels:
   - bioconda
+  - conda-forge
 dependencies:
   - aragorn >=1.2
   - barrnap >=0.7
