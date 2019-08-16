@@ -1,0 +1,14 @@
+#!/bin/bash
+
+input=`cat`
+
+### Try to run hmmscan with trusted cutoffs. Otherwise, use evalue ###
+tmpout=`mktemp`
+echo "${input}" | hmmscan --noali --notextw --cut_tc --acc --cpu 1 $1 /dev/stdin 2> /dev/null > ${tmpout}
+exit=$?
+if [ ${exit} -gt 0 ] ; then
+  echo "${input}" | hmmscan --noali --notextw --acc -E $2 --cpu 1 $1 /dev/stdin 2> /dev/null
+else
+  cat ${tmpout}
+  rm ${tmpout}
+fi

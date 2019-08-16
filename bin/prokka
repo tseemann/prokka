@@ -67,7 +67,8 @@ my %GOOD_PROD = (map { ($_=>1) } @GOOD_PROD);
 
 # these should accept .faa on STDIN and write report to STDOUT
 my $BLASTPCMD = "blastp -query - -db %d -evalue %e -qcov_hsp_perc %c -num_threads 1 -num_descriptions 1 -num_alignments 1 -seg no";
-my $HMMER3CMD = "hmmscan --noali --notextw --cut_tc --acc --cpu 1 %d /dev/stdin";
+#my $HMMER3CMD = "hmmscan --noali --notextw --cut_tc --acc --cpu 1 %d /dev/stdin";
+my $HMMER3CMD = "prokka-run_hmmscan %d %e";
 
 my $rnammer_mode = 'bac';
 my $barrnap_mode = 'bac';
@@ -968,12 +969,14 @@ push @database, {
 # secondary sources are a series of HMMs
 unless ($kingdom eq 'Viruses') {
   for my $name ( hmms() ) {
+    msg("Trying hmmscan with trusted cutoffs");
     my $dbfile = "$dbdir/hmm/$name.hmm";
     if (-r $dbfile) {
       push @database, {
         DB  => $dbfile,
         EVALUE => $evalue,
         SRC => "protein motif:$name:",
+        EVALUE => $evalue,
         FMT => 'hmmer3',
         CMD => $HMMER3CMD,
         VERSION => 3,   # without this, latest Bioperl goes into infinite loop
@@ -996,6 +999,8 @@ if ($usegenus) {
       # EVALUE => $evalue,
       # MINCOV => 90,
       SRC => 'similar to AA sequence:RefSeq:',
+      EVALUE => $proteins_evalue,
+      MINCOV => 90,
       FMT => 'blast',
       CMD => $BLASTPCMD,
     };
@@ -1012,6 +1017,7 @@ else {
 if ($hmms) {
   msg("Preparing user-supplied primary HMMER annotation source: $hmms");
   -r "$hmms.h3i" or err("Your HMM is not indexed, please run: hmmpress $hmms");
+
   my $src = $hmms;
   $src =~ s{^.*/}{};
   $src =~ s/.hmm$//;
@@ -1020,6 +1026,7 @@ if ($hmms) {
     DB  => $hmms,
 #    EVALUE => $evalue,
     SRC => $compliant ? "" : "protein motif:$src:",
+    EVALUE => $evalue,
     FMT => 'hmmer3',
     CMD => $HMMER3CMD,
     VERSION => 3,   # without this, latest Bioperl goes into infinite loop
@@ -1042,7 +1049,7 @@ if (-r $proteins) {
     err("Option --proteins only supports FASTA, GenBank, and EMBL formats.");
   }
 
-  ## if supplied argument already indicates a blastdb, don't regenerate ##
+  ## ZDK: if supplied argument already indicates a blastdb, don't regenerate ##
   if (-f $proteins . '.pin') {
     my $src = $proteins;
     $src =~ s{^.*/}{};
@@ -1101,11 +1108,11 @@ else {
     my $count=0;
     for my $sid (@seq) {
       for my $f (@{ $seq{$sid}{FEATURE} }) {
-	next unless $f->primary_tag eq 'CDS';
-	next if $f->has_tag('product');
-	$cds{++$count} = $f;
-	print $faa ">$count\n",
-          $f->seq->translate(-codontable_id=>$gcode, -complete=>1)->seq,"\n";
+          next unless $f->primary_tag eq 'CDS';
+          next if $f->has_tag('product');
+          $cds{++$count} = $f;
+          print $faa ">$count\n",
+            $f->seq->translate(-codontable_id=>$gcode, -complete=>1)->seq,"\n";
       }
     }
     close $faa;

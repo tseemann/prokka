@@ -1,0 +1,16 @@
+name: prokka
+channels:
+  - bioconda
+dependencies:
+  - aragorn >=1.2
+  - barrnap >=0.7
+  - blast >=2.7.1
+  - hmmer >=3.1b2
+  - infernal >=1.1.2
+  - minced >=0.3
+  - parallel >=20180522
+  - perl >=5.26.2,<5.26.3.0a0
+  - perl-bioperl >=1.7.2
+  - perl-xml-simple
+  - prodigal >=2.6
+  - tbl2asn >=25.7
