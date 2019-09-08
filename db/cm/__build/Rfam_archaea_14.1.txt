@@ -1,0 +1,152 @@
+RF00010	Gene; ribozyme;	Bacterial RNase P class A
+RF00017	Gene;	Metazoan signal recognition particle RNA
+RF00028	Intron;	Group I catalytic intron
+RF00029	Intron;	Group II catalytic intron
+RF00030	Gene; ribozyme;	RNase MRP
+RF00032	Cis-reg;	Histone 3' UTR stem-loop
+RF00050	Cis-reg; riboswitch;	FMN riboswitch (RFN element)
+RF00058	Gene; snRNA; snoRNA; HACA-box;	HgcF RNA (Pab35)
+RF00059	Cis-reg; riboswitch;	TPP riboswitch (THI element)
+RF00060	Gene; snRNA; snoRNA; HACA-box;	HgcE RNA (Pab105)
+RF00062	Gene;	HgcC family RNA
+RF00063	Gene;	SscA RNA
+RF00064	Gene; snRNA; snoRNA; HACA-box	HgcG RNA (Pab40)
+RF00065	Gene; snRNA; snoRNA; CD-box;	Small nucleolar RNA snoR9
+RF00095	Gene; snRNA; snoRNA; CD-box;	Pyrococcus C/D box small nucleolar RNA
+RF00150	Gene; snRNA; snoRNA; CD-box;	Small nucleolar RNA SNORD42
+RF00169	Gene;	Bacterial small signal recognition particle RNA
+RF00174	Cis-reg; riboswitch;	Cobalamin riboswitch
+RF00373	Gene; ribozyme;	Archaeal RNase P
+RF00380	Cis-reg; riboswitch;	ykoK leader
+RF00504	Cis-reg; riboswitch;	Glycine riboswitch
+RF00517	Cis-reg; leader;	serC leader
+RF00845	Gene; miRNA;	microRNA MIR158
+RF01051	Cis-reg;	Cyclic di-GMP-I riboswitch
+RF01068	Cis-reg;	Guanidine-II riboswitch
+RF01119	Gene; snRNA; snoRNA; CD-box;	Small nucleolar RNA sR32
+RF01120	Gene; snRNA; snoRNA; CD-box;	Small nucleolar RNA sR33
+RF01121	Gene; snRNA; snoRNA; CD-box;	Small nucleolar RNA sR38
+RF01122	Gene; snRNA; snoRNA; CD-box;	Small nucleolar RNA sR39
+RF01123	Gene; snRNA; snoRNA; CD-box;	Small nucleolar RNA sR35
+RF01124	Gene; snRNA; snoRNA; CD-box;	Small nucleolar RNA sR36
+RF01125	Gene; snRNA; snoRNA; CD-box;	Small nucleolar RNA sR4
+RF01126	Gene; snRNA; snoRNA; CD-box;	Small nucleolar RNA sR41
+RF01127	Gene; snRNA; snoRNA; CD-box;	Small nucleolar RNA sR42
+RF01128	Gene; snRNA; snoRNA; CD-box;	Small nucleolar RNA sR42
+RF01129	Gene; snRNA; snoRNA; CD-box;	Small nucleolar RNA sR44
+RF01130	Gene; snRNA; snoRNA; CD-box;	Small nucleolar RNA sR46
+RF01131	Gene; snRNA; snoRNA; CD-box;	Small nucleolar RNA sR47
+RF01132	Gene; snRNA; snoRNA; CD-box;	Small nucleolar RNA sR48
+RF01133	Gene; snRNA; snoRNA; CD-box;	Small nucleolar RNA sR3
+RF01134	Gene; snRNA; snoRNA; CD-box;	Small nucleolar RNA sR30
+RF01135	Gene; snRNA; snoRNA; CD-box;	Small nucleolar RNA sR24
+RF01136	Gene; snRNA; snoRNA; CD-box;	Small nucleolar RNA sR28
+RF01137	Gene; snRNA; snoRNA; CD-box;	Small nucleolar RNA sR21
+RF01138	Gene; snRNA; snoRNA; CD-box;	Small nucleolar RNA sR23
+RF01139	Gene; snRNA; snoRNA; CD-box;	Small nucleolar RNA sR2
+RF01140	Gene; snRNA; snoRNA; CD-box;	Small nucleolar RNA sR20
+RF01141	Gene; snRNA; snoRNA; CD-box;	Small nucleolar RNA sR18
+RF01142	Gene; snRNA; snoRNA; CD-box;	Small nucleolar RNA sR19
+RF01143	Gene; snRNA; snoRNA; CD-box;	Small nucleolar RNA sR16
+RF01144	Gene; snRNA; snoRNA; CD-box;	Small nucleolar RNA sR17
+RF01145	Gene; snRNA; snoRNA; CD-box;	Small nucleolar RNA sR14
+RF01146	Gene; snRNA; snoRNA; CD-box;	Small nucleolar RNA sR15
+RF01147	Gene; snRNA; snoRNA; CD-box;	Small nucleolar RNA sR12
+RF01149	Gene; snRNA; snoRNA; CD-box;	Small nucleolar RNA sR10
+RF01150	Gene; snRNA; snoRNA; CD-box;	Small nucleolar RNA sR11
+RF01152	Gene; snRNA; snoRNA; CD-box;	Small nucleolar RNA sR1
+RF01273	Gene; snRNA; snoRNA; CD-box;	Small nucleolar RNA sR34
+RF01274	Gene; snRNA; snoRNA; CD-box;	Small nucleolar RNA sR45
+RF01275	Gene; snRNA; snoRNA; CD-box;	Small nucleolar RNA sR22
+RF01276	Gene; snRNA; snoRNA; CD-box;	Small nucleolar RNA sR53
+RF01297	Gene; snRNA; snoRNA; CD-box;	Small nucleolar RNA sR40
+RF01303	Gene; snRNA; snoRNA; CD-box;	Small nucleolar RNA sR49
+RF01304	Gene; snRNA; snoRNA; CD-box;	Small nucleolar RNA sR5
+RF01305	Gene; snRNA; snoRNA; CD-box;	Small nucleolar RNA sR51
+RF01306	Gene; snRNA; snoRNA; CD-box;	Small nucleolar RNA sR52
+RF01307	Gene; snRNA; snoRNA; CD-box;	Small nucleolar RNA sR55
+RF01308	Gene; snRNA; snoRNA; CD-box;	Small nucleolar RNA sR58
+RF01309	Gene; snRNA; snoRNA; CD-box;	Small nucleolar RNA sR60
+RF01310	Gene; snRNA; snoRNA; CD-box;	Small nucleolar RNA sR7
+RF01312	Gene; snRNA; snoRNA; CD-box;	Small nucleolar RNA sR9
+RF01319	Gene; CRISPR;	CRISPR RNA direct repeat element
+RF01320	Gene; CRISPR;	CRISPR RNA direct repeat element
+RF01322	Gene; CRISPR;	CRISPR RNA direct repeat element
+RF01324	Gene; CRISPR;	CRISPR RNA direct repeat element
+RF01326	Gene; CRISPR;	CRISPR RNA direct repeat element
+RF01328	Gene; CRISPR;	CRISPR RNA direct repeat element
+RF01337	Gene; CRISPR;	CRISPR RNA direct repeat element
+RF01338	Gene; CRISPR;	CRISPR RNA direct repeat element
+RF01339	Gene; CRISPR;	CRISPR RNA direct repeat element
+RF01350	Gene; CRISPR;	CRISPR RNA direct repeat element
+RF01351	Gene; CRISPR;	CRISPR RNA direct repeat element
+RF01353	Gene; CRISPR;	CRISPR RNA direct repeat element
+RF01354	Gene; CRISPR;	CRISPR RNA direct repeat element
+RF01355	Gene; CRISPR;	CRISPR RNA direct repeat element
+RF01358	Gene; CRISPR;	CRISPR RNA direct repeat element
+RF01360	Gene; CRISPR;	CRISPR RNA direct repeat element
+RF01369	Gene; CRISPR;	CRISPR RNA direct repeat element
+RF01373	Gene; CRISPR;	CRISPR RNA direct repeat element
+RF01375	Gene; CRISPR;	CRISPR RNA direct repeat element
+RF01377	Gene; CRISPR;	CRISPR RNA direct repeat element
+RF01378	Gene; CRISPR;	CRISPR RNA direct repeat element
+RF01380	Cis-reg;	Human immunodeficiency virus type 1 major splice donor
+RF01419	Gene; antisense;	Antisense RNA which regulates isiA expression
+RF01689	Cis-reg; riboswitch;	AdoCbl variant RNA
+RF01717	Cis-reg;	PhotoRC-II RNA
+RF01722	Gene; sRNA;	Pyrobac-1 RNA
+RF01725	Cis-reg; riboswitch;	SAM-I/IV variant riboswitch
+RF01734	Cis-reg; riboswitch;	Fluoride riboswitch
+RF01737	Cis-reg;	flpD RNA
+RF01745	Cis-reg;	manA RNA
+RF01761	Cis-reg;	wcaG RNA
+RF01829	Gene; snRNA; snoRNA; CD-box;	sR6 snoRNA
+RF01854	Gene;	Bacterial large signal recognition particle RNA
+RF01856	Gene;	Protozoan signal recognition particle RNA
+RF01857	Gene;	Archaeal signal recognition particle RNA
+RF01982	Cis-reg;	Pyrrolysine insertion sequence 1
+RF01998	Intron;	Group II catalytic intron D1-D4-1
+RF01999	Intron;	Group II catalytic intron D1-D4-2
+RF02001	Intron;	Group II catalytic intron D1-D4-3
+RF02003	Intron;	Group II catalytic intron D1-D4-4
+RF02005	Intron;	Group II catalytic intron D1-D4-6
+RF02012	Intron;	Group II catalytic intron D1-D4-7
+RF02033	Gene;	HNH endonuclease-associated RNA and ORF (HEARO) RNA
+RF02163	Gene; snRNA; snoRNA; CD-box;	Small nucleolar RNA sR-tMet
+RF02194	Gene; antisense;	Bacterial antisense RNA HPnc0260
+RF02253	Cis-reg;	Iron response element II
+RF02276	Gene; ribozyme;	Hammerhead ribozyme (type II)
+RF02357	Gene; ribozyme;	RNaseP truncated form
+RF02509	Cis-reg;	Pyrrolysine insertion sequence mtbB
+RF02510	Cis-reg;	Pyrrolysine insertion sequence mttB
+RF02511	Cis-reg;	Pyrrolysine insertion sequence TetR
+RF02512	Cis-reg;	Pyrrolysine insertion sequence transposase 1
+RF02513	Cis-reg;	Pyrrolysine insertion sequence transposase 2
+RF02514	Gene; sRNA;	5' ureB small RNA
+RF02656	Gene; sRNA;	Sense overlapping transcript RNA 0042 (sot)
+RF02657	Gene; sRNA;	Sense overlapping transcript RNA 2652 (sot)
+RF02792	Gene; antisense;	Archaeal Small RNA 162
+RF02794	Gene; snRNA; snoRNA; HACA-box;	Pab19 RNA
+RF02795	Gene; snRNA; snoRNA; HACA-box;	Pab91 RNA
+RF02796	Gene; snRNA; snoRNA; HACA-box;	Pab160 RNA
+RF02800	Gene; sRNA;	Rickettsia sRNA47
+RF02801	Gene; snRNA; snoRNA; HACA-box;	Pyrobaculum sRNA 201
+RF02802	Gene; snRNA; snoRNA; HACA-box;	Pyrobaculum sRNA 204
+RF02803	Gene; snRNA; snoRNA; HACA-box;	Pyrobaculum sRNA 205
+RF02804	Gene; snRNA; snoRNA; HACA-box;	Pyrobaculum sRNA 206
+RF02805	Gene; snRNA; snoRNA; HACA-box;	Pyrobaculum sRNA 207
+RF02806	Gene; snRNA; snoRNA; HACA-box;	Pyrobaculum sRNA 208
+RF02807	Gene; snRNA; snoRNA; HACA-box;	Pyrobaculum sRNA 209
+RF02808	Gene; snRNA; snoRNA; HACA-box;	Pyrobaculum sRNA 210
+RF02814	Gene; sRNA;	Sulfolobus sRNA133
+RF02820	Gene; antisense;	Vibrio RNA AS9
+RF02905	Gene; sRNA;	Archaeal Small RNA 41
+RF02906	Gene; sRNA;	Archaeal Small RNA 154
+RF02914	Cis-reg;	DUF805b RNA
+RF02921	Gene; sRNA;	RT-14 RNA
+RF02984	Gene; sRNA;	DUF3800-X RNA
+RF02996	Gene; sRNA;	int-alpA RNA
+RF03001	Cis-reg;	leuA-Halobacteria RNA
+RF03006	Gene; sRNA;	M23 RNA
+RF03019	Gene; sRNA;	RT-16 RNA
+RF03094	Gene; sRNA;	LAGLIDADG-2 RNA

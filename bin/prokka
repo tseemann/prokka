@@ -622,29 +622,31 @@ if ($rfam) {
     my $num_ncrna = 0;
     my $tool = "Infernal:".$tools{'cmscan'}->{VERSION};
     my $icpu = $cpus || 1;
-    my $cmd = "cmscan --rfam --cpu $icpu -E $evalue --tblout /dev/stdout -o /dev/null --noali $cmdb \Q$outdir/$prefix.fna\E";
+    my $dbsize = $total_bp * 2 / 1000000;
+    my $cmd = "cmscan -Z $dbsize --cut_ga --rfam --nohmmonly --fmt 2 --cpu $icpu --tblout /dev/stdout -o /dev/null --noali $cmdb \Q$outdir/$prefix.fna\E";
     msg("Running: $cmd");
     open INFERNAL, '-|', $cmd;
     while (<INFERNAL>) {
       next if m/^#/;       # ignore comments
       my @x = split ' ';   # magic Perl whitespace splitter
-  #    msg("DEBUG: ", join("~~~", @x) );
-      next unless @x > 9;  # avoid incorrect lines
-      next unless defined $x[1] and $x[1] =~ m/^RF\d/;
-      my $sid = $x[2];
+      next unless defined $x[2] and $x[2] =~ m/^RF\d/;
+      my $sid = $x[3];
       next unless exists $seq{$sid};
+      next if defined $x[19] and $x[19] =~ m/^=$/;  # Overlaps with a higher scoring match
       push @{$seq{$sid}{FEATURE}}, Bio::SeqFeature::Generic->new( 
         -primary    => 'misc_RNA',
         -seq_id     => $sid,
         -source     => $tool,
-        -start      => min($x[7], $x[8]),
-        -end        => max($x[7], $x[8]),
-        -strand     => ($x[9] eq '-' ? -1 : +1),
-        -score      => undef,  # possibly x[16] but had problems here with '!'
+        -start      => min($x[9], $x[10]),
+        -end        => max($x[9], $x[10]),
+        -strand     => ($x[11] eq '-' ? -1 : +1),
+        -score      => $x[16],
         -frame      => 0,
         -tag        => {
-          'product' => $x[0],
+          'product' => $x[1],
           'inference' => "COORDINATES:profile:$tool",
+          'accession' => $x[2],
+          'Note' => '"' . join(' ', @x[26..$#x]) . '"',
         }
       );
       $num_ncrna++;    
@@ -1622,7 +1624,7 @@ sub setup_db {
   }
 
   check_tool('cmpress');
-  for my $cm (<$dbdir/cm/{Viruses,Bacteria}>) {
+  for my $cm (<$dbdir/cm/{Viruses,Bacteria,Archaea}>) {
     msg("Pressing CM database: $cm");    
     runcmd("cmpress \Q$cm\E");
   }

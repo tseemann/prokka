@@ -1,0 +1,239 @@
+RF00004	Gene; snRNA; splicing;	U2 spliceosomal RNA
+RF00008	Gene; ribozyme;	Hammerhead ribozyme (type III)
+RF00024	Gene;	Vertebrate telomerase RNA
+RF00028	Intron;	Group I catalytic intron
+RF00029	Intron;	Group II catalytic intron
+RF00032	Cis-reg;	Histone 3' UTR stem-loop
+RF00036	Cis-reg;	HIV Rev response element
+RF00041	Cis-reg;	Enteroviral 3' UTR element
+RF00044	Gene;	Bacteriophage pRNA
+RF00048	Cis-reg;	Enterovirus cis-acting replication element
+RF00061	Cis-reg; IRES;	Hepatitis C virus internal ribosome entry site
+RF00094	Gene; ribozyme;	Hepatitis delta virus ribozyme
+RF00102	Gene;	VA RNA
+RF00106	Gene; antisense;	RNAI
+RF00164	Cis-reg;	Coronavirus 3' stem-loop II-like motif (s2m)
+RF00165	Cis-reg;	Coronavirus 3' UTR pseudoknot
+RF00170	Gene;	Retron msr RNA
+RF00171	Cis-reg;	Tombusvirus 5' UTR
+RF00173	Gene; ribozyme;	Hairpin ribozyme
+RF00175	Cis-reg;	Human immunodeficiency virus type 1 dimerisation initiation site
+RF00176	Cis-reg;	Tombusvirus 3' UTR region IV
+RF00182	Cis-reg;	Coronavirus packaging signal
+RF00184	Cis-reg;	Potato virus X cis-acting regulatory element
+RF00185	Cis-reg;	Flavivirus 3' UTR cis-acting replication element (CRE)
+RF00192	Cis-reg;	Bovine leukaemia virus RNA packaging signal
+RF00193	Cis-reg;	Citrus tristeza virus replication signal
+RF00194	Cis-reg;	Rubella virus 3' cis-acting element
+RF00196	Cis-reg;	Alfalfa mosaic virus RNA 1 5' UTR stem-loop
+RF00209	Cis-reg; IRES;	Pestivirus internal ribosome entry site (IRES)
+RF00210	Cis-reg; IRES;	Aphthovirus internal ribosome entry site (IRES)
+RF00214	Cis-reg;	Retrovirus direct repeat 1 (dr1)
+RF00215	Cis-reg;	Tombus virus defective interfering (DI) RNA region 3
+RF00220	Cis-reg;	Human rhinovirus internal cis-acting regulatory element (CRE)
+RF00225	Cis-reg; IRES;	Tobamovirus internal ribosome entry site (IRES)
+RF00228	Cis-reg; IRES;	Hepatitis A virus internal ribosome entry site (IRES)
+RF00229	Cis-reg; IRES;	Picornavirus internal ribosome entry site (IRES)
+RF00233	Cis-reg;	Tymovirus/Pomovirus/Furovirus tRNA-like 3' UTR element
+RF00250	Gene; miRNA;	Trans-activation response element (TAR)
+RF00252	Cis-reg;	Alfalfa mosaic virus coat protein binding (CPB) RNA
+RF00260	Cis-reg;	Hepatitis C virus (HCV) cis-acting replication element (CRE)
+RF00262	Gene; antisense;	sar RNA
+RF00290	Cis-reg;	Bamboo mosaic potexvirus (BaMV) cis-regulatory element
+RF00363	Gene; miRNA;	mir-BART1 microRNA precursor family
+RF00364	Gene; miRNA;	mir-BART2 microRNA precursor family
+RF00365	Gene; miRNA;	mir-BHRF1-1 microRNA precursor family
+RF00366	Gene; miRNA;	mir-BHRF1-2 microRNA precursor family
+RF00367	Gene; miRNA;	mir-BHRF1-3 microRNA precursor family
+RF00374	Cis-reg;	Gammaretrovirus core encapsidation signal
+RF00375	Cis-reg;	HIV primer binding site (PBS)
+RF00376	Cis-reg;	HIV gag stem loop 3 (GSL3)
+RF00384	Cis-reg;	Poxvirus AX element late mRNA cis-regulatory element
+RF00385	Cis-reg;	Infectious bronchitis virus D-RNA
+RF00386	Cis-reg;	Enterovirus 5' cloverleaf cis-acting replication element
+RF00389	Cis-reg;	Bamboo mosaic virus satellite RNA cis-regulatory element
+RF00390	Cis-reg;	UPSK RNA
+RF00434	Cis-reg;	Luteovirus cap-independent translation element (BTE)
+RF00448	Cis-reg; IRES;	Epstein-Barr virus nuclear antigen (EBNA) IRES
+RF00453	Cis-reg;	Cardiovirus cis-acting replication element (CRE)
+RF00458	Cis-reg; IRES;	Cripavirus internal ribosome entry site (IRES)
+RF00459	Cis-reg;	Mason-Pfizer monkey virus packaging signal
+RF00465	Cis-reg;	Japanese encephalitis virus (JEV) hairpin structure
+RF00467	Cis-reg;	Rous sarcoma virus (RSV) primer binding site (PBS)
+RF00468	Cis-reg;	Hepatitis C virus stem-loop VII
+RF00469	Cis-reg;	Hepatitis C stem-loop IV
+RF00470	Cis-reg;	Togavirus 5' plus strand cis-regulatory element
+RF00480	Cis-reg; frameshift_element;	HIV Ribosomal frameshift signal
+RF00481	Cis-reg;	Hepatitis C virus 3'X element
+RF00496	Cis-reg;	Coronavirus SL-III cis-acting replication element (CRE)
+RF00498	Cis-reg; leader;	Equine arteritis virus leader TRS hairpin (LTH)
+RF00499	Cis-reg;	Human parechovirus 1 (HPeV1) cis regulatory element (CRE)
+RF00500	Cis-reg;	Turnip crinkle virus (TCV) repressor of minus strand synthesis H5
+RF00501	Cis-reg;	Rotavirus cis-acting replication element (CRE)
+RF00502	Cis-reg;	Turnip crinkle virus (TCV) core promoter hairpin (Pr)
+RF00507	Cis-reg; frameshift_element;	Coronavirus frameshifting stimulation element
+RF00510	Cis-reg;	Tombusvirus internal replication element (IRE)
+RF00511	Cis-reg; IRES;	Kaposi's sarcoma-associated herpesvirus internal ribosome entry site
+RF00524	Cis-reg;	R2 RNA element
+RF00525	Cis-reg;	Flavivirus DB element
+RF00550	Cis-reg;	Hepatitis E virus cis-reactive element
+RF00617	Cis-reg;	flavivirus capsid hairpin cHP
+RF00620	Cis-reg;	Hepatitis C alternative reading frame stem-loop
+RF00863	Gene; miRNA;	microRNA mir-BART17
+RF00864	Gene; miRNA;	microRNA mir-BART20
+RF00866	Gene; miRNA;	microRNA mir-BART3
+RF00867	Gene; miRNA;	microRNA mir-BART5
+RF00868	Gene; miRNA;	microRNA mir-BART15
+RF00869	Gene; miRNA;	microRNA mir-BART7
+RF00874	Gene; miRNA;	microRNA mir-BART12
+RF01009	Gene; miRNA;	microRNA mir-M7
+RF01047	Cis-reg;	HBV RNA encapsidation signal epsilon
+RF01051	Cis-reg;	Cyclic di-GMP-I riboswitch
+RF01072	Cis-reg;	Pseudoknot of upstream pseudoknot domain (UPD) of the 3'UTR
+RF01073	Cis-reg;	Gag/pol translational readthrough site
+RF01074	Cis-reg; frameshift_element;	Putative RNA-dependent RNA polymerase ribosomal frameshift site
+RF01075	Cis-reg;	Pseudoknot of tRNA-like structure
+RF01076	Cis-reg; frameshift_element;	Polymerase ribosomal frameshift site
+RF01077	Cis-reg;	Pseudoknot of tRNA-like structure
+RF01078	Cis-reg;	3'-terminal pseudoknot in PYVV
+RF01079	Cis-reg; frameshift_element;	Putative RNA-dependent RNA polymerase ribosomal frameshift site
+RF01080	Cis-reg;	Pseudoknot of upstream pseudoknot domain (UPD) of the 3'UTR
+RF01081	Cis-reg;	Pseudoknot of upstream pseudoknot domain (UPD) of the 3'UTR
+RF01082	Cis-reg;	Pseudoknot of upstream pseudoknot domain (UPD) of the 3'UTR
+RF01083	Cis-reg;	Pseudoknot of upstream pseudoknot domain (UPD) of the 3'UTR
+RF01084	Cis-reg;	Pseudoknot of tRNA-like structure
+RF01085	Cis-reg;	Pseudoknot of tRNA-like structure
+RF01088	Cis-reg;	Pseudoknot of tRNA-like structure
+RF01091	Cis-reg;	3'-terminal pseudoknot in SPCSV
+RF01092	Cis-reg;	Gag/pol translational readthrough site
+RF01094	Cis-reg; frameshift_element;	Polymerase ribosomal frameshift site
+RF01095	Cis-reg;	3'-terminal pseudoknot of CuYV/BPYV
+RF01096	Cis-reg;	HepA virus 3'-terminal pseudoknot
+RF01097	Cis-reg; frameshift_element;	Gag/pro ribosomal frameshift site
+RF01098	Cis-reg; frameshift_element;	Gag/pro ribosomal frameshift site
+RF01099	Cis-reg;	Pseudoknot of influenza A virus gene
+RF01100	Cis-reg;	3'-terminal pseudoknot in BYV
+RF01101	Cis-reg;	Pseudoknot of tRNA-like structure
+RF01102	Cis-reg; leader;	5'-leader pseudoknot of TEV/CVMV
+RF01103	Cis-reg;	Pseudoknot of upstream pseudoknot domain (UPD) of the 3'UTR
+RF01104	Cis-reg;	Pseudoknot of upstream pseudoknot domain (UPD) of the 3'UTR
+RF01105	Cis-reg;	Pseudoknot of upstream pseudoknot domain (UPD) of the 3'UTR
+RF01106	Cis-reg;	Pseudoknot of upstream pseudoknot domain (UPD) of the 3'UTR
+RF01107	Cis-reg;	Pseudoknot of upstream pseudoknot domain (UPD) of the 3'UTR
+RF01108	Cis-reg;	Pseudoknot of upstream pseudoknot domain (UPD) of the 3'UTR
+RF01109	Cis-reg;	Pseudoknot of upstream pseudoknot domain (UPD) of the 3'UTR
+RF01111	Cis-reg;	Pseudoknot of upstream pseudoknot domain (UPD) of the 3'UTR
+RF01113	Cis-reg;	Pseudoknot of upstream pseudoknot domain (UPD) of the 3'UTR
+RF01114	Cis-reg;	Pseudoknot of upstream pseudoknot domain (UPD) of the 3'UTR
+RF01313	Cis-reg;	Avian HBV RNA encapsidation signal epsilon
+RF01380	Cis-reg;	Human immunodeficiency virus type 1 major splice donor
+RF01381	Cis-reg;	HIV-1 stem-loop 3 Psi packaging signal
+RF01382	Cis-reg;	HIV-1 stem-loop 4 packaging signal
+RF01386	Gene; sRNA;	isrB Hfq binding RNA
+RF01394	Gene; sRNA;	isrK Hfq binding RNA
+RF01412	Gene; sRNA;	BsrG
+RF01415	Cis-reg;	Flavivirus 3'UTR stem loop IV
+RF01417	Cis-reg;	Retroviral 3'UTR stability element
+RF01418	Cis-reg;	HIV pol-1 stem loop
+RF01453	Cis-reg;	3'TE-DR1 translation enhancer element
+RF01454	Cis-reg;	5'UTR enhancer element
+RF01458	Gene; antisense;	Listeria snRNA rli23
+RF01466	Gene; sRNA;	Listeria sRNA rli34
+RF01479	Gene; sRNA;	Listeria sRNA rli48
+RF01486	Cis-reg;	Listeria sRNA rli62
+RF01492	Gene; sRNA;	Listeria sRNA rli28
+RF01497	Cis-reg;	ALIL pseudoknot
+RF01508	Cis-reg;	Barley yellow dwarf virus 5'UTR
+RF01516	Gene; snRNA; snoRNA; CD-box;	Human herpesvirus 1 small nucleolar RNA
+RF01668	Gene; sRNA;	Pseudomonas sRNA P10
+RF01695	Gene; antisense;	C4 antisense RNA
+RF01704	Cis-reg;	Downstream peptide RNA
+RF01717	Cis-reg;	PhotoRC-II RNA
+RF01739	Cis-reg; riboswitch;	Glutamine riboswitch
+RF01745	Cis-reg;	manA RNA
+RF01761	Cis-reg;	wcaG RNA
+RF01768	Cis-reg; frameshift_element;	ribosomal frameshift site
+RF01785	Cis-reg; frameshift_element;	ribosomal frameshift site
+RF01789	Gene; sRNA;	Epstein-Barr virus EBER1
+RF01790	Cis-reg; frameshift_element;	ribosomal frameshift site
+RF01792	Cis-reg; frameshift_element;	ribosomal frameshift site
+RF01794	Gene; antitoxin;	sok antitoxin (CssrC)
+RF01802	Gene; snRNA;	Herpesvirus saimiri U RNA1/RNA2
+RF01804	Cis-reg; thermoregulator;	Lambda phage CIII thermoregulator element
+RF01828	Gene; sRNA;	Small pathogenicity island RNA D
+RF01833	Cis-reg; frameshift_element;	ribosomal frameshift site
+RF01834	Cis-reg; frameshift_element;	ribosomal frameshift site
+RF01835	Cis-reg; frameshift_element;	ribosomal frameshift site
+RF01836	Cis-reg; frameshift_element;	ribosomal frameshift site
+RF01837	Cis-reg; frameshift_element;	togavirus ribosomal frameshift element
+RF01838	Cis-reg; frameshift_element;	sobemovirus ribosomal frameshift elemental
+RF01839	Cis-reg; frameshift_element;	eastern equine encephalitis ribosomal frameshift element
+RF01840	Cis-reg; frameshift_element;	ribosomal frameshift element
+RF01841	Cis-reg; frameshift_element;	venezuelan equine encephalitis virus ribosomal frameshift element
+RF01940	Gene; miRNA;	microRNA hvt-mir-H9
+RF02004	Intron;	Group II catalytic intron D1-D4-5
+RF02012	Intron;	Group II catalytic intron D1-D4-7
+RF02032	Gene;	Giant, ornate, lake- and Lactobacillales-derived (GOLLD) RNA
+RF02033	Gene;	HNH endonuclease-associated RNA and ORF (HEARO) RNA
+RF02076	Gene; sRNA;	Gammaproteobacterial sRNA STnc100
+RF02111	Gene;	IS009
+RF02221	Gene; sRNA;	sRNA-Xcc1
+RF02276	Gene; ribozyme;	Hammerhead ribozyme (type II)
+RF02340	Cis-reg;	Dengue virus SLA
+RF02359	Cis-reg;	Bacteriophage MS2 operator hairpin
+RF02415	Gene; sRNA;	Listeria sRNA rliG
+RF02416	Cis-reg;	Turnip crinkle virus 3'UTR
+RF02435	Gene; sRNA;	Streptococcus sRNA SpF41
+RF02455	Cis-reg;	Dianthovirus RNA2 cap-independent translation element
+RF02456	Cis-reg;	Dianthovirus RNA2 3'UTR stem loops
+RF02457	Cis-reg;	Tombusvirus 3' cap-independent translation element
+RF02458	Cis-reg;	Aureusvirus cap-independent translation element
+RF02459	Cis-reg;	Necrovirus cap-independent translation element
+RF02460	Cis-reg;	Satellite tobacco necrosis virus cap-independent translation element
+RF02461	Cis-reg;	Blackcurrant reversion virus cap-independent translation element
+RF02521	Cis-reg;	Pea enation mosaic virus-2 cap-independent translation element
+RF02522	Cis-reg;	Pea enation mosaic virus-2 cap-independent translation element
+RF02532	Cis-reg;	Murine norovirus 3'UTR
+RF02533	Cis-reg;	Hepatitis A virus (HAV) cis-acting replication element (CRE)
+RF02534	Cis-reg;	Norovirus cis-acting replication element (CRE)
+RF02536	Cis-reg;	Avian encephalitis virus (AEV) cis-acting replication element (CRE)
+RF02549	Cis-reg;	Pseudoknot PSK3
+RF02577	Gene; sRNA;	S. aureus tsr24 small RNA
+RF02585	Cis-reg;	Hepatitis C virus RNA packaging signal
+RF02586	Cis-reg;	Hepatitis C virus RNA packaging signal 733
+RF02587	Cis-reg;	Hepatitis C virus RNA packaging signal 4629
+RF02588	Cis-reg;	Hepatitis C virus RNA packaging signal 6067
+RF02589	Gene; sRNA;	S. pyogenes small RNA 779816
+RF02595	Gene;	Epstein-Barr virus stable intronic sequence RNA 1
+RF02598	Gene;	Epstein-Barr virus stable intronic sequence RNA 2
+RF02626	Gene; sRNA;	Wolbachia sRNA 59
+RF02658	Cis-reg; IRES;	Rhopalosiphum padi virus 5'UTR internal ribosome entry site
+RF02672	Gene; sRNA;	Small pathogenicity island RNA X
+RF02679	Gene; ribozyme;	Pistol ribozyme
+RF02702	Gene; sRNA;	Anti GcvB sRNA
+RF02703	Gene; sRNA;	Anti stx2 sRNA
+RF02712	Gene; sRNA;	Epstein-Barr virus EBER2
+RF02743	Gene; antisense;	Saccharopolyspora sRNA 389
+RF02816	Cis-reg;	Hepatitis B virus post-transcriptional regulatory element 1151-1410
+RF02838	Gene; sRNA;	Enterococcus sRNA 55
+RF02848	Gene; sRNA;	Enterococcus sRNA B11
+RF02855	Gene; antisense;	Yersinia sRNA 251
+RF02892	Gene; antisense;	Bacillus SR6 antitoxin
+RF02897	Gene; sRNA;	Staphylococcus sRNA 808
+RF02900	Gene; sRNA;	Aggregatibacter sRNA 82
+RF02910	Cis-reg;	Coronavirus 5' stem-loops 1-2
+RF02911	Cis-reg;	Baculoviridae Nucleocapsid Assembly essential Element
+RF02921	Gene; sRNA;	RT-14 RNA
+RF02924	Gene; sRNA;	skipping-rope RNA
+RF02931	Gene; sRNA;	Bacilli-1 RNA
+RF02944	Gene; sRNA;	c4-2 RNA
+RF02996	Gene; sRNA;	int-alpA RNA
+RF03003	Cis-reg;	GP20-b RNA
+RF03010	Gene; sRNA;	mcrA RNA
+RF03021	Gene; sRNA;	RT-18 RNA
+RF03022	Gene; sRNA;	RT-10 RNA
+RF03044	Gene; sRNA;	Proteo-phage-1 RNA
+RF03064	Gene; sRNA;	RAGATH-18 RNA
+RF03075	Gene; sRNA;	DUF3800-VIII RNA
+RF03085	Gene; sRNA;	abiF RNA
+RF03087	Gene; sRNA;	ROOL RNA
