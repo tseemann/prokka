@@ -28,7 +28,7 @@ use Time::Piece;
 use Time::Seconds;
 use XML::Simple;
 use Digest::MD5;
-use List::Util qw(min max sum);
+use List::Util qw(min max sum uniq);
 use Scalar::Util qw(openhandle);
 use Data::Dumper;
 use Bio::Root::Version;
@@ -1567,7 +1567,7 @@ sub add_bundle_to_path {
 #----------------------------------------------------------------------
 
 sub kingdoms {
-  return map { m{kingdom/(\w+?)/}; $1 } glob("$dbdir/kingdom/*/*.pin");
+  return uniq map { m{kingdom/(\w+?)/}; $1 } glob("$dbdir/kingdom/*/*.pin");
 }
 
 sub genera {
