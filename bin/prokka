@@ -23,6 +23,7 @@ use warnings;
 use FindBin;
 use Cwd qw(abs_path);
 use File::Copy;
+use File::Basename;
 use Time::Piece;
 use Time::Seconds;
 use XML::Simple;
@@ -45,7 +46,7 @@ my @CMDLINE = ($0, @ARGV);
 my $OPSYS = $^O;
 my $BINDIR = "$FindBin::RealBin/../binaries/$OPSYS";
 my $EXE = $FindBin::RealScript;
-my $VERSION = "1.14.0";
+my $VERSION = "1.14.1";
 my $AUTHOR = 'Torsten Seemann <torsten.seemann@gmail.com>';
 my $URL = 'https://github.com/tseemann/prokka';
 my $PROKKA_PMID = '24642063';
@@ -1017,8 +1018,7 @@ else {
     }
 
     # create a unqiue output name so we can save them in --debug mode
-    my $outname = $db->{DB};
-    $outname =~ s{^.*/}{};
+    my $outname = "$prefix.".basename($db->{DB}).".tmp.$$";
 
     # we write out all the CDS which haven't been annotated yet and then search them
     my $faa_name = "$outdir/$outname.faa";
