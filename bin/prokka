@@ -119,7 +119,7 @@ my %tools = (
   },
   'signalp' => {
     # this is so long-winded as -v changed meaning (3.0=version, 4.0=verbose !?)
-    GETVER  => "signalp -v < /dev/null 2>&1 | egrep ',|# SignalP' | sed 's/^# SignalP-//'",
+    GETVER  => "if [ \"`signalp -version 2>&1 | grep -Eo '[0-9]+\.[0-9]+'`\" != \"\" ]; then echo `signalp -version 2>&1 | grep -Eo '[0-9]+\.[0-9]+'`; else signalp -v < /dev/null 2>&1 | egrep ',|# SignalP' | sed 's/^# SignalP-//'; fi",
     REGEXP  => qr/^($BIDEC)/,
     MINVER  => "3.0",
     NEEDED  => 0,  # only if --gram used
@@ -777,14 +777,15 @@ for my $sid (@seq) {
 # Find signal peptide leader sequences
 
 if ($tools{signalp}->{HAVE}) {
-  my $sigpver = substr $tools{signalp}{VERSION}, 0, 1;  # first char, expect 3 or 4
+  my $sigpver = substr $tools{signalp}{VERSION}, 0, 1;  # first char, expect 3, 4 or 5
 
-  if ($kingdom eq 'Bacteria' and $sigpver==3 || $sigpver==4) {
+  if ($kingdom eq 'Bacteria' and $sigpver==3 || $sigpver==4 || $sigpver==5) {
     if ($gram) {
       $gram = $gram =~ m/\+|[posl]/i ? 'gram+' : 'gram-';
       msg("Looking for signal peptides at start of predicted proteins");
       msg("Treating $kingdom as $gram");
       my $spoutfn = "$outdir/signalp.faa";
+      my $sp5outfn = "$outdir/signalp_summary.signalp5";
       open my $spoutfh, '>', $spoutfn;
       my $spout = Bio::SeqIO->new(-fh=>$spoutfh, -format=>'fasta');
       my %cds;
@@ -803,12 +804,17 @@ if ($tools{signalp}->{HAVE}) {
         msg("Skipping signalp because it can not handle >$SIGNALP_MAXSEQ sequences.");
       }
       else {
-        my $opts = $sigpver==3 ? '-m hmm' : '';
-        my $cmd = "signalp -t $gram -f short $opts \Q$spoutfn\E 2> /dev/null";
+        my $opts = $sigpver==3 ? "signalp -t $gram -f short -m hmm" : ($sigpver==4 ? "signalp -t $gram -f short" : '$(which signalp)'." -tmp $outdir -prefix $outdir/signalp -org $gram -format short -fasta");
+        my $cmd = "$opts \Q$spoutfn\E 2> /dev/null";
         msg("Running: $cmd");
         my $tool = "SignalP:".$tools{signalp}->{VERSION};
         my $num_sigpep = 0;
-        open SIGNALP, '-|', $cmd;
+        if ($sigpver == 3 or $sigpver == 4) {
+          open SIGNALP, '-|', $cmd;
+        } else {
+          qx($cmd);
+          open SIGNALP, '<', $sp5outfn;
+        }
         while (<SIGNALP>) {
           my @x = split m/\s+/;
           if ($sigpver == 3) {
@@ -837,8 +843,7 @@ if ($tools{signalp}->{HAVE}) {
             );
             push @{$seq{$parent->seq_id}{FEATURE}}, $sigpep;
             $num_sigpep++;
-          }
-          else {
+          } elsif ($sigpver == 4) {
     #        msg("sigp$sigpver: @x");
             next unless @x==12 and $x[9] eq 'Y'; # has sig_pep
             my $parent = $cds{ $x[0] };
@@ -864,11 +869,45 @@ if ($tools{signalp}->{HAVE}) {
             );
             push @{$seq{$parent->seq_id}{FEATURE}}, $sigpep;
             $num_sigpep++;
-          }	
+          } else {
+    #        msg("sigp$sigpver: @x");
+            next unless @x==12 and $x[1] =~ m/^SP|TAT|LIPO/; # has sig_pep
+            my $parent = $cds{ $x[0] };
+            my $tpprob;
+            if ($x[1] =~ m/^SP/) { $tpprob = $x[2] }
+            elsif ($x[1] =~ m/^TAT/) { $tpprob = $x[3] }
+            elsif ($x[1] =~ m/^LIPO/) { $tpprob = $x[4] }
+            my $type = "$x[1] (Probability: $tpprob)";
+            my ($cleave1, $cleave2) = ($1, $2) if $x[8] =~ m/(\d+)-(\d+)\./;
+            my $cleaveseq = $1 if $x[9] =~ m/(\w+-\w+)\./;
+            my $clprob = $x[11];
+            my $start = $parent->strand > 0 ? $parent->start : $parent->end;
+            # need to convert to DNA coordinates
+            my $end = $start + $parent->strand * ($cleave1*3 - 1);
+            my $sigpep = Bio::SeqFeature::Generic->new( 
+              -seq_id     => $parent->seq_id,
+              -source_tag => $tool,
+              -primary    => 'sig_peptide',
+              -start      => min($start, $end),
+              -end        => max($start, $end),
+              -strand     => $parent->strand,
+              -frame      => 0,    # PHASE: compulsory for peptides, can't be '.'
+              -tag        => {
+      #	  'ID' => $ID,
+      #	  'Parent' => $x[0],  # don't have proper IDs yet....
+                'product' => "putative signal peptide", 
+                'inference' => "ab initio prediction:$tool", 
+                'note' => "$type, predicted cleavage between residues $cleave1 and $cleave2 ($cleaveseq) with probability $clprob",
+              }
+            );
+            push @{$seq{$parent->seq_id}{FEATURE}}, $sigpep;
+            $num_sigpep++;
+          }
         }
         msg("Found $num_sigpep signal peptides");
       }
       delfile($spoutfn);
+      delfile($sp5outfn) if $sigpver == 5;
     }
     else {
       msg("Option --gram not specified, will NOT check for signal peptides.");
