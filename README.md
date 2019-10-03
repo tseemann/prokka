@@ -50,7 +50,7 @@ $HOME/prokka/bin/prokka --setupdb
 
 ## Test
 
-* Type `prokka` and it should output it's help screen.
+* Type `prokka` and it should output its help screen.
 * Type `prokka --version` and you should see an output like `prokka 1.x`
 * Type `prokka --listdb` and it will show you what databases it has installed to use.
 
@@ -366,7 +366,7 @@ There is no clear reason for this.  The only way to restore normal behaviour
 is to edit the prokka script and change `parallel` to `parallel --gnu`.
 
 * __Why does prokka fail when it gets to hmmscan?__  
-Unfortunately HMMER keeps changing it's database format, and they aren't
+Unfortunately HMMER keeps changing its database format, and they aren't
 upward compatible.  If you upgraded HMMER (from 3.0 to 3.1 say) then you
 need to "re-press" the files.  This can be done as follows:
 ```
