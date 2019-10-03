@@ -136,9 +136,11 @@ $HOME/prokka/bin/prokka --setupdb
     -g linear -c PROK -n 11 -f PRJEB12345/EHEC-Chr1.embl \
     "Escherichia coli" 562 PRJEB12345 "Escherichia coli strain EHEC" PRJEB12345/EHEC-Chr1.gff
 
-# Download and run the EMBL validator prior to submitting the EMBL flat file
-% curl -L -O ftp://ftp.ebi.ac.uk/pub/databases/ena/lib/embl-client.jar
-% java -jar embl-client.jar -r PRJEB12345/EHEC-Chr1.embl
+# Download and run the latest EMBL validator prior to submitting the EMBL flat file
+# from http://central.maven.org/maven2/uk/ac/ebi/ena/sequence/embl-api-validator/
+# which at the time of writing is v1.1.129
+% curl -L -O http://central.maven.org/maven2/uk/ac/ebi/ena/sequence/embl-api-validator/1.1.129/embl-api-validator-1.1.129.jar
+% java -jar embl-api-validator-1.1.129.jar -r PRJEB12345/EHEC-Chr1.embl
 
 # Compress the file ready to upload to ENA, and calculate MD5 checksum
 % gzip PRJEB12345/EHEC-Chr1.embl
