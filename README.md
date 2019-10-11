@@ -267,11 +267,20 @@ BLAST+.  This combination of small database and fast search typically
 completes about 70% of the workload.  Then a series of slower but more
 sensitive HMM databases are searched using HMMER3.
 
-The initial core databases are derived from UniProtKB; there is one per
-"kingdom" supported.  To qualify for inclusion, a protein must be (1) from
-Bacteria (or Archaea or Viruses); (2) not be "Fragment" entries; and (3)
-have an evidence level ("PE") of 2 or lower, which corresponds to
-experimental mRNA or proteomics evidence.
+The three core databases, applied in order, are:
+
+1. [ISfinder](https://isfinder.biotoul.fr/):
+Only the tranposase (protein) sequences; the whole transposon is not annotated.
+
+2. [NCBI Bacterial Antimicrobial Resistance Reference Gene Database](https://www.ncbi.nlm.nih.gov/bioproject/313047):
+Antimicrobial resistance genes curated by NCBI.
+
+3. [UniProtKB (SwissProt)](https://www.uniprot.org/uniprot/?query=reviewed:yes): 
+For each `--kingdom` we include curated proteins with evidence that
+(i) from Bacteria (or Archaea or Viruses);
+(ii) not be "Fragment" entries;
+and (iii) have an evidence level ("PE") of 2 or lower, which
+corresponds to experimental mRNA or proteomics evidence.
 
 #### Making a Core Databases
 
@@ -282,6 +291,8 @@ If you add new ones, the command `prokka --listdb` will show you whether it
 has been detected properly.
 
 #### The Genus Databases
+
+:warning: This is no longer recommended. Please use `--proteins` instead.
 
 If you enable `--usegenus` and also provide a Genus via `--genus` then it
 will first use a BLAST database which is Genus specific.  Prokka comes with

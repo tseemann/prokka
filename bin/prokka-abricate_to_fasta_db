@@ -24,12 +24,20 @@ my $out = Bio::SeqIO->new(-fh=>\*STDOUT, -format=>'fasta');
 my %seen;
 
 while (my $seq = $in->next_seq) {
-  my(undef,$gene,$locustag) = split m"~~~", $seq->id;
-  $gene = '' if $gene eq $locustag;
+  my(undef,$gene,$acc,$abx) = split m"~~~", $seq->id;
+  $gene = '' if $gene eq $acc;
   my $prot = $seq->translate;
-  die Dumper($prot) if $prot->seq =~ m/\*./; # check for stop codon in middle
-  die Dumper($prot) if $seen{$prot->seq}++;  # check for dupes
-  $prot->id($locustag);
+  my $aa = $prot->seq;
+  die Dumper($prot) if $aa =~ m/\*./; # check for stop codon in middle
+  die Dumper($prot) if $seen{$aa}++;  # check for dupes
+  substr($aa,0,1) = "M"; # force Met start
+  chop($aa) if $aa =~ m/\*$/;  # remove trailing stop codon
+  $prot->seq($aa);
+  $prot->id($acc);
+  # 1. no /EC_number
+  # 2. /gene
+  # 3. /product
+  # 4. COG
   $prot->desc( join('~~~', '', $gene, $prot->desc, '') );
   $out->write_seq($prot);
 }
