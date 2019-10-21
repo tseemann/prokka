@@ -17,7 +17,6 @@ nytprof.out
 pm_to_blib
 bug/
 db/cm/*.i1*
-db/kingdom/*/sprot.p*
+db/kingdom/*/*.p??
 db/hmm/*.h3?
 db/genus/*.p*
-
