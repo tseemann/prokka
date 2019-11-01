@@ -227,7 +227,7 @@ sub check_all_tools {
 
 my(@Options, $quiet, $debug, $kingdom, $fast, $force, $outdir, $prefix, $cpus, $dbdir,
              $addgenes, $addmrna, $cds_rna_olap,
-             $gcode, $gram, $gffver, $locustag, $increment, $mincontiglen, $evalue, $coverage,
+             $gcode, $gram, $gffver, $locustag, $increment, $mincontiglen, $evalue, $coverage, $prodigal_training_file,
              $genus, $species, $strain, $plasmid, 
              $usegenus, $proteins, $hmms, $centre, $scaffolds,
              $rfam, $norrna, $notrna, $rnammer, $rawproduct, $noanno, $accver,
@@ -712,7 +712,12 @@ my $totalbp = sum( map { $seq{$_}{DNA}->length } @seq);
 my $prodigal_mode = ($totalbp >= 100000 && !$metagenome) ? 'single' : 'meta';
 msg("Contigs total $totalbp bp, so using $prodigal_mode mode");
 my $num_cds=0;
-my $cmd = "prodigal -i \Q$outdir/$prefix.fna\E -c -m -g $gcode -p $prodigal_mode -f sco -q";
+my $cmd;
+if ($prodigal_training_file ne ""){
+  $cmd = "prodigal -i \Q$outdir/$prefix.fna\E -c -m -g $gcode -p $prodigal_mode -f sco -q -t $prodigal_training_file";
+}else{
+  $cmd = "prodigal -i \Q$outdir/$prefix.fna\E -c -m -g $gcode -p $prodigal_mode -f sco -q";
+}
 msg("Running: $cmd");
 open my $PRODIGAL, '-|', $cmd;
 my $sid;
@@ -1770,6 +1775,7 @@ sub setOptions {
     {OPT=>"metagenome!",  VAR=>\$metagenome, DEFAULT=>0, DESC=>"Improve gene predictions for highly fragmented genomes"},
     {OPT=>"rawproduct!",  VAR=>\$rawproduct, DEFAULT=>0, DESC=>"Do not clean up /product annotation"},
     {OPT=>"cdsrnaolap!",  VAR=>\$cds_rna_olap, DEFAULT=>0, DESC=>"Allow [tr]RNA to overlap CDS"},
+    {OPT=>"prodigal-training-file=s", VAR=>\$prodigal_training_file, DEFAULT=>'', DESC=>"Add training file to prodigal"},
     'Matching:',
     {OPT=>"evalue=f",  VAR=>\$evalue, DEFAULT=>1E-9, DESC=>"Similarity e-value cut-off"},
     {OPT=>"coverage=f",  VAR=>\$coverage, DEFAULT=>80, DESC=>"Minimum coverage on query protein"},
