@@ -225,6 +225,7 @@ $HOME/prokka/bin/prokka --setupdb
       --norrna          Don't run rRNA search (default OFF)
       --notrna          Don't run tRNA search (default OFF)
       --rnammer         Prefer RNAmmer over Barrnap for rRNA prediction (default OFF)
+      --crispr          Enable searching for CRISPR with minced (default '0')
 
 ### Option: --proteins
 

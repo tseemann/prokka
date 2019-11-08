@@ -79,7 +79,22 @@ my $starttime = localtime;
 my %seq;
 my @seq;
 
-# . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
+# . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+# command line options
+
+my(@Options, $quiet, $debug, $kingdom, $fast, $force, $outdir, $prefix, $cpus, $dbdir,
+             $addgenes, $addmrna, $cds_rna_olap,
+             $gcode, $gram, $gffver, $locustag, $increment, $mincontiglen, $evalue, $coverage,
+             $genus, $species, $strain, $plasmid, 
+             $usegenus, $proteins, $hmms, $centre, $scaffolds,
+             $rfam, $norrna, $notrna, $rnammer, $crispr, $rawproduct, $noanno, $accver,
+	     $metagenome, $compliant, $listdb, $citation);
+
+$dbdir = $ENV{'PROKKA_DBDIR'} || abs_path("$FindBin::RealBin/../db");
+
+setOptions();
+
+## . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
 # table of tools we need/optional and min versions
 # yes - this should be in a json/yaml config file :-/
 
@@ -102,13 +117,13 @@ my %tools = (
     GETVER  => "rnammer -V 2>&1 | grep -i 'rnammer [0-9]'",
     REGEXP  => qr/($BIDEC)/,
     MINVER  => "1.2",
-    NEEDED  => 0,
+    NEEDED  => $rnammer ? 1 : 0,
   },
   'barrnap' => {
     GETVER  => "barrnap --version 2>&1",
-    REGEXP  => qr/($BIDEC)/,  
-    MINVER  => "0.4",  
-    NEEDED  => 0,
+    REGEXP  => qr/($BIDEC)/,
+    MINVER  => "0.4",
+    NEEDED  => $rnammer ? 0 : 1,
   },
   'prodigal' => {
     GETVER  => "prodigal -v 2>&1 | grep -i '^Prodigal V'",
@@ -122,25 +137,25 @@ my %tools = (
     GETVER  => "if [ \"`signalp -version 2>&1 | grep -Eo '[0-9]+\.[0-9]+'`\" != \"\" ]; then echo `signalp -version 2>&1 | grep -Eo '[0-9]+\.[0-9]+'`; else signalp -v < /dev/null 2>&1 | egrep ',|# SignalP' | sed 's/^# SignalP-//'; fi",
     REGEXP  => qr/^($BIDEC)/,
     MINVER  => "3.0",
-    NEEDED  => 0,  # only if --gram used
+    NEEDED  => $gram ? 1 : 0,  # only if --gram used
   },
   'minced' => {
      GETVER => "minced --version | sed -n '1p'",
      REGEXP => qr/minced\s+\d+\.(\d+\.\d+)/,
      MINVER => "2.0",  # really 0.3 as we skip first number
-     NEEDED => 0,
+     NEEDED => $crispr ? 1 : 0,
    },
   'cmscan' => {
     GETVER  => "cmscan -h | grep '^# INFERNAL'",
     REGEXP  => qr/INFERNAL\s+($BIDEC)/,
     MINVER  => "1.1",
-    NEEDED  => 0,  # only if --rfam used
+    NEEDED  => $rfam ? 1 : 0,  # only if --rfam used
   },
   'cmpress' => {
     GETVER  => "cmpress -h | grep '^# INFERNAL'",
     REGEXP  => qr/INFERNAL\s+($BIDEC)/,
     MINVER  => "1.1",
-    NEEDED  => 0,  
+    NEEDED  => $rfam ? 1 : 0,
   },
   'hmmscan' => {
     GETVER  => "hmmscan -h | grep '^# HMMER'",
@@ -164,7 +179,7 @@ my %tools = (
     GETVER  => "makeblastdb -version",
     REGEXP  => qr/makeblastdb:\s+($BIDEC)/,
     MINVER  => "2.8",
-    NEEDED  => 0,  # only if --proteins used
+    NEEDED  => $proteins ? 1 : 0,  # only if --proteins used
   },
   'tbl2asn' => {
     GETVER  => "tbl2asn - | grep '^tbl2asn'",
@@ -181,17 +196,18 @@ my %tools = (
   'java'    => { NEEDED=>1 },
   # for the new --proteins option ability to take .gbk or .embl files
   'prokka-genbank_to_fasta_db'    => { NEEDED=>1 },
-);  
+);
 
-# . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
+# . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
 # functions to check if tool is installed and correct version
 
 sub check_tool {
-  my($toolname) = @_;
+  my $toolname = shift @_;
+  my $need = shift @_;
   my $t = $tools{$toolname};
   my $fp = find_exe($toolname);
-  err("Can't find required '$toolname' in your \$PATH") if !$fp and $t->{NEEDED};
-  if ($fp) {
+  err("Can't find required '$toolname' in your \$PATH") if !$fp and $need;
+  if ($fp and $need) {
     $t->{HAVE} = $fp;
     msg("Looking for '$toolname' - found $fp");
     if ($t->{GETVER}) {
@@ -204,7 +220,7 @@ sub check_tool {
           err("Prokka needs $toolname $t->{MINVER} or higher. Please upgrade and try again.");
         }
         if (defined $t->{MAXVER} and $t->{VERSION} > $t->{MAXVER}) {
-          err("Prokka needs a version of $toolname between $t->{MINVER} and $t->{MAXVER}. Please downgrade and try again."); 
+          err("Prokka needs a version of $toolname between $t->{MINVER} and $t->{MAXVER}. Please downgrade and try again.");
         }
       }
       else {
@@ -218,24 +234,9 @@ sub check_tool {
 sub check_all_tools {
   $ENV{"GREP_OPTIONS"} = '';  # --colour => version grep fails (Issue #117)
   for my $toolname (sort keys %tools) {
-    check_tool($toolname);
+    check_tool($toolname, $tools{$toolname}{NEED});
   }
 }
-
-# . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
-# command line options
-
-my(@Options, $quiet, $debug, $kingdom, $fast, $force, $outdir, $prefix, $cpus, $dbdir,
-             $addgenes, $addmrna, $cds_rna_olap,
-             $gcode, $gram, $gffver, $locustag, $increment, $mincontiglen, $evalue, $coverage,
-             $genus, $species, $strain, $plasmid, 
-             $usegenus, $proteins, $hmms, $centre, $scaffolds,
-             $rfam, $norrna, $notrna, $rnammer, $rawproduct, $noanno, $accver,
-	     $metagenome, $compliant, $listdb, $citation);
-
-$dbdir = $ENV{'PROKKA_DBDIR'} || abs_path("$FindBin::RealBin/../db");
-
-setOptions();
 
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
 # welcome message
@@ -403,6 +404,9 @@ if ($rfam and ! $tools{'cmscan'}->{HAVE}) {
 }
 if ($gram and ! $tools{'signalp'}->{HAVE}) {
   err("You need to install 'signalp' to use the --gram option.");
+}
+if ($crispr and ! $tools{'minced'}->{HAVE}) {
+  err("You need to install 'minced' to use the --crispr option.");
 }
 
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
@@ -674,7 +678,7 @@ msg("Total of", scalar(@allrna), "tRNA + rRNA features");
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
 # CRISPRs
 
-if ($tools{'minced'}->{HAVE}) {
+if ($crispr and $tools{'minced'}->{HAVE}) {
   msg("Searching for CRISPR repeats");
   my $num_crispr=0;
   # ##gff-version 3
@@ -1642,7 +1646,7 @@ sub setup_db {
 
   clean_db(0);  # don't quit, come back here
 
-  check_tool('makeblastdb');
+  check_tool('makeblastdb', 1);
 
   for my $db (qw/sprot IS AMR/) {
     for my $fasta (<$dbdir/kingdom/*/$db>) {
@@ -1656,13 +1660,13 @@ sub setup_db {
     runcmd("makeblastdb -hash_index -dbtype prot -in \Q$genus\E -logfile /dev/null");
   }
 
-  check_tool('hmmpress');
+  check_tool('hmmpress', 1);
   for my $hmm (<$dbdir/hmm/*.hmm>) {
     msg("Pressing HMM database: $hmm");
     runcmd("hmmpress \Q$hmm\E");
   }
 
-  check_tool('cmpress');
+  check_tool('cmpress', 1);
   for my $cm (<$dbdir/cm/{Viruses,Bacteria,Archaea}>) {
     msg("Pressing CM database: $cm");    
     runcmd("cmpress \Q$cm\E");
@@ -1782,6 +1786,7 @@ sub setOptions {
     {OPT=>"norrna!",  VAR=>\$norrna, DEFAULT=>0, DESC=>"Don't run rRNA search"},
     {OPT=>"notrna!",  VAR=>\$notrna, DEFAULT=>0, DESC=>"Don't run tRNA search"},
     {OPT=>"rnammer!",  VAR=>\$rnammer, DEFAULT=>0, DESC=>"Prefer RNAmmer over Barrnap for rRNA prediction"},
+    {OPT=>"crispr",  VAR=>\$crispr, DEFAULT=>0, DESC=>"Enable searching for CRISPR with minced"},
   );
 
   (!@ARGV) && (usage(1));
