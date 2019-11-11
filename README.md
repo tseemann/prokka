@@ -403,6 +403,11 @@ compliant. It does not like the ACCESSION and VERSION strings that Prokka
 produces via the "tbl2asn" tool. The following Unix command will fix them:
 `egrep -v '^(ACCESSION|VERSION)' prokka.gbk > mauve.gbk`
 
+* __How can I make my GFF not have the contig sequences in it?__
+```
+sed '/^##FASTA/Q' prokka.gff > nosequence.gff
+```
+
 ## Bugs
 
 Submit problems or requests to the [Issue Tracker](https://github.com/tseemann/prokka/issues).
