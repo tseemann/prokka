@@ -172,7 +172,6 @@ my %tools = (
     NEEDED  => 1,
   },
   # now just the standard unix tools we need
-  'less'    => { NEEDED=>1 },
   'grep'    => { NEEDED=>1 },  # yes, we need this before we can test versions :-/
   'egrep'   => { NEEDED=>1 },
   'sed'     => { NEEDED=>1 },
@@ -1571,13 +1570,6 @@ sub version {
 
 #----------------------------------------------------------------------
 
-sub showdoc {
-  system("less $FindBin::Bin/../doc/$EXE-manual.txt");
-  exit;
-}
-
-#----------------------------------------------------------------------
-
 sub show_citation {
   print STDERR << "EOCITE";
   
@@ -1735,7 +1727,6 @@ sub setOptions {
     'General:',
     {OPT=>"help",    VAR=>\&usage,             DESC=>"This help"},
     {OPT=>"version", VAR=>\&version, DESC=>"Print version and exit"},
-    {OPT=>"docs",    VAR=>\&showdoc,           DESC=>"Show full manual/documentation"},
     {OPT=>"citation",VAR=>\&show_citation,     DESC=>"Print citation for referencing Prokka"},
     {OPT=>"quiet!",  VAR=>\$quiet, DEFAULT=>0, DESC=>"No screen output"},
     {OPT=>"debug!",  VAR=>\$debug, DEFAULT=>0, DESC=>"Debug mode: keep all temporary files"},

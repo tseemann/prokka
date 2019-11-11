@@ -183,7 +183,6 @@ $HOME/prokka/bin/prokka --setupdb
     General:
       --help            This help
       --version         Print version and exit
-      --docs            Show full manual/documentation
       --citation        Print citation for referencing Prokka
       --quiet           No screen output (default OFF)
       --debug           Debug mode: keep all temporary files (default OFF)
