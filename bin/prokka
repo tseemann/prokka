@@ -230,7 +230,7 @@ sub check_all_tools {
 my(@Options, $quiet, $debug, $kingdom, $fast, $force, $outdir, $prefix, $cpus, $dbdir,
              $addgenes, $addmrna, $cds_rna_olap,
              $gcode, $gram, $gffver, $locustag, $increment, $mincontiglen, $evalue, $coverage,
-             $genus, $species, $strain, $plasmid, 
+             $genus, $species, $strain, $plasmid, $prodigaltf,
              $usegenus, $proteins, $hmms, $centre, $scaffolds,
              $rfam, $norrna, $notrna, $rnammer, $rawproduct, $noanno, $accver,
 	     $metagenome, $compliant, $listdb, $citation);
@@ -715,6 +715,10 @@ my $prodigal_mode = ($totalbp >= 100000 && !$metagenome) ? 'single' : 'meta';
 msg("Contigs total $totalbp bp, so using $prodigal_mode mode");
 my $num_cds=0;
 my $cmd = "prodigal -i \Q$outdir/$prefix.fna\E -c -m -g $gcode -p $prodigal_mode -f sco -q";
+if ($prodigaltf and -r $prodigaltf) {
+  msg("Gene finding will be aided by Prodigal training file: $prodigaltf");
+  $cmd .= " -t '$prodigaltf'";
+}
 msg("Running: $cmd");
 open my $PRODIGAL, '-|', $cmd;
 my $sid;
@@ -1757,6 +1761,7 @@ sub setOptions {
     'Annotations:',
     {OPT=>"kingdom=s",  VAR=>\$kingdom, DEFAULT=>'Bacteria', DESC=>"Annotation mode: ".join('|', kingdoms()) },
     {OPT=>"gcode=i",  VAR=>\$gcode, DEFAULT=>0, DESC=>"Genetic code / Translation table (set if --kingdom is set)"},
+    {OPT=>"prodigaltf=s",  VAR=>\$prodigaltf, DEFAULT=>'', DESC=>"Prodigal training file" },
     {OPT=>"gram=s",  VAR=>\$gram, DEFAULT=>'', DESC=>"Gram: -/neg +/pos"},
     {OPT=>"usegenus!",  VAR=>\$usegenus, DEFAULT=>0, DESC=>"Use genus-specific BLAST databases (needs --genus)"},
     {OPT=>"proteins=s",  VAR=>\$proteins, DEFAULT=>'', DESC=>"FASTA or GBK file to use as 1st priority"},
