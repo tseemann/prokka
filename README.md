@@ -209,6 +209,7 @@ $HOME/prokka/bin/prokka --setupdb
     Annotations:
       --kingdom [X]     Annotation mode: Archaea|Bacteria|Mitochondria|Viruses (default 'Bacteria')
       --gcode [N]       Genetic code / Translation table (set if --kingdom is set) (default '0')
+      --prodigaltf [X]  Prodigal training file (default '')
       --gram [X]        Gram: -/neg +/pos (default '')
       --usegenus        Use genus-specific BLAST databases (needs --genus) (default OFF)
       --proteins [X]    Fasta file of trusted proteins to first annotate from (default '')
@@ -238,6 +239,13 @@ recognisable file extension like `.gb` or `.gbk` or auto-detect will fail.   The
 use of Genbank is recommended over FASTA, because it will provide `/gene` 
 and `/EC_number` annotations that a typical `.faa` file will not provide, unless
 you have specially formatted it for Prokka.
+
+### Option: --prodigaltf
+
+Instead of letting `prodigal` train its gene model on the contigs you
+provide, you can pre-train it on some good closed reference genomes first
+using the `prodigal -t` option. Once you've done that, provide `prokka`
+the training file using the `--prodgialtf` option.
 
 ### Option: --rawproduct
 
