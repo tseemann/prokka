@@ -46,7 +46,7 @@ my @CMDLINE = ($0, @ARGV);
 my $OPSYS = $^O;
 my $BINDIR = "$FindBin::RealBin/../binaries/$OPSYS";
 my $EXE = $FindBin::RealScript;
-my $VERSION = "1.14.3";
+my $VERSION = "1.14.4";
 my $AUTHOR = 'Torsten Seemann <torsten.seemann@gmail.com>';
 my $URL = 'https://github.com/tseemann/prokka';
 my $PROKKA_PMID = '24642063';
@@ -114,7 +114,6 @@ my %tools = (
     GETVER  => "prodigal -v 2>&1 | grep -i '^Prodigal V'",
     REGEXP  => qr/($BIDEC)/,
     MINVER  => "2.6",
-    MAXVER  => "2.69",  # changed cmdline options in 2.70 git :-/
     NEEDED  => 1,
   },
   'signalp' => {
@@ -186,6 +185,12 @@ my %tools = (
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
 # functions to check if tool is installed and correct version
 
+sub ver2str {
+  my($bidec) = @_;
+  return $bidec if $bidec !~ m/\./;
+  return join '', map { sprintf "%03d",$_ } (split m/\./, $bidec);
+}
+
 sub check_tool {
   my($toolname) = @_;
   my $t = $tools{$toolname};
@@ -197,19 +202,17 @@ sub check_tool {
     if ($t->{GETVER}) {
       my($s) = qx($t->{GETVER});
       if (defined $s) {
-        $s =~ $t->{REGEXP};
-        $t->{VERSION} = $1 if defined $1;
-        msg("Determined $toolname version is $t->{VERSION}");
-        if (defined $t->{MINVER} and $t->{VERSION} < $t->{MINVER}) {
+        chomp $s;
+        $s =~ $t->{REGEXP} or err("Coult not parse version from '$s'");;
+        $t->{VERSION} = ver2str($1);
+        msg("Determined $toolname version is $t->{VERSION} from '$s'");
+        if (defined $t->{MINVER} and $t->{VERSION} lt ver2str($t->{MINVER}) ) {
           err("Prokka needs $toolname $t->{MINVER} or higher. Please upgrade and try again.");
-        }
-        if (defined $t->{MAXVER} and $t->{VERSION} > $t->{MAXVER}) {
-          err("Prokka needs a version of $toolname between $t->{MINVER} and $t->{MAXVER}. Please downgrade and try again."); 
         }
       }
       else {
         err("Could not determine version of $toolname - please install version",
-            $t->{MINVER}, "or higher");  # FIXME: or less <= MAXVER if given
+            $t->{MINVER}, "or higher");
       }
     }
   }
