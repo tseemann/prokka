@@ -469,6 +469,7 @@ while (my $seq = $fin->next_seq) {
   push @seq, $id;  # this array it used to preserve original contig order
   $total_bp += $seq->length;
 }
+$fout->close();
 $ncontig > 0 or err("FASTA file '$in' contains no suitable sequence entries");
 msg("Wrote $ncontig contigs totalling $total_bp bp.");
 
@@ -1363,6 +1364,7 @@ for my $sid (@seq) {
     print ${tsv_fh} tsv_line( map { $_ || '' } @values );
   }
 }
+$fsa_fh->close();
 
 if (@seq) {
   print $gff_fh "##FASTA\n";
