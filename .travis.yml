@@ -2,9 +2,10 @@ language: perl
 
 perl:
     - "5.26"
-    
+
 install:
-    - "cpanm --quiet --notest Time::Piece XML::Simple Digest::MD5 Bio::Perl"
+    - "cpanm --quiet --notest Time::Piece XML::Simple Digest::MD5"
+    - "cpanm --quiet --notest Bio::SeqIO Bio::SearchIO Bio::Tools::GFF Bio::Tools::GuessSeqFormat"
     - "export PATH=$PWD/bin:$PATH"
 
 script:
