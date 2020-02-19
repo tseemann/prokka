@@ -14,6 +14,13 @@ viral genomes quickly and produce standards-compliant output files.
 
 ## Installation
 
+### Bioconda
+If you use [Conda](https://conda.io/docs/install/quick.html)
+you can use the [Bioconda channel](https://bioconda.github.io/):
+```
+conda install -c conda-forge -c bioconda -c defaults prokka
+```
+
 ### Brew
 If you are using the [MacOS Brew](http://brew.sh/) 
 or [LinuxBrew](http://brew.sh/linuxbrew/) packaging system:
@@ -21,11 +28,18 @@ or [LinuxBrew](http://brew.sh/linuxbrew/) packaging system:
 brew install brewsci/bio/prokka
 ```
 
-### Bioconda
-If you use [Conda](https://conda.io/docs/install/quick.html)
-you can use the [Bioconda channel](https://bioconda.github.io/):
+### Docker
+Maintained by https://hub.docker.com/u/staphb
 ```
-conda install -c conda-forge -c bioconda -c defaults prokka
+
+docker pull staphb/prokka:latest
+docker run staphb/prokka:latest prokka -h
+```
+
+### Singularity
+```
+singularity build prokka.sif docker://staphb/prokka:latest
+singularity exec prokka.sif prokka -h
 ```
 
 ### Ubuntu/Debian/Mint
