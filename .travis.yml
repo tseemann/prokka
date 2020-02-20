@@ -3,6 +3,11 @@ language: perl
 perl:
     - "5.30"
 
+addons:
+    apt:
+        packages:
+            - libdb-dev
+
 install:
     - "cpanm --quiet --notest Time::Piece XML::Simple Digest::MD5"
     - "cpanm --quiet --notest Bio::SeqIO Bio::SearchIO Bio::Tools::GFF Bio::Tools::GuessSeqFormat"
