@@ -7,10 +7,10 @@ addons:
     apt:
         packages:
             - libdb-dev
+            - libbio-perl-perl
+            - libxml-simple-perl
 
 install:
-    - "cpanm --quiet --notest Time::Piece XML::Simple Digest::MD5"
-    - "cpanm --quiet --notest Bio::Seq Bio::SeqIO Bio::SearchIO Bio::SearchIO::hmmer Bio::Tools::GFF Bio::Tools::GuessSeqFormat""
     - "export PATH=$PWD/bin:$PATH"
 
 script:
