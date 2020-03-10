@@ -727,11 +727,23 @@ my $totalbp = sum( map { $seq{$_}{DNA}->length } @seq);
 my $prodigal_mode = ($totalbp >= 100000 && !$metagenome) ? 'single' : 'meta';
 msg("Contigs total $totalbp bp, so using $prodigal_mode mode");
 my $num_cds=0;
-my $cmd = "prodigal -i \Q$outdir/$prefix.fna\E -c -m -g $gcode -p $prodigal_mode -f sco -q";
+my $cmd = "prodigal -c -m -g $gcode -p $prodigal_mode -f sco -q";
 if ($prodigaltf and -r $prodigaltf) {
   msg("Gene finding will be aided by Prodigal training file: $prodigaltf");
   $cmd .= " -t '$prodigaltf'";
 }
+$cmd .= " < \Q$outdir/$prefix.fna\E";
+
+# Meta mode is considerably slower, but it processes each sequence
+# individually. That's two reasons to run in parallel.
+if ($prodigal_mode eq 'meta') {
+  my $fsize = -s "$outdir/$prefix.fna";
+  my $bsize = int($fsize / $cpus / 2);
+  my $prlopts = $cpus > 0 ? " -j $cpus" : "";
+  my $prlcmd = "${PARALLELCMD}$prlopts --block $bsize --recstart '>' --pipe ";
+  $cmd = $prlcmd . $cmd;
+}
+
 msg("Running: $cmd");
 open my $PRODIGAL, '-|', $cmd;
 my $sid;
