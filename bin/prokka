@@ -233,7 +233,7 @@ my(@Options, $quiet, $debug, $kingdom, $fast, $force, $outdir, $prefix, $cpus, $
              $genus, $species, $strain, $plasmid, $prodigaltf,
              $usegenus, $proteins, $hmms, $centre, $scaffolds,
              $rfam, $norrna, $notrna, $rnammer, $rawproduct, $noanno, $accver,
-	     $metagenome, $compliant, $listdb, $citation, $nogbk);
+	     $metagenome, $compliant, $listdb, $citation, $nogbk, $nocrispr);
 
 $dbdir = $ENV{'PROKKA_DBDIR'} || abs_path("$FindBin::RealBin/../db");
 
@@ -676,7 +676,9 @@ msg("Total of", scalar(@allrna), "tRNA + rRNA features");
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
 # CRISPRs
 
-if ($tools{'minced'}->{HAVE}) {
+if ($nocrispr) {
+  msg("Skipping CRISPR search");
+} elsif ($tools{'minced'}->{HAVE}) {
   msg("Searching for CRISPR repeats");
   my $num_crispr=0;
   # ##gff-version 3
@@ -1798,6 +1800,7 @@ sub setOptions {
     {OPT=>"rfam",  VAR=>\$rfam, DEFAULT=>0, DESC=>"Enable searching for ncRNAs with Infernal+Rfam (SLOW!)"},
     {OPT=>"norrna!",  VAR=>\$norrna, DEFAULT=>0, DESC=>"Don't run rRNA search"},
     {OPT=>"notrna!",  VAR=>\$notrna, DEFAULT=>0, DESC=>"Don't run tRNA search"},
+    {OPT=>"nocrispr!",  VAR=>\$nocrispr, DEFAULT=>0, DESC=>"Don't run CRISPR search"},
     {OPT=>"nogbk!",  VAR=>\$nogbk, DEFAULT=>0, DESC=>"Don't create GeneBank file"},
     {OPT=>"rnammer!",  VAR=>\$rnammer, DEFAULT=>0, DESC=>"Prefer RNAmmer over Barrnap for rRNA prediction"},
   );
