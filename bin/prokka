@@ -1539,7 +1539,7 @@ sub find_exe {
 
 sub msg {
   my $t = localtime;
-  my $line = "[".$t->hms."] @_\n";
+  my $line = "[".$t->dmy." ".$t->hms."] @_\n";
   print STDERR $line unless $quiet;
   if (openhandle(\*LOG)) {
     # write out any buffered log lines
