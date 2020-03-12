@@ -233,7 +233,8 @@ my(@Options, $quiet, $debug, $kingdom, $fast, $force, $outdir, $prefix, $cpus, $
              $genus, $species, $strain, $plasmid, $prodigaltf,
              $usegenus, $proteins, $hmms, $centre, $scaffolds,
              $rfam, $norrna, $notrna, $rnammer, $rawproduct, $noanno, $accver,
-	     $metagenome, $compliant, $listdb, $citation, $nogbk, $nocrispr);
+	     $metagenome, $compliant, $listdb, $citation, $nogbk, $nocrispr,
+	     $prodigalraw);
 
 $dbdir = $ENV{'PROKKA_DBDIR'} || abs_path("$FindBin::RealBin/../db");
 
@@ -796,6 +797,12 @@ while (<$PRODIGAL>) {
   }
 }
 msg("Found $num_cds CDS");
+
+if ($prodigalraw) {
+  msg("Running prodigal with GFF output for collecting additional data.");
+  $cmd =~ s/-f sco/-f gff/g;
+  runcmd($cmd . " > \Q$outdir/$prefix.prodigal.gff\E");
+}
 
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
 # Connect features to their parent sequences
@@ -1815,6 +1822,7 @@ sub setOptions {
     {OPT=>"nocrispr!",  VAR=>\$nocrispr, DEFAULT=>0, DESC=>"Don't run CRISPR search"},
     {OPT=>"nogbk!",  VAR=>\$nogbk, DEFAULT=>0, DESC=>"Don't create GeneBank file"},
     {OPT=>"rnammer!",  VAR=>\$rnammer, DEFAULT=>0, DESC=>"Prefer RNAmmer over Barrnap for rRNA prediction"},
+    {OPT=>"prodigalraw!",  VAR=>\$prodigalraw, DEFAULT=>0, DESC=>"Save raw prodigal output (runs prodigal again)"},
   );
 
   (!@ARGV) && (usage(1));
