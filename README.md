@@ -3,7 +3,10 @@
 [![DOI:10.1093/bioinformatics/btu153](https://zenodo.org/badge/DOI/10.1093/bioinformatics/btu153.svg)](https://doi.org/10.1093/bioinformatics/btu153)
 ![Don't judge me](https://img.shields.io/badge/Language-Perl_5-steelblue.svg)
 
-# Prokka: rapid prokaryotic genome annotation  
+# Prokka: rapid prokaryotic genome annotation
+
+This is a modified version of Prokka (nicknamed Prokka-Delicatés), with some
+performance improvements and additional options.
 
 ## Introduction
 
@@ -63,6 +66,19 @@ $HOME/prokka/bin/prokka --setupdb
 sudo cpan Time::Piece XML::Simple Digest::MD5 Bio::Perl
 git clone https://github.com/tseemann/prokka.git $HOME/prokka
 $HOME/prokka/bin/prokka --setupdb
+```
+
+## Getting the Delicatés
+
+After installing, find the prokka executable. On Linux run `which prokka` and
+make sure that's what you installed.
+
+Make sure `prokka -v` gives 1.14.6.
+
+To get the modified executable:
+
+```
+curl "https://raw.githubusercontent.com/fluhus/prokka/master/bin/prokka" > YOUR_PROKKA_PATH
 ```
 
 ## Test
