@@ -230,7 +230,7 @@ sub check_all_tools {
 
 my(@Options, $quiet, $debug, $kingdom, $fast, $force, $outdir, $prefix, $cpus, $dbdir,
              $addgenes, $addmrna, $cds_rna_olap,
-             $gcode, $gram, $gffver, $locustag, $increment, $mincontiglen, $evalue, $coverage,
+             $gcode, $gram, $gffver, $locustag, $increment, $mincontiglen, $evalue, $proteins_evalue, $coverage,
              $genus, $species, $strain, $plasmid, $prodigaltf,
              $usegenus, $proteins, $hmms, $centre, $scaffolds,
              $rfam, $norrna, $notrna, $rnammer, $rawproduct, $noanno, $accver,
