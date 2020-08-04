@@ -238,6 +238,7 @@ $HOME/prokka/bin/prokka --setupdb
       --rfam            Enable searching for ncRNAs with Infernal+Rfam (SLOW!) (default '0')
       --norrna          Don't run rRNA search (default OFF)
       --notrna          Don't run tRNA search (default OFF)
+      --notbl2asn       Don't run tbl2asn (default OFF)
       --rnammer         Prefer RNAmmer over Barrnap for rRNA prediction (default OFF)
 
 ### Option: --proteins
