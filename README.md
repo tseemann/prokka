@@ -3,7 +3,7 @@
 [![DOI:10.1093/bioinformatics/btu153](https://zenodo.org/badge/DOI/10.1093/bioinformatics/btu153.svg)](https://doi.org/10.1093/bioinformatics/btu153)
 ![Don't judge me](https://img.shields.io/badge/Language-Perl_5-steelblue.svg)
 
-# Prokka: rapid prokaryotic genome annotation  
+# Prokka: rapid prokaryotic genome annotation
 
 ## Introduction
 
@@ -264,7 +264,7 @@ the training file using the `--prodgialtf` option.
 ### Option: --rawproduct
 
 Prokka annotates proteins by using sequence similarity to other proteins in its database,
-or the databses the user provides via `--proteins`. By default, Prokka tries to "cleans" the
+or the databases the user provides via `--proteins`. By default, Prokka tries to "cleans" the
 `/product` names to ensure they are compliant with Genbank/ENA conventions. 
 Some of the main things it does is:
 
@@ -282,7 +282,7 @@ an example of where it is "behaving badly" and I will fix it.
 ### The Core (BLAST+) Databases
 
 Prokka uses a variety of databases when trying to assign function to the
-predicted CDS features.  It takes a hierarchial approach to make it fast.  
+predicted CDS features.  It takes a hierarchical approach to make it fast.  
 A small, core set of well characterized proteins are first searched using
 BLAST+.  This combination of small database and fast search typically
 completes about 70% of the workload.  Then a series of slower but more
@@ -391,7 +391,7 @@ No.  Prokka is specifically designed for Bacteria, Archaea and Viruses.  It
 can't handle multi-exon gene models; I would recommend using MAKER 2 for
 that purpose.
 
-* __Why does Prokka keeps on crashing when it gets to tge "tbl2asn" stage?__  
+* __Why does Prokka keeps on crashing when it gets to the "tbl2asn" stage?__  
 It seems that the tbl2asn program from NCBI "expires" after 6-12 months, and
 refuses to run.  Unfortunately you need to install a newer version which you
 can download from [here](http://www.ncbi.nlm.nih.gov/genbank/tbl2asn2/).
