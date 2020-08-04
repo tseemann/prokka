@@ -391,7 +391,7 @@ No.  Prokka is specifically designed for Bacteria, Archaea and Viruses.  It
 can't handle multi-exon gene models; I would recommend using MAKER 2 for
 that purpose.
 
-* __Why does Prokka keeps on crashing when it gets to tge "tbl2asn" stage?__  
+* __Why does Prokka keeps on crashing when it gets to the "tbl2asn" stage?__  
 It seems that the tbl2asn program from NCBI "expires" after 6-12 months, and
 refuses to run.  Unfortunately you need to install a newer version which you
 can download from [here](http://www.ncbi.nlm.nih.gov/genbank/tbl2asn2/).
