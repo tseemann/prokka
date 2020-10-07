@@ -3,6 +3,7 @@ channels:
   - bioconda
   - conda-forge
 dependencies:
+  - python==3.6
   - aragorn >=1.2
   - barrnap >=0.7
   - blast >=2.7.1
