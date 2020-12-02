@@ -710,8 +710,12 @@ if ($tools{'minced'}->{HAVE}) {
 # CDS
 
 msg("Predicting coding sequences");
+#check that training file is readable, if given
+if (defined $prodigaltf && ! -r $prodigaltf) {
+    err("Cannot open specified training file for reading: ", $prodigaltf);
+}
 my $totalbp = sum( map { $seq{$_}{DNA}->length } @seq);
-my $prodigal_mode = ($totalbp >= 100000 && !$metagenome) ? 'single' : 'meta';
+my $prodigal_mode = ($totalbp >= 100000 && !$metagenome) || defined $prodigaltf ? 'single' : 'meta';
 msg("Contigs total $totalbp bp, so using $prodigal_mode mode");
 my $num_cds=0;
 my $cmd = "prodigal -i \Q$outdir/$prefix.fna\E -c -m -g $gcode -p $prodigal_mode -f sco -q";
