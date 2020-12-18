@@ -53,7 +53,7 @@ $HOME/prokka/bin/prokka --setupdb
 ### Centos/Fedora/RHEL
 ```
 sudo yum install git perl-Time-Piece perl-XML-Simple perl-Digest-MD5 perl-App-cpanminus git java perl-CPAN perl-Module-Build
-sudo cpanm Bio::Perl
+sudo cpan Bio::Perl
 git clone https://github.com/tseemann/prokka.git $HOME/prokka
 $HOME/prokka/bin/prokka --setupdb
 ```
