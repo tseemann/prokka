@@ -3,7 +3,7 @@ channels:
   - bioconda
   - conda-forge
 dependencies:
-  - python==3.6
+  - python==3.8
   - aragorn >=1.2
   - barrnap >=0.7
   - blast >=2.7.1
@@ -12,7 +12,8 @@ dependencies:
   - minced >=0.3
   - parallel >=20180522
   - perl >=5.26.2,<5.26.3.0a0
-  - perl-bioperl >=1.7.2
+  - perl-bioperl >=1.6.924
   - perl-xml-simple
   - prodigal >=2.6
   - tbl2asn-forever >=25.7.1f
+  - openssl >=1.1.1i,<1.1.2a
