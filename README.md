@@ -213,7 +213,7 @@ $HOME/prokka/bin/prokka --setupdb
       --locustag [X]    Locus tag prefix (default 'PROKKA')
       --increment [N]   Locus tag counter increment (default '1')
       --gffver [N]      GFF version (default '3')
-      --compliant       Force Genbank/ENA/DDJB compliance: --genes --mincontiglen 200 --centre XXX (default OFF)
+      --compliant       Force Genbank/ENA/DDJB compliance: --addgenes --mincontiglen 200 --centre XXX (default OFF)
       --centre [X]      Sequencing centre ID. (default '')
     Organism details:
       --genus [X]       Genus name (default 'Genus')
