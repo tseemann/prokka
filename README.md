@@ -252,7 +252,7 @@ as the first priority, use the `--proteins myfile.gbk`. Please make sure it has 
 recognisable file extension like `.gb` or `.gbk` or auto-detect will fail.   The
 use of Genbank is recommended over FASTA, because it will provide `/gene` 
 and `/EC_number` annotations that a typical `.faa` file will not provide, unless
-you have specially formatted it for Prokka.
+you have [specially formatted it for Prokka](#fasta-database-format).
 
 ### Option: --prodigaltf
 
