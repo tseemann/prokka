@@ -38,6 +38,7 @@ use Bio::Seq;
 use Bio::SeqFeature::Generic;
 use Bio::Tools::GFF;
 use Bio::Tools::GuessSeqFormat;
+use version;
 
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
 # global variables
@@ -256,7 +257,7 @@ msg("You have enabled DEBUG mode. Temporary files will NOT be deleted.") if $deb
 my $minbpver = "1.006002"; # for Bio::SearchIO::hmmer3
 my $bpver = $Bio::Root::Version::VERSION;
 msg("You have BioPerl $bpver");
-err("Please install BioPerl $minbpver or higher") if $bpver < $minbpver;
+err("Please install BioPerl $minbpver or higher") if version->parse($bpver) < version->parse($minbpver);
 
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
 # Check some incompatible options
