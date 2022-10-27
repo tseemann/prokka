@@ -31,15 +31,26 @@ brew install brewsci/bio/prokka
 ### Docker
 Maintained by https://hub.docker.com/u/staphb
 ```
-
+# pull docker image to local
 docker pull staphb/prokka:latest
+
+# test run to print out help messages from prokka
 docker run staphb/prokka:latest prokka -h
+
+# actual run: remember to add <absolute path to folder containing contigs.fa> such as /user/Documents
+docker run -v <absolute path to folder containing contigs.fa>:/mydata staphb/prokka:latest prokka --outdir /mydata/annotation /mydata/contigs.fa
 ```
 
 ### Singularity
 ```
+# build local image
 singularity build prokka.sif docker://staphb/prokka:latest
+
+# test run to print out help messages from prokka
 singularity exec prokka.sif prokka -h
+
+# actual run: remember to use --bind to link absolute local path continaing contigs.fa to singularity path /mydata
+singularity exec --bind /local/path/to/fasta:/mydata prokka.sif prokka --outdir /mydata/annotation  /mydata/contigs.fasta
 ```
 
 ### Ubuntu/Debian/Mint
