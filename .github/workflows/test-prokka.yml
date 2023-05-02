@@ -14,6 +14,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y libdb-dev libbio-perl-perl libxml-simple-perl libidn11-dev libidn-dev
           sudo ldconfig 
+          echo "${{ github.workspace }}/bin" >> $GITHUB_PATH
 
       - name: Test Prokka
         run: |
