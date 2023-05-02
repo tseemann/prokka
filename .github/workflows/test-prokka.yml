@@ -12,7 +12,7 @@ jobs:
       - name: Install Dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y libdb-dev libbio-perl-perl libxml-simple-perl
+          sudo apt-get install -y libdb-dev libbio-perl-perl libxml-simple-perl libidn11
           echo "${{ github.workspace }}/bin" >> $GITHUB_PATH
 
       - name: Test Prokka
