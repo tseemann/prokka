@@ -12,7 +12,8 @@ jobs:
       - name: Install Dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y libdb-dev libbio-perl-perl libxml-simple-perl libidn11-dev
+          sudo apt-get install -y libdb-dev libbio-perl-perl libxml-simple-perl
+          wget -O "${{ github.workspace }}/bin/tbl2asn" https://ftp.ncbi.nih.gov/toolbox/ncbi_tools/converters/by_program/tbl2asn/linux64.tbl2asn.gz
           echo "${{ github.workspace }}/bin" >> $GITHUB_PATH
 
       - name: Test Prokka
