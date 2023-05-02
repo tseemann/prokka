@@ -9,11 +9,19 @@ jobs:
       - name: Pull Prokka
         uses: actions/checkout@v3
 
-      - name: Install Dependencies
+      - uses: conda-incubator/setup-miniconda@v2
+        with:
+          python-version: '3.10'
+          miniforge-variant: Mambaforge
+          channels: conda-forge,bioconda
+          channel-priority: strict
+          activate-environment: prokka
+          environment-file: environment.yml
+          auto-update-conda: true
+
+      - name: Add Prokka to PATH
         run: |
-          sudo apt-get update
-          sudo apt-get install -y libdb-dev libbio-perl-perl libxml-simple-perl libidn11-dev libidn-dev
-          sudo ldconfig 
+          rm -rf "${{ github.workspace }}/binaries"
           echo "${{ github.workspace }}/bin" >> $GITHUB_PATH
 
       - name: Test Prokka
