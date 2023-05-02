@@ -1,0 +1,26 @@
+name: Prokka Tests
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      PATH: ${{ github.workspace }}/bin:$PATH
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libdb-dev libbio-perl-perl libxml-simple-perl
+      - name: Test Prokka
+        run: |
+          prokka --version
+          prokka --help
+          ! prokka --doesnotexist
+          prokka --depends
+          prokka --setupdb
+          prokka --listdb
+          prokka --cpus 2 --outdir asm --prefix asm test/plasmid.fna
+          grep '>' asm/asm.fna
+          prokka --cleandb
