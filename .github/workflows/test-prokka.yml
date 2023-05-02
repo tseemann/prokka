@@ -5,14 +5,16 @@ on: [push]
 jobs:
   build:
     runs-on: ubuntu-latest
-    env:
-      PATH: ${{ github.workspace }}/bin:$PATH
     steps:
-      - uses: actions/checkout@v3
+      - name: Pull Prokka
+        uses: actions/checkout@v3
+
       - name: Install Dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y libdb-dev libbio-perl-perl libxml-simple-perl
+          echo "${{ github.workspace }}/bin" >> $GITHUB_PATH
+
       - name: Test Prokka
         run: |
           prokka --version
