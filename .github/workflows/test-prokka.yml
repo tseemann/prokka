@@ -12,12 +12,13 @@ jobs:
       - name: Install Dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y libdb-dev libbio-perl-perl libxml-simple-perl
+          sudo apt-get install -y libdb-dev libbio-perl-perl libxml-simple-perl libidn11-dev libidn-dev
           # replace packaged latest tbl2asn
           rm "${{ github.workspace }}/binaries/linux/tbl2asn"
           wget -O "${{ github.workspace }}/binaries/linux/tbl2asn.gz" https://ftp.ncbi.nih.gov/toolbox/ncbi_tools/converters/by_program/tbl2asn/linux64.tbl2asn.gz
           gunzip "${{ github.workspace }}/binaries/linux/tbl2asn.gz"
           chmod 775 "${{ github.workspace }}/binaries/linux/tbl2asn"
+          "${{ github.workspace }}/binaries/linux/tbl2asn" --version
           echo "${{ github.workspace }}/bin" >> $GITHUB_PATH
 
       - name: Test Prokka
