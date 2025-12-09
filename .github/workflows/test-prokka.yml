@@ -14,8 +14,8 @@ jobs:
 
       - uses: conda-incubator/setup-miniconda@v3
         with:
-          python-version: 3.12
-          miniforge-version: lates
+          #python-version: 3.12
+          miniforge-version: latest
           #miniforge-variant: Mambaf
           channels: conda-forge,bioconda
           conda-remove-defaults: true
