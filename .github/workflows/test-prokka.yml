@@ -1,0 +1,40 @@
+name: Prokka Tests
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash -el {0}
+    steps:
+      - name: Pull Prokka
+        uses: actions/checkout@v3
+
+      - uses: conda-incubator/setup-miniconda@v2
+        with:
+          python-version: '3.10'
+          miniforge-variant: Mambaforge
+          channels: conda-forge,bioconda
+          channel-priority: strict
+          activate-environment: prokka
+          environment-file: environment.yml
+          auto-update-conda: true
+
+      - name: Add Prokka to PATH
+        run: |
+          rm -rf "${{ github.workspace }}/binaries"
+          echo "${{ github.workspace }}/bin" >> $GITHUB_PATH
+
+      - name: Test Prokka
+        run: |
+          prokka --version
+          prokka --help
+          ! prokka --doesnotexist
+          prokka --depends
+          prokka --setupdb
+          prokka --listdb
+          prokka --cpus 2 --outdir asm --prefix asm test/plasmid.fna
+          grep '>' asm/asm.fna
+          prokka --cleandb
