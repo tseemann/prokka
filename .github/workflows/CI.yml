@@ -29,14 +29,23 @@ jobs:
         run: |
           echo "${{ github.workspace }}/bin" >> $GITHUB_PATH
 
-      - name: Test Prokka
+      - name: Simple tests
         run: |
           prokka --version
           prokka --help
           ! prokka --doesnotexist
           prokka --depends
+          prokka --cleandb
           prokka --setupdb
           prokka --listdb
-          prokka --cpus 2 --outdir asm --prefix asm test/plasmid.fna
-          grep '>' asm/asm.fna
-          prokka --cleandb
+
+      - name: Anmotation tests
+        run: |
+          for F in plasmid genome ; do
+            prokka --cpus $(nproc) \
+              --outdir $F --prefix $F \
+              test/$F.fna
+            grep -c '>' $F/$F.fna 
+            head -n 1 $F/$F.gbk
+            grep '#sequence' $F/$F.gff
+          done
