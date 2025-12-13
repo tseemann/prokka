@@ -45,7 +45,7 @@ use Bio::Tools::GuessSeqFormat;
 my @CMDLINE = ($0, @ARGV);
 my $OPSYS = $^O;
 my $EXE = $FindBin::RealScript;
-my $VERSION = "1.15.0";
+my $VERSION = "1.15.1";
 my $AUTHOR = 'Torsten Seemann <torsten.seemann@gmail.com>';
 my $URL = 'https://github.com/tseemann/prokka';
 my $PROKKA_PMID = '24642063';
@@ -1622,8 +1622,6 @@ sub list_db {
 #----------------------------------------------------------------------
 
 sub setup_db {
-
-  add_bundle_to_path();
 
   clean_db(0);  # don't quit, come back here
 
