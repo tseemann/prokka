@@ -16,6 +16,22 @@ in a set of genomic DNA sequences, and labelling them with useful
 information. Prokka is a software tool to annotate bacterial, archaeal and
 viral genomes quickly and produce standards-compliant output files.
 
+## Bakta is the next generation of Prokka
+
+Prokka has served the community well for over a decade.
+I can no longer maintain it, so, with my blessing
+and gratitude, 
+[Oliver Schwengers](https://github.com/oschwengers)
+has taken the bacterial annotation toruch and
+developed
+[Bakta](https://github.com/oschwengers/bakta)
+which is a modern version of Prokka with better
+tooling and maintained databases, including
+`db-light` which is in the spirit of Prokka's
+:fast and lean" approach. I recommend replacing
+Prokka with Bakta in your analysis pipelines
+going forward.
+
 ## Installation
 
 ### Bioconda
