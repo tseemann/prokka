@@ -1,0 +1,149 @@
+#!/usr/bin/env perl
+use strict;
+use warnings;
+use lib 'swissknife_1.81/lib';
+use SWISS::Entry;
+use SWISS::KW;
+#use SWISS::OC;
+use Data::Dumper;
+
+my(@Options, $verbose, $frag, $evlev, $minlen, $maxlen, $sep, $blank, $term, $hypo);
+setOptions();
+
+my $HYPO = 'hypothetical protein'; 
+
+# Read an entire record at a time
+local $/ = "\n//\n";
+
+my $in=0;
+my $out=0;
+
+while (<ARGV>) 
+{
+  # Read the entry
+  my $entry = SWISS::Entry->fromText($_);
+  $in++;
+
+  # Immediately reject partial genes
+  next if not $frag and $entry->isFragment;
+  next if not $frag and $entry->DEs->hasFragment;
+
+  # Too short or to long?
+  my $L = length($entry->SQs->seq);
+  next if $minlen > 0 and $L < $minlen;
+  next if $maxlen > 0 and $L > $maxlen;
+ 
+  # Reject on evidence level
+  # grep ^PE uniprot_sprot.dat | sort | uniq -c
+  #  74284 PE   1: Evidence at protein level;
+  #  67762 PE   2: Evidence at transcript level;
+  # 376894 PE   3: Inferred from homology;
+  #  14424 PE   4: Predicted;
+  #   1884 PE   5: Uncertain;
+  if ($evlev < 5) { 
+    $entry->PE->text =~ m/^(\d+)/;
+    next unless $1 <= $evlev; 
+  }
+
+  # Only specified organism class
+  if ($term) {
+    my $tax = $entry->OCs->list or next;
+    next unless grep { $_ eq $term } @$tax ;
+  }
+
+  # /gene code  
+  my $gene = $entry->GNs->getFirst || '';
+  $gene = '' if $gene =~ m/\d{2}/ or $gene =~ m/\./;
+
+  my $ec = ''; 
+  my $prod = ''; 
+  my $cog = '';
+
+  if (1) {
+    # [ 'eggNOG', 'COG4799', 'LUCA' ]
+    for my $dr ( @{ $entry->DRs->list } ) {
+#      print Dumper($dr);
+      if ($dr->[1] =~ m/^(COG\d+)$/) {
+        $cog = $1;
+        last;
+      }   
+    }
+  }
+
+  if (1) {  
+    for my $de ($entry->DEs->elements) {
+      if ($de->type eq 'EC') {
+	$ec = $de->text;
+	$ec =~ s/^\D*//;
+#	last;
+      }
+      elsif ($de->type eq 'Full' and $de->category eq 'RecName') {
+	$prod = $de->text;
+	if ($prod =~ m/^UPF\d|^Uncharacterized protein|^ORF|^Protein /) {
+          next if ! $hypo;
+	  $prod = $HYPO;
+	}
+      }
+      last if $prod and $ec;  # we have some data now, exit out
+    }
+  }
+  
+  $prod ||= $HYPO;
+
+  # skip hypthetical proteins, unless user has overridden this with --hypo
+  next if !$hypo and $prod eq $HYPO;
+
+  $ec ||= $blank;
+  $gene ||= $blank;
+  $prod ||= $blank;
+  
+  print STDERR join("\t", $entry->AC, $ec, $gene, $prod, $cog), "\n" if $verbose;
+  print ">", $entry->AC, " $ec$sep$gene$sep$prod$sep$cog\n", $entry->SQs->seq, "\n";
+  
+  $out++;
+
+}
+
+#print STDERR "\n";
+
+#----------------------------------------------------------------------
+# Option setting routines
+
+sub setOptions {
+  use Getopt::Long;
+
+  @Options = (
+    {OPT=>"help",    VAR=>\&usage,             DESC=>"This help"},
+    {OPT=>"verbose!", VAR=>\$verbose, DEFAULT=>0, DESC=>"Verbose output"},
+    {OPT=>"separator=s",   VAR=>\$sep, DEFAULT=>'~~~', DESC=>"Separator for gene/EC/product"},
+    {OPT=>"blank=s",   VAR=>\$blank, DEFAULT=>'', DESC=>"Replace empty gene/EC/product with this"},
+    {OPT=>"evidence=i",   VAR=>\$evlev, DEFAULT=>2, DESC=>"1=prot 2=mrna 3=homol 4=pred 5=unsure"},
+    {OPT=>"fragments!",   VAR=>\$frag, DEFAULT=>0, DESC=>"Include 'DE Flags: Fragment;' entries"},
+    {OPT=>"minlen=i",   VAR=>\$minlen, DEFAULT=>20, DESC=>"Minimum peptide length"},
+    {OPT=>"maxlen=i",   VAR=>\$maxlen, DEFAULT=>1E5, DESC=>"Maximum peptide length"},
+    {OPT=>"term=s",   VAR=>\$term, DEFAULT=>'', DESC=>"Lineage must contain this term eg. 'Bacteria'"},
+    {OPT=>"hypo!",   VAR=>\$hypo, DEFAULT=>0, DESC=>"Don't filter out hypothetical proteins"},
+  );
+
+  #(!@ARGV) && (usage());
+
+  &GetOptions(map {$_->{OPT}, $_->{VAR}} @Options) || usage();
+
+  # Now setup default values.
+  foreach (@Options) {
+    if (defined($_->{DEFAULT}) && !defined(${$_->{VAR}})) {
+      ${$_->{VAR}} = $_->{DEFAULT};
+    }
+  }
+}
+
+sub usage {
+  print "Usage: $0 [options] <uniprot.dat>\n";
+  foreach (@Options) {
+    printf "  --%-13s %s%s.\n",$_->{OPT},$_->{DESC},
+           defined($_->{DEFAULT}) ? " (default '$_->{DEFAULT}')" : "";
+  }
+  exit(1);
+}
+ 
+#----------------------------------------------------------------------
