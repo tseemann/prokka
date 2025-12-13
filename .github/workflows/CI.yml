@@ -18,19 +18,15 @@ jobs:
 
       - uses: conda-incubator/setup-miniconda@v3
         with:
-          #python-version: 3.12
-          miniforge-version: latest
-          #miniforge-variant: Mambaf
-          channels: conda-forge,bioconda
-          conda-remove-defaults: true
-          channel-priority: strict
           activate-environment: prokka
           environment-file: environment.yml
+          miniforge-version: latest
+          channels: conda-forge,bioconda
+          channel-priority: strict
           auto-update-conda: true
 
       - name: Add Prokka to PATH
         run: |
-          rm -rf "${{ github.workspace }}/binaries"
           echo "${{ github.workspace }}/bin" >> $GITHUB_PATH
 
       - name: Test Prokka
