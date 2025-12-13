@@ -44,9 +44,8 @@ use Bio::Tools::GuessSeqFormat;
 
 my @CMDLINE = ($0, @ARGV);
 my $OPSYS = $^O;
-my $BINDIR = "$FindBin::RealBin/../binaries/$OPSYS";
 my $EXE = $FindBin::RealScript;
-my $VERSION = "1.14.6";
+my $VERSION = "1.15.0";
 my $AUTHOR = 'Torsten Seemann <torsten.seemann@gmail.com>';
 my $URL = 'https://github.com/tseemann/prokka';
 my $PROKKA_PMID = '24642063';
@@ -56,6 +55,9 @@ my $UNANN = 'unannotated protein';
 my $MAXCONTIGIDLEN = 37;  # Genbank rule
 my $SIGNALP_MAXSEQ = 10_000;  # maximum allowed input for signalp
 my @LOG; # buffer up log lines before we have log file ready
+
+# add bin dir to path
+$ENV{'PATH'} .= ":$FindBin::RealBin/../bin";
 
 # list of exceptions to /product annotations
 my @GOOD_PROD = (
@@ -377,11 +379,6 @@ msg("Writing log to: $logfile");
 open LOG, '>', $logfile or err("Can't open logfile");
 
 msg("Command: @CMDLINE");
-
-# . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
-# add our included binaries to the END of the PATH
-
-add_bundle_to_path();
 
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
 # now check the tools and make the adjustments
@@ -1595,17 +1592,6 @@ EOCITE
 
 #----------------------------------------------------------------------
 
-sub add_bundle_to_path {
-  for my $dir ($BINDIR, "$BINDIR/../common", $FindBin::RealBin) {
-    if (-d $dir) {
-      msg("Appending to PATH: $dir");
-      $ENV{PATH} .= ":$dir";
-    }
-  }
-}
-
-#----------------------------------------------------------------------
-
 sub kingdoms {
   return uniq map { m{kingdom/(\w+?)/}; $1 } glob("$dbdir/kingdom/*/*.pin");
 }
@@ -1689,10 +1675,7 @@ sub list_depends {
   for my $t (sort keys %tools) {
     my $ver = $tools{$t}{MINVER} || '0';
     my $opt = $tools{$t}{NEEDED} ? 'compulsory' : 'optional';
-    my $inc = -x "$BINDIR/$t" || -x "$BINDIR/../common/$t" || -x "$BINDIR/../../bin/$t" 
-            ? 'bundled' 
-            : 'not bundled';
-    print "$t >= $ver ($opt, $inc)\n";
+    print "$t >= $ver ($opt)\n";
   }
   exit(0);
 }
