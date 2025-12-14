@@ -19,6 +19,7 @@
 
 use strict;
 use warnings;
+use version;
 ###BREWCONDA###
 use FindBin;
 use Cwd qw(abs_path);
@@ -205,9 +206,9 @@ sub check_tool {
       if (defined $s) {
         chomp $s;
         $s =~ $t->{REGEXP} or err("Coult not parse version from '$s'");;
-        $t->{VERSION} = ver2str($1);
+        $t->{VERSION} = version->declare("$1");
         msg("Determined $toolname version is $t->{VERSION} from '$s'");
-        if (defined $t->{MINVER} and $t->{VERSION} lt ver2str($t->{MINVER}) ) {
+        if (defined $t->{MINVER} and $t->{VERSION} < version->declare("$t->{MINVER}") ) {
           err("Prokka needs $toolname $t->{MINVER} or higher. Please upgrade and try again.");
         }
       }
@@ -220,7 +221,7 @@ sub check_tool {
 }
 
 sub check_all_tools {
-  $ENV{"GREP_OPTIONS"} = '';  # --colour => version grep fails (Issue #117)
+  local $ENV{"GREP_OPTIONS"} = '';  # --colour => version grep fails (Issue #117)
   for my $toolname (sort keys %tools) {
     check_tool($toolname);
   }
@@ -258,7 +259,7 @@ msg("You have enabled DEBUG mode. Temporary files will NOT be deleted.") if $deb
 my $minbpver = "1.006002"; # for Bio::SearchIO::hmmer3
 my $bpver = $Bio::Root::Version::VERSION;
 msg("You have BioPerl $bpver");
-err("Please install BioPerl $minbpver or higher") if $bpver < $minbpver;
+err("Please install BioPerl $minbpver or higher") if version->parse($bpver) < version->parse($minbpver);
 
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
 # Check some incompatible options
