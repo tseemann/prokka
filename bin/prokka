@@ -45,7 +45,7 @@ use Bio::Tools::GuessSeqFormat;
 my @CMDLINE = ($0, @ARGV);
 my $OPSYS = $^O;
 my $EXE = $FindBin::RealScript;
-my $VERSION = "1.15.1";
+my $VERSION = "1.15.2";
 my $AUTHOR = 'Torsten Seemann <torsten.seemann@gmail.com>';
 my $URL = 'https://github.com/tseemann/prokka';
 my $PROKKA_PMID = '24642063';
@@ -255,10 +255,10 @@ msg("You have enabled DEBUG mode. Temporary files will NOT be deleted.") if $deb
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
 # check BioPerl version 
 
-my $minbpver = "1.006002"; # for Bio::SearchIO::hmmer3
+#my $minbpver = "1.006002"; # for Bio::SearchIO::hmmer3
 my $bpver = $Bio::Root::Version::VERSION;
 msg("You have BioPerl $bpver");
-err("Please install BioPerl $minbpver or higher") if $bpver < $minbpver;
+#err("Please install BioPerl $minbpver or higher") if $bpver < $minbpver;
 
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
 # Check some incompatible options
