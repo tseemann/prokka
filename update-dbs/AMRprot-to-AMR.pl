@@ -24,12 +24,12 @@ while (<>) {
     my @f = split m/\|/, $hdr;
     $f[9] =~ s/_/ /g;
     print 
-      ">",
+      ">$f[0] ",
       join('~~~',
-        $f[0],
-        $f[3],
-        $f[9],
-        '',
+        '',    # /EC_number
+        $f[3], # /gene
+        $f[9], # /productr
+        '',    # COG
       ),
       "\n";
   }
