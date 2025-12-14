@@ -46,7 +46,7 @@ use Bio::Tools::GuessSeqFormat;
 my @CMDLINE = ($0, @ARGV);
 my $OPSYS = $^O;
 my $EXE = $FindBin::RealScript;
-my $VERSION = "1.15.2";
+my $VERSION = "1.15.5";
 my $AUTHOR = 'Torsten Seemann <torsten.seemann@gmail.com>';
 my $URL = 'https://github.com/tseemann/prokka';
 my $PROKKA_PMID = '24642063';
@@ -720,7 +720,7 @@ for my $rna (@allrna) {
 
 msg("Predicting coding sequences");
 #check that training file is readable, if given
-if (defined $prodigaltf && ! -r $prodigaltf) {
+if ($prodigaltf and ! -r $prodigaltf) {
     err("Cannot open specified training file for reading: ", $prodigaltf);
 }
 my $totalbp = sum( map { $seq{$_}{DNA}->length } @seq);
