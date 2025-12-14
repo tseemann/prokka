@@ -707,6 +707,17 @@ if ($tools{'minced'}->{HAVE}) {
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
 # CDS
 
+# Create a hash of RNA lists, grouped by seqid to speed up lookups.
+my %rnabyseq;
+for my $rna (@allrna) {
+  my @a = ();
+  $rnabyseq{$rna->seq_id} = \@a;
+}
+for my $rna (@allrna) {
+  my $a = $rnabyseq{$rna->seq_id};
+  push @$a, $rna;
+}
+
 msg("Predicting coding sequences");
 #check that training file is readable, if given
 if (defined $prodigaltf && ! -r $prodigaltf) {
@@ -746,15 +757,18 @@ while (<$PRODIGAL>) {
       }
     );
     my $overlap;
-    for my $rna (@allrna) {
-      # same contig, overlapping (could check same strand too? not sure)
-      if ($rna->seq_id eq $sid and $cds->overlaps($rna)) { 
-        $overlap = $rna;
-	last;
-      }	
+    if (!$cds_rna_olap and exists($rnabyseq{$sid})) {
+      my $seqrna = $rnabyseq{$sid};
+      for my $rna (@$seqrna) {
+        # same contig, overlapping (could check same strand too? not sure)
+        if ($rna->seq_id eq $sid and $cds->overlaps($rna)) {
+          $overlap = $rna;
+	        last;
+        }	
+      }
     }
     # mitochondria are highly packed, so don't exclude as CDS/tRNA often overlap.
-    if ($overlap and ! $cds_rna_olap) {
+    if ($overlap) {
       my $type = $overlap->primary_tag;
       msg("Excluding CDS which overlaps existing RNA ($type) at $sid:$1..$2 on $3 strand");
     }
