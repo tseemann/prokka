@@ -172,7 +172,7 @@ my %tools = (
     GETVER  => "tbl2asn - | grep '^tbl2asn'",
     REGEXP  => qr/tbl2asn\s+($BIDEC)/,
     MINVER  => "24.3",
-    NEEDED  => 1,
+    NEEDED  => 0,
   },
   # now just the standard unix tools we need
   'grep'    => { NEEDED=>1 },  # yes, we need this before we can test versions :-/
@@ -235,7 +235,7 @@ my(@Options, $quiet, $debug, $kingdom, $fast, $force, $outdir, $prefix, $cpus, $
              $gcode, $gram, $gffver, $locustag, $increment, $mincontiglen, $evalue, $coverage,
              $genus, $species, $strain, $plasmid, $prodigaltf,
              $usegenus, $proteins, $hmms, $centre, $scaffolds,
-             $rfam, $norrna, $notrna, $rnammer, $rawproduct, $noanno, $accver,
+             $rfam, $norrna, $notrna, $rnammer, $tbl2asn, $rawproduct, $noanno, $accver,
 	     $metagenome, $compliant, $listdb, $citation);
 
 $dbdir = $ENV{'PROKKA_DBDIR'} || abs_path("$FindBin::RealBin/../db");
@@ -397,6 +397,9 @@ if ($rnammer and $tools{'rnammer'}->{HAVE}) {
 
 if ($proteins and ! $tools{'makeblastdb'}->{HAVE}) {
   err("You need to install 'makeblastdb' to use the --proteins option.");
+}
+if ($tbl2asn and ! $tools{'tbl2asn'}->{HAVE}) {
+  err("You need to install 'tbl2asn' to use the --tbl2asn option.");
 }
 if ($rfam and ! $tools{'cmscan'}->{HAVE}) {
   err("You need to install 'cmscan' to use the --rfam option.");
@@ -1418,33 +1421,37 @@ close $txtFh;
 # NOTE: the -A and -N  fake accession and version needed for Mauve!
 # BUT: -A xxx has a bug where it uses xxx as the LOCUS (contig) ID for 1st contig
 # SO: *sigh*
+if ($tbl2asn) {
+  my $tbl2asn_opt = @seq > 10_000 ? '-M b' : '-M n';  # Issue 93 - big assemblies
 
-my $tbl2asn_opt = @seq > 10_000 ? '-M b' : '-M n';  # Issue 93 - big assemblies
+  msg("Generating Genbank and Sequin files");
+  #runcmd("tbl2asn -a s -q F -A $prefix -N 1 -y 'Annotated using $EXE $VERSION from $URL' -Z $outdir/$prefix.err -M n -V b -i $outdir/$prefix.fsa -f $outdir/$prefix.tbl 2> /dev/null");
+  #runcmd("tbl2asn -V b -a s -A $prefix -N 1 -y 'Annotated using $EXE $VERSION from $URL' -Z $outdir/$prefix.err -i $outdir/$prefix.fsa");
+  #runcmd("tbl2asn -V b -a s -N 1 -y 'Annotated using $EXE $VERSION from $URL' -Z $outdir/$prefix.err -i $outdir/$prefix.fsa 2> /dev/null");
+  runcmd(
+    "tbl2asn -V b -a r10k -l paired-ends $tbl2asn_opt -N $accver -y 'Annotated using $EXE $VERSION from $URL'".
+    " -Z \Q$outdir/$prefix.err\E -i \Q$outdir/$prefix.fsa\E 2> /dev/null"
+  );
+  delfile("$outdir/errorsummary.val");
+  delfile( map { "$outdir/$prefix.$_" } qw(dr fixedproducts ecn val) );
 
-msg("Generating Genbank and Sequin files");
-#runcmd("tbl2asn -a s -q F -A $prefix -N 1 -y 'Annotated using $EXE $VERSION from $URL' -Z $outdir/$prefix.err -M n -V b -i $outdir/$prefix.fsa -f $outdir/$prefix.tbl 2> /dev/null");
-#runcmd("tbl2asn -V b -a s -A $prefix -N 1 -y 'Annotated using $EXE $VERSION from $URL' -Z $outdir/$prefix.err -i $outdir/$prefix.fsa");
-#runcmd("tbl2asn -V b -a s -N 1 -y 'Annotated using $EXE $VERSION from $URL' -Z $outdir/$prefix.err -i $outdir/$prefix.fsa 2> /dev/null");
-runcmd(
-  "tbl2asn -V b -a r10k -l paired-ends $tbl2asn_opt -N $accver -y 'Annotated using $EXE $VERSION from $URL'".
-  " -Z \Q$outdir/$prefix.err\E -i \Q$outdir/$prefix.fsa\E 2> /dev/null"
-);
-delfile("$outdir/errorsummary.val");
-delfile( map { "$outdir/$prefix.$_" } qw(dr fixedproducts ecn val) );
+  msg("Repairing broken .GBK output that tbl2asn produces...");
+  runcmd("sed 's/COORDINATES: profile/COORDINATES:profile/' < \Q$outdir/$prefix.gbf\E > \Q$outdir/$prefix.gbk\E");
+  delfile("$outdir/$prefix.gbf");
 
-msg("Repairing broken .GBK output that tbl2asn produces...");
-runcmd("sed 's/COORDINATES: profile/COORDINATES:profile/' < \Q$outdir/$prefix.gbf\E > \Q$outdir/$prefix.gbk\E");
-delfile("$outdir/$prefix.gbf");
+  # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
+  # Some final log output
 
-# . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
-# Some final log output
-
-msg("Output files:");
-foreach (qx(find \Q$outdir\E -type f -name "$prefix.*")) {
-  chomp;
-  msg($_);
+  msg("Output files:");
+  foreach (qx(find \Q$outdir\E -type f -name "$prefix.*")) {
+    chomp;
+    msg($_);
+  }
+  msg("Annotation finished successfully.");
 }
-msg("Annotation finished successfully.");
+else {
+  msg("Disabling tbl2asn");
+}
 my $endtime = localtime;
 my $walltime = $endtime - $starttime;
 #msg("Walltime used:", $walltime->pretty);  # Heikki says this method only came with 1.20
@@ -1780,6 +1787,7 @@ sub setOptions {
     {OPT=>"rfam",  VAR=>\$rfam, DEFAULT=>0, DESC=>"Enable searching for ncRNAs with Infernal+Rfam (SLOW!)"},
     {OPT=>"norrna!",  VAR=>\$norrna, DEFAULT=>0, DESC=>"Don't run rRNA search"},
     {OPT=>"notrna!",  VAR=>\$notrna, DEFAULT=>0, DESC=>"Don't run tRNA search"},
+    {OPT=>"tbl2asn!",  VAR=>\$tbl2asn, DEFAULT=>0, DESC=>"Run tbl2asn tool"},
     {OPT=>"rnammer!",  VAR=>\$rnammer, DEFAULT=>0, DESC=>"Prefer RNAmmer over Barrnap for rRNA prediction"},
   );
 
