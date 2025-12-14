@@ -19,6 +19,7 @@
 
 use strict;
 use warnings;
+use version;
 ###BREWCONDA###
 use FindBin;
 use Cwd qw(abs_path);
@@ -205,9 +206,9 @@ sub check_tool {
       if (defined $s) {
         chomp $s;
         $s =~ $t->{REGEXP} or err("Coult not parse version from '$s'");;
-        $t->{VERSION} = ver2str($1);
+        $t->{VERSION} = version->declare("$1");
         msg("Determined $toolname version is $t->{VERSION} from '$s'");
-        if (defined $t->{MINVER} and $t->{VERSION} lt ver2str($t->{MINVER}) ) {
+        if (defined $t->{MINVER} and $t->{VERSION} < version->declare("$t->{MINVER}") ) {
           err("Prokka needs $toolname $t->{MINVER} or higher. Please upgrade and try again.");
         }
       }
@@ -220,7 +221,7 @@ sub check_tool {
 }
 
 sub check_all_tools {
-  $ENV{"GREP_OPTIONS"} = '';  # --colour => version grep fails (Issue #117)
+  local $ENV{"GREP_OPTIONS"} = '';  # --colour => version grep fails (Issue #117)
   for my $toolname (sort keys %tools) {
     check_tool($toolname);
   }
@@ -706,9 +707,24 @@ if ($tools{'minced'}->{HAVE}) {
 # . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 
 # CDS
 
+# Create a hash of RNA lists, grouped by seqid to speed up lookups.
+my %rnabyseq;
+for my $rna (@allrna) {
+  my @a = ();
+  $rnabyseq{$rna->seq_id} = \@a;
+}
+for my $rna (@allrna) {
+  my $a = $rnabyseq{$rna->seq_id};
+  push @$a, $rna;
+}
+
 msg("Predicting coding sequences");
+#check that training file is readable, if given
+if (defined $prodigaltf && ! -r $prodigaltf) {
+    err("Cannot open specified training file for reading: ", $prodigaltf);
+}
 my $totalbp = sum( map { $seq{$_}{DNA}->length } @seq);
-my $prodigal_mode = ($totalbp >= 100000 && !$metagenome) ? 'single' : 'meta';
+my $prodigal_mode = ($totalbp >= 100000 && !$metagenome) || defined $prodigaltf ? 'single' : 'meta';
 msg("Contigs total $totalbp bp, so using $prodigal_mode mode");
 my $num_cds=0;
 my $cmd = "prodigal -i \Q$outdir/$prefix.fna\E -c -m -g $gcode -p $prodigal_mode -f sco -q";
@@ -741,15 +757,18 @@ while (<$PRODIGAL>) {
       }
     );
     my $overlap;
-    for my $rna (@allrna) {
-      # same contig, overlapping (could check same strand too? not sure)
-      if ($rna->seq_id eq $sid and $cds->overlaps($rna)) { 
-        $overlap = $rna;
-	last;
-      }	
+    if (!$cds_rna_olap and exists($rnabyseq{$sid})) {
+      my $seqrna = $rnabyseq{$sid};
+      for my $rna (@$seqrna) {
+        # same contig, overlapping (could check same strand too? not sure)
+        if ($rna->seq_id eq $sid and $cds->overlaps($rna)) {
+          $overlap = $rna;
+	        last;
+        }	
+      }
     }
     # mitochondria are highly packed, so don't exclude as CDS/tRNA often overlap.
-    if ($overlap and ! $cds_rna_olap) {
+    if ($overlap) {
       my $type = $overlap->primary_tag;
       msg("Excluding CDS which overlaps existing RNA ($type) at $sid:$1..$2 on $3 strand");
     }
