@@ -478,28 +478,28 @@ _Petersen TN et al. SignalP 4.0: discriminating signal peptides from transmembra
 Used for similarity searching against ncRNA family profiles  
 _D. L. Kolbe, S. R. Eddy. Fast Filtering for RNA Homology Search. Bioinformatics, 27:3102-3109, 2011._
 
-
 ## Changes
 
 * Read the [release notes](https://github.com/tseemann/prokka/releases)
 * Look at the [Github commits](https://github.com/tseemann/prokka/commits/master)
 
 ## Feedback
+
 Submit problems or requests to the [Issue Tracker](https://github.com/tseemann/prokka/issues).
 
 ## Citation
 
-Seemann T.  
-*Prokka: rapid prokaryotic genome annotation*  
+Seemann T.
+*Prokka: rapid prokaryotic genome annotation*
 **Bioinformatics** 2014 Jul 15;30(14):2068-9.
-[PMID:24642063](http://www.ncbi.nlm.nih.gov/pubmed/24642063)  
+[PMID:24642063](http://www.ncbi.nlm.nih.gov/pubmed/24642063)
 [DOI:10.1093/bioinformatics/btu153](https://doi.org/10.1093/bioinformatics/btu153)
 [CFF](CITATION.cff)
 
 ## Licence
 
-[GPL v3](https://raw.githubusercontent.com/tseemann/prokka/master/doc/LICENSE.Prokka)
+[GPL v3](https://raw.githubusercontent.com/tseemann/prokka/master/LICENSE)
 
 ## Author
 
-* [Torsten Seemann](https://tseemann.github.io/)
+[Torsten Seemann](https://tseemann.github.io/)
