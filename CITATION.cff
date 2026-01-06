@@ -1,0 +1,31 @@
+cff-version: 1.2.0
+message: Please cite the following works when using this software.
+preferred-citation:
+  authors:
+    - family-names: Seemann
+      given-names: Torsten
+  doi: 10.1093/bioinformatics/btu153
+  identifiers:
+    - type: doi
+      value: 10.1093/bioinformatics/btu153
+    - type: url
+      value: http://dx.doi.org/10.1093/bioinformatics/btu153
+    - type: other
+      value: urn:issn:1367-4811
+  title: 'Prokka: rapid prokaryotic genome annotation'
+  url: http://dx.doi.org/10.1093/bioinformatics/btu153
+  database: Crossref
+  date-published: 2014-03-18
+  year: 2014
+  month: 3
+  issn: 1367-4811
+  issue: '14'
+  journal: Bioinformatics
+  languages:
+    - en
+  publisher:
+    name: Oxford University Press (OUP)
+  start: '2068'
+  end: '2069'
+  type: article
+  volume: '30'
