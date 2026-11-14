@@ -1659,7 +1659,7 @@ sub setup_db {
   }
 
   check_tool('hmmpress');
-  for my $hmm (<$dbdir/hmm/*.{hmm,hmm.gz}>) {
+  for my $hmm (hmm_files($dbdir)) {
     msg("Pressing HMM database: $hmm");
     # We may need to uncompress first
     if ($hmm =~ m/^(.*?)\.gz$/) {
@@ -1678,6 +1678,18 @@ sub setup_db {
   }
   
   list_db();
+}
+
+#----------------------------------------------------------------------
+
+sub hmm_files {
+  my($hmm_dir) = @_;
+  my @hmm = <$hmm_dir/*.hmm>;
+  for my $hmm_gz (<$hmm_dir/*.hmm.gz>) {
+    (my $hmm = $hmm_gz) =~ s/\.gz$//;
+    push @hmm, $hmm_gz unless -e $hmm;
+  }
+  return @hmm;
 }
 
 #----------------------------------------------------------------------
