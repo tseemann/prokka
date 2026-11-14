@@ -28,10 +28,17 @@ sub delfile {
 eval "$clean_db 1;";
 die $@ if $@;
 
-sub mock_setupdb {
+sub legacy_hmm_files {
   my($dir) = @_;
+  return <$dir/*.{hmm,hmm.gz}>;
+}
+
+sub mock_setupdb {
+  my($dir, $selector) = @_;
+  $selector ||= \&hmm_files;
   my @commands;
-  for my $hmm (hmm_files($dir)) {
+  unlink $_ for glob "$dir/*.h3?";
+  for my $hmm ($selector->($dir)) {
     if ($hmm =~ m/\.gz$/) {
       (my $uncompressed = $hmm) =~ s/\.gz$//;
       push @commands, "gzip -dc $hmm > $uncompressed";
@@ -42,13 +49,21 @@ sub mock_setupdb {
       close $in;
       $hmm = $uncompressed;
     }
-    push @commands, "hmmpress $hmm";
-    for my $suffix (qw(h3f h3i h3m h3p)) {
-      open my $index, '>', "$hmm.$suffix" or die $!;
-      close $index;
-    }
+    mock_hmmpress($hmm, \@commands);
   }
   return \@commands;
+}
+
+sub mock_hmmpress {
+  my($hmm, $commands) = @_;
+  my @index_files = map { "$hmm.$_" } qw(h3f h3i h3m h3p);
+  die "mock hmmpress refused existing indices for $hmm\n"
+    if grep { -e $_ } @index_files;
+  push @$commands, "hmmpress $hmm";
+  for my $index (@index_files) {
+    open my $fh, '>', $index or die $!;
+    close $fh;
+  }
 }
 
 my $dir = tempdir(CLEANUP => 1);
@@ -58,16 +73,30 @@ close $hmm;
 open my $gz, '>', "$dir/HAMAP.hmm.gz" or die $!;
 print {$gz} "compressed fixture\n";
 close $gz;
+open my $other_gz, '>', "$dir/OTHER.hmm.gz" or die $!;
+print {$other_gz} "compressed fixture\n";
+close $other_gz;
 
-is_deeply([hmm_files($dir)], ["$dir/HAMAP.hmm"],
+is_deeply([hmm_files($dir)], ["$dir/HAMAP.hmm", "$dir/OTHER.hmm.gz"],
   'an existing uncompressed HMM wins over its compressed twin');
 
+my $legacy_error;
+eval { mock_setupdb($dir, \&legacy_hmm_files); 1 }
+  or $legacy_error = $@;
+like($legacy_error, qr/mock hmmpress refused existing indices for .*HAMAP\.hmm/,
+  'the legacy HMM glob reproduces duplicate hmmpress failure');
+
 my $first = mock_setupdb($dir);
-is_deeply($first, ["hmmpress $dir/HAMAP.hmm"],
-  'setupdb presses a coexistence pair only once');
+is_deeply($first, [
+  "hmmpress $dir/HAMAP.hmm",
+  "gzip -dc $dir/OTHER.hmm.gz > $dir/OTHER.hmm",
+  "hmmpress $dir/OTHER.hmm",
+], 'setupdb presses each logical HMM only once');
 my $second = mock_setupdb($dir);
-is_deeply($second, ["hmmpress $dir/HAMAP.hmm"],
-  'repeated setupdb remains single-pass without gzip or duplicate hmmpress');
+is_deeply($second, [
+  "hmmpress $dir/HAMAP.hmm",
+  "hmmpress $dir/OTHER.hmm",
+], 'repeated setupdb remains single-pass without duplicate hmmpress');
 ok(-e "$dir/HAMAP.hmm.h3i", 'mock hmmpress produced an index');
 
 my $only_gz = tempdir(CLEANUP => 1);
